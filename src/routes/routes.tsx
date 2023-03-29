@@ -4,7 +4,9 @@ import {RouteObject} from "react-router-dom"
 import Notifications from "../pages/Notifications"
 import Services from "../pages/Services"
 import ErrorPage from "../pages/ErrorPage"
-import Authentication from "../pages/Auth"
+import SignUp from "../pages/SignUp"
+import Login from "../pages/Login"
+import Authentication from "../layouts/Authentication"
 
 export const routes: RouteObject[] = [
     {
@@ -20,9 +22,19 @@ export const routes: RouteObject[] = [
                 path: "/services",
                 element: <Services/>,
             },
+        ],
+    },
+    {
+        path: "/auth",
+        element: <Authentication/>,
+        children: [
             {
-                path: "/auth",
-                element: <Authentication/>,
+                path: "/auth/signup",
+                element: <SignUp/>,
+            },
+            {
+                path: "/auth/login",
+                element: <Login/>,
             },
         ],
     },

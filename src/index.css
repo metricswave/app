@@ -3,31 +3,45 @@
 @tailwind utilities;
 
 :root {
-  --font-mono: 'PT Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
-  monospace;
+    --font-mono: 'PT Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
 
-  --landing-nav-height: 56px;
+    --landing-nav-height: 56px;
 
-  /*  Colors */
-  --text-color: #111;
-  --background-color: rgb(249 246 241);
+    /*  Colors */
+    --text-color: #111;
+    --background-color: rgb(249 246 241);
 
-  /*  Size and spacing */
-  --landing-max-width: 768px;
-  --app-padding: 1rem;
+    /*  Size and spacing */
+    --landing-max-width: 768px;
+    --app-padding: 1rem;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    /*  Colors */
-    --text-color: #dfdfdf;
-    --background-color: #181818;
-  }
+    :root {
+        /*  Colors */
+        --text-color: #dfdfdf;
+        --background-color: #181818;
+    }
 }
 
 html {
-  font-family: var(--font-mono);
-  color: var(--text-color);
-  background: var(--background-color);
-  scroll-behavior: smooth;
+    font-family: var(--font-mono);
+    color: var(--text-color);
+    background: var(--background-color);
+    scroll-behavior: smooth;
+}
+
+/* Change Autocomplete styles in Chrome*/
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0px 1000px #FFF inset;
+    box-shadow: 0 0 0px 1000px #FFF inset;
 }

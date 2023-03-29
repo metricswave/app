@@ -7,8 +7,8 @@ export default function App() {
     const location = useLocation()
     const [user, setUser] = React.useState<User | null>(null)
 
-    if (!user && location.pathname !== "/auth") {
-        return <Navigate to="/auth"/>
+    if (!user && location.pathname !== "/auth/signup") {
+        return <Navigate to="/auth/signup"/>
     }
 
     return (
