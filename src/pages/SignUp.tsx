@@ -4,6 +4,8 @@ import Authentication from "../components/wrappers/Authentication"
 import LinkButton from "../components/buttons/LinkButton"
 import {FormEvent, useState} from "react"
 import {DeviceName} from "../storage/DeviceName"
+import {fetchApi} from "../helpers/ApiFetcher"
+import {Tokens} from "../types/Token"
 
 export default function SignUp() {
     const [name, setName] = useState("")
@@ -39,11 +41,14 @@ export default function SignUp() {
             e = {...e, email: false}
         }
 
-        if (password !== passwordConfirmation) {
+        if (password === "") {
+            hasErrors = true
+            e = {...e, password: "Passwords is required"}
+        } else if (password !== passwordConfirmation) {
             hasErrors = true
             e = {...e, passwordConfirmation: "Passwords do not match"}
         } else {
-            e = {...e, passwordConfirmation: false}
+            e = {...e, password: false, passwordConfirmation: false}
         }
 
         setErrors({...errors, ...e})
@@ -59,37 +64,28 @@ export default function SignUp() {
         setLoading(true)
         setFormError(false)
 
-        fetch("http://notifywave.test/api/signup", {
+        fetchApi<Tokens>("/signup", {
             method: "POST",
-            body: JSON.stringify({
+            body: {
                 name,
                 email,
                 password,
                 password_confirmation: passwordConfirmation,
                 device_name: DeviceName.name(),
-            }),
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json",
+            },
+            success: (data) => {
+                localStorage.setItem("nw:auth", JSON.stringify(data.data))
+                window.location.href = "/"
+                setLoading(false)
+            },
+            error: (data) => {
+                setFormError(data.message)
+                setLoading(false)
+            },
+            catcher: (data) => {
+                setLoading(false)
             },
         })
-                .then(async res => {
-                    if (res.status >= 200 && res.status < 300) {
-                        return res.json()
-                    }
-
-                    const e = await res.json()
-                    throw new Error(e.message)
-                })
-                .then(data => {
-                    localStorage.setItem("nw:auth", JSON.stringify(data.data))
-                    window.location.href = "/"
-                    setLoading(false)
-                })
-                .catch(err => {
-                    setFormError(err.message)
-                    setLoading(false)
-                })
     }
 
     return (
