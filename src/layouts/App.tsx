@@ -4,6 +4,9 @@ import {AuthContext} from "../contexts/AuthContext"
 import Logo from "../components/logo/Logo"
 import {useUserState} from "../storage/User"
 import {useAuthState} from "../storage/AuthToken"
+import NavigationItems from "../components/navigation/NavigationItems"
+import MobileNavigationItems from "../components/navigation/MobileNavigationItems"
+import SettingsIcon from "../components/icons/SettingsIcon"
 
 export default function App() {
     const {isAuth} = useAuthState()
@@ -15,12 +18,33 @@ export default function App() {
 
     return (
             <AuthContext.Provider value={{user}}>
-                <div className="App">
-                    <header className="App-header">
+                <div className="">
+                    <header className="flex flex-row space-x-4 items-center justify-between py-3 px-5 border-b border-zinc-200/50 dark:border-zinc-700/50 text-sm">
                         <Logo/>
+                        <div className="hidden sm:block">
+                            <NavigationItems/>
+                        </div>
+                        <div>
+                            <ul className="flex flex-row space-x-4">
+                                <li>
+                                    <a href="#"
+                                       className={[
+                                           "flex flex-row items-center justify-center transition-all duration-300 hover:bg-[var(--menu-item-hover)] rounded-full p-3",
+                                       ].join(" ")}>
+                                        <SettingsIcon className="text-base"/>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </header>
 
-                    <Outlet/>
+                    <div className="p-4 sm:p-6">
+                        <Outlet/>
+                    </div>
+
+                    <div className="fixed bottom-0 left-0 right-0 p-4 border-t border-zinc-200/60 dark:border-zinc-700/60 sm:hidden">
+                        <MobileNavigationItems/>
+                    </div>
                 </div>
             </AuthContext.Provider>
     )

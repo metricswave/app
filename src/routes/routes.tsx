@@ -9,6 +9,7 @@ import Login from "../pages/Login"
 import Authentication from "../layouts/Authentication"
 import ForgotPassword from "../pages/ForgotPassword"
 import ResetPassword from "../pages/ResetPassword"
+import Triggers from "../pages/Triggers"
 
 export const routes: RouteObject[] = [
     {
@@ -23,6 +24,10 @@ export const routes: RouteObject[] = [
             {
                 path: "/services",
                 element: <Services/>,
+            },
+            {
+                path: "/triggers",
+                element: <Triggers/>,
             },
         ],
     },

@@ -11,6 +11,8 @@
     /*  Colors */
     --text-color: #111;
     --background-color: rgb(249 246 241);
+    --menu-item-active: #feeddb;
+    --menu-item-hover: #feeddb8f;
 
     /*  Size and spacing */
     --landing-max-width: 768px;
@@ -22,6 +24,8 @@
         /*  Colors */
         --text-color: #dfdfdf;
         --background-color: #181818;
+        --menu-item-active: #27272A;
+        --menu-item-hover: rgba(39, 39, 42, 0.55);
     }
 }
 
