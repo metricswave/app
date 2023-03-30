@@ -5,6 +5,7 @@ import {fetchAuthApi} from "../helpers/ApiFetcher"
 import {DeviceName} from "./DeviceName"
 
 const AUTH_KEY: string = "nw:auth"
+const REFRESH_INTERVAL = 1000 * 60 * 15 // 15 minutes
 
 export const getTokens = () => localStorage.getItem(AUTH_KEY)
     ? JSON.parse(localStorage.getItem(AUTH_KEY) as string) as Tokens
@@ -19,30 +20,33 @@ export function useAuthState() {
     }
 
     useEffect(() => {
-        const nowSeconds = Math.floor(Date.now() / 1000)
-        const lessThanTwelveHoursToExpire = tokens && tokens.token.expires_at - nowSeconds < DAY_SECONDS / 2
+        const interval = setInterval(() => {
+            const nowSeconds = Math.floor(Date.now() / 1000)
+            const lessThanTwelveHoursToExpire = tokens && tokens.token.expires_at - nowSeconds < DAY_SECONDS / 2
 
-        if (!lessThanTwelveHoursToExpire) {
-            return
-        }
+            if (!lessThanTwelveHoursToExpire) {
+                return
+            }
 
-        fetchAuthApi<Tokens>("/refresh", {
-            method: "POST",
-            refreshToken: true,
-            body: {
-                device_name: DeviceName.name(),
-            },
-            success: (data) => {
-                set(data.data)
-            },
-            error: () => {
-                set(null)
-            },
-            catcher: (err) => {
-                console.log(err)
-                set(null)
-            },
-        })
+            fetchAuthApi<Tokens>("/refresh", {
+                method: "POST",
+                refreshToken: true,
+                body: {
+                    device_name: DeviceName.name(),
+                },
+                success: (data) => {
+                    set(data.data)
+                },
+                error: () => {
+                    set(null)
+                },
+                catcher: (err) => {
+                    set(null)
+                },
+            })
+        }, REFRESH_INTERVAL)
+
+        return () => clearInterval(interval)
     }, [tokens])
 
     return {isAuth: tokens !== null, tokens, setTokens: set}
