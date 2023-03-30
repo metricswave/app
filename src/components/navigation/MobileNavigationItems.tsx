@@ -8,7 +8,7 @@ export default function MobileNavigationItems() {
                     const current = window.location.pathname === path
 
                     return (
-                            <li>
+                            <li key={`${index}_item`}>
                                 <a href={path}
                                    className={[
                                        "flex flex-row items-center justify-center rounded-full transition-all duration-300",

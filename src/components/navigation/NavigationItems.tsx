@@ -8,7 +8,7 @@ export default function NavigationItems() {
                     const current = window.location.pathname === path
 
                     return (
-                            <li>
+                            <li key={`${index}_item`}>
                                 <a href={path}
                                    className={[
                                        "flex flex-row items-center justify-center transition-all duration-300 hover:bg-[var(--menu-item-hover)] rounded-full px-4 py-2",
