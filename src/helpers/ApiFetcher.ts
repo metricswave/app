@@ -1,5 +1,5 @@
 import {app} from "../config/app"
-import {Tokens} from "../types/Token"
+import {getTokens} from "../storage/AuthToken"
 
 type ApiResponse<T> = {
     data: T
@@ -17,10 +17,7 @@ type ApiFetcherParams<T> = {
     catcher: (err: Error) => void
 }
 
-// todo: We should get token from localStorage in one place only. Extract useState from App to somewhere.
-const tokens = localStorage.getItem("nw:auth")
-    ? JSON.parse(localStorage.getItem("nw:auth") as string) as Tokens
-    : null
+const tokens = getTokens()
 
 export function fetchAuthApi<T>(path: string, {method = "GET", ...params}: ApiFetcherParams<T>) {
     fetch(`${app.api}${path}`, {
@@ -36,6 +33,7 @@ export function fetchAuthApi<T>(path: string, {method = "GET", ...params}: ApiFe
             if (res.status >= 200 && res.status < 300) {
                 const data = await res.json()
                 params.success(data)
+                return
             }
 
             const err = await res.json()
@@ -57,6 +55,7 @@ export function fetchApi<T>(path: string, {method = "GET", ...params}: ApiFetche
             if (res.status >= 200 && res.status < 300) {
                 const data = await res.json()
                 params.success(data)
+                return
             }
 
             const err = await res.json()
