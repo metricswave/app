@@ -10,7 +10,9 @@ import Authentication from "../layouts/Authentication"
 import ForgotPassword from "../pages/ForgotPassword"
 import ResetPassword from "../pages/ResetPassword"
 import Triggers from "../pages/Triggers"
-import Settings from "../pages/Settings"
+import Settings from "../pages/Settings/Settings"
+import BillingSettings from "../pages/Settings/BillingSettings"
+import ProfileSettings from "../pages/Settings/ProfileSettings"
 
 export const routes: RouteObject[] = [
     {
@@ -33,6 +35,16 @@ export const routes: RouteObject[] = [
             {
                 path: "/settings",
                 element: <Settings/>,
+                children: [
+                    {
+                        path: "/settings/profile",
+                        element: <ProfileSettings/>,
+                    },
+                    {
+                        path: "/settings/billing",
+                        element: <BillingSettings/>,
+                    },
+                ],
             },
         ],
     },

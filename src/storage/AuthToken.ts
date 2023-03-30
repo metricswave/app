@@ -3,6 +3,7 @@ import {Tokens} from "../types/Token"
 import {DAY_SECONDS} from "../helpers/ExpirableLocalStorage"
 import {fetchAuthApi} from "../helpers/ApiFetcher"
 import {DeviceName} from "./DeviceName"
+import {useNavigate} from "react-router-dom"
 
 const AUTH_KEY: string = "nw:auth"
 const REFRESH_INTERVAL = 1000 * 60 * 15 // 15 minutes
@@ -12,11 +13,20 @@ export const getTokens = () => localStorage.getItem(AUTH_KEY)
     : null
 
 export function useAuthState() {
+    const navigate = useNavigate()
     const [tokens, setTokens] = useState<Tokens | null>(getTokens())
 
     const set = (tokens: Tokens | null) => {
         localStorage.setItem(AUTH_KEY, JSON.stringify(tokens))
         setTokens(tokens)
+    }
+
+    const logout = () => {
+        // todo: call logout endpoint to remove all tokens for current device
+
+        localStorage.clear()
+        set(null)
+        navigate("/auth/login")
     }
 
     useEffect(() => {
@@ -49,5 +59,5 @@ export function useAuthState() {
         return () => clearInterval(interval)
     }, [tokens])
 
-    return {isAuth: tokens !== null, tokens, setTokens: set}
+    return {isAuth: tokens !== null, tokens, setTokens: set, logout}
 }

@@ -11,7 +11,7 @@ export default function MobileNavigationItems() {
                             <li key={`${index}_item`}>
                                 <a href={path}
                                    className={[
-                                       "flex flex-row items-center justify-center rounded-full transition-all duration-300",
+                                       "flex flex-row items-center justify-center rounded-full smooth",
                                        (current ? "py-3 px-4 bg-[var(--menu-item-active)] shadow dark:shadow-xl" : "p-3"),
                                    ].join(" ")}>
                                     {React.createElement(icon, {className: "text-xl"})}

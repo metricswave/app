@@ -12,7 +12,10 @@
     --text-color: #111;
     --background-color: rgb(249 246 241);
     --menu-item-active: #feeddb;
-    --menu-item-hover: #feeddb8f;
+    --menu-item-hover: rgba(254, 237, 219, 0.44);
+    --form-select-background: #feeddb;
+    --form-select-content-background: #fff;
+    --form-select-item-background: rgb(244 244 245);
 
     /*  Size and spacing */
     --landing-max-width: 768px;
@@ -26,6 +29,9 @@
         --background-color: #181818;
         --menu-item-active: #27272A;
         --menu-item-hover: rgba(39, 39, 42, 0.55);
+        --form-select-background: rgba(39, 39, 42, 0.55);
+        --form-select-content-background: #27272A;
+        --form-select-item-background: #181818;
     }
 }
 
@@ -49,3 +55,12 @@ select:-webkit-autofill:focus {
     -webkit-box-shadow: 0 0 0px 1000px #FFF inset;
     box-shadow: 0 0 0px 1000px #FFF inset;
 }
+
+.smooth {
+    @apply transition-colors duration-300;
+}
+
+.soft-border {
+    @apply border-zinc-200/50 dark:border-zinc-800;
+}
+
