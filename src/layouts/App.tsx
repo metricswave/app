@@ -7,7 +7,7 @@ import {useAuthState} from "../storage/AuthToken"
 
 export default function App() {
     const {isAuth} = useAuthState()
-    const {user, expired} = useUserState()
+    const {user, expired} = useUserState(isAuth)
 
     if (expired || !isAuth) {
         return <Navigate to="/auth/signup"/>

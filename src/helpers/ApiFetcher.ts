@@ -12,18 +12,24 @@ type ApiErrorResponse = {
 type ApiFetcherParams<T> = {
     method?: "GET" | "POST"
     body?: object
+    refreshToken?: boolean
     success: (data: ApiResponse<T>) => void
     error: (data: ApiErrorResponse) => void
     catcher: (err: Error) => void
 }
 
 
-export function fetchAuthApi<T>(path: string, {method = "GET", ...params}: ApiFetcherParams<T>) {
+export function fetchAuthApi<T>(path: string, {
+    method = "GET",
+    refreshToken = false,
+    ...params
+}: ApiFetcherParams<T>) {
     const tokens = getTokens()
-
     if (tokens === null) {
         return
     }
+
+    const token = refreshToken ? tokens.refresh_token.token : tokens.token.token
 
     fetch(`${app.api}${path}`, {
         method,
@@ -31,7 +37,7 @@ export function fetchAuthApi<T>(path: string, {method = "GET", ...params}: ApiFe
         headers: {
             "Content-Type": "application/json",
             "Accept": "application/json",
-            "Authorization": `Bearer ${tokens!.token.token}`,
+            "Authorization": `Bearer ${token}`,
         },
     })
         .then(async res => {
