@@ -4,22 +4,16 @@ import Authentication from "../components/wrappers/Authentication"
 import LinkButton from "../components/buttons/LinkButton"
 import {FormEvent, useState} from "react"
 import {fetchApi} from "../helpers/ApiFetcher"
-import {Tokens} from "../types/Token"
-import {DeviceName} from "../storage/DeviceName"
 import FormErrorMessage from "../components/form/FormErrorMessage"
-import {useNavigate} from "react-router-dom"
-import {useAuthState} from "../storage/AuthToken"
+import FormSuccessMessage from "../components/form/FormSuccessMessage"
 
-export default function Login() {
-    const navigate = useNavigate()
-    const {setTokens} = useAuthState()
+export default function ForgotPassword() {
     const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
     const [loading, setLoading] = useState(false)
+    const [formSuccess, setFormSuccess] = useState<string | false>(false)
     const [formError, setFormError] = useState<string | false>(false)
-    const [errors, setErrors] = useState<{ email: false | string, password: false | string }>({
+    const [errors, setErrors] = useState<{ email: false | string }>({
         email: false,
-        password: false,
     })
 
     const isValid = (): boolean => {
@@ -35,13 +29,6 @@ export default function Login() {
             e = {...e, email: false}
         }
 
-        if (password === "") {
-            hasErrors = true
-            e = {...e, password: "Passwords is required"}
-        } else {
-            e = {...e, password: false}
-        }
-
         setErrors({...errors, ...e})
 
         return !hasErrors
@@ -55,17 +42,14 @@ export default function Login() {
         setLoading(true)
         setFormError(false)
 
-        fetchApi<Tokens>("/login", {
+        fetchApi<{ message: string }>("/forgot-password", {
             method: "POST",
             body: {
                 email,
-                password,
-                device_name: DeviceName.name(),
             },
             success: (data) => {
-                setTokens(data.data)
-                navigate("/")
                 setLoading(false)
+                setFormSuccess(data.data.message)
             },
             error: (data) => {
                 setFormError(data.message)
@@ -83,7 +67,7 @@ export default function Login() {
             <Authentication footer={
                 <>
                     <p className="text-sm">
-                        Forgot your password? <LinkButton href="/auth/forgot-password" text="Reset Password →"/>
+                        Want to login? <LinkButton href="/auth/login" text="Log In →"/>
                     </p>
                     <p className="text-sm">
                         Do not have an account? <LinkButton href="/auth/signup" text="Sign Up →"/>
@@ -100,16 +84,11 @@ export default function Login() {
                                        placeholder="john-doe@email.com"
                                        type="email"/>
 
-                        <InputFieldBox value={password}
-                                       setValue={setPassword}
-                                       label="Password"
-                                       name="password"
-                                       placeholder="Password"
-                                       type="password"/>
-
                         <FormErrorMessage error={formError}/>
 
-                        <PrimaryButton text="Log In" loading={loading}/>
+                        <FormSuccessMessage message={formSuccess}/>
+
+                        <PrimaryButton text="Reset password" loading={loading}/>
                     </div>
                 </form>
             </Authentication>

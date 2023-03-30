@@ -8,9 +8,12 @@ export const getTokens = () => localStorage.getItem(AUTH_KEY)
     : null
 
 export function useAuthState() {
-    const [tokens] = useState<Tokens | null>(getTokens())
+    const [tokens, setTokens] = useState<Tokens | null>(getTokens())
 
-    // todo: Refresh token if is about to expire
+    const set = (tokens: Tokens | null) => {
+        localStorage.setItem(AUTH_KEY, JSON.stringify(tokens))
+        setTokens(tokens)
+    }
 
-    return {isAuth: tokens !== null, tokens}
+    return {isAuth: tokens !== null, tokens, setTokens: set}
 }

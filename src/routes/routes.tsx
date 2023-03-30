@@ -7,6 +7,8 @@ import ErrorPage from "../pages/ErrorPage"
 import SignUp from "../pages/SignUp"
 import Login from "../pages/Login"
 import Authentication from "../layouts/Authentication"
+import ForgotPassword from "../pages/ForgotPassword"
+import ResetPassword from "../pages/ResetPassword"
 
 export const routes: RouteObject[] = [
     {
@@ -35,6 +37,14 @@ export const routes: RouteObject[] = [
             {
                 path: "/auth/login",
                 element: <Login/>,
+            },
+            {
+                path: "/auth/forgot-password",
+                element: <ForgotPassword/>,
+            },
+            {
+                path: "/auth/reset-password",
+                element: <ResetPassword/>,
             },
         ],
     },

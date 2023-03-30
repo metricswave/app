@@ -2,11 +2,13 @@ import {useEffect, useState} from "react"
 import {fetchAuthApi} from "../helpers/ApiFetcher"
 import {User} from "../types/User"
 import {DAY_SECONDS, expirableLocalStorage} from "../helpers/ExpirableLocalStorage"
+import {useAuthState} from "./AuthToken"
 
 const USER_REFRESH_KEY: string = "nw:user:refresh"
 const USER_KEY: string = "nw:user"
 
 export function useUserState() {
+    const {isAuth} = useAuthState()
     const [expired, setExpired] = useState(false)
 
     const [isFreshUser, setIsFreshUser] = useState<true | false>(
@@ -30,7 +32,7 @@ export function useUserState() {
                 error: (data) => setExpired(true),
                 catcher: (err) => setExpired(true),
             })
-    }, [])
+    }, [isAuth])
 
     return {user, setUser, expired, setExpired}
 }

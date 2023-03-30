@@ -2,15 +2,29 @@ import React from "react"
 
 type Props = {
     value: string,
+    disabled?: boolean,
     setValue: (value: string) => void,
     error?: false | string,
     label: string,
+    focus?: boolean,
     name: string,
     type?: string,
     placeholder: string
 }
 
-export default function InputFieldBox({value, setValue, error, label, name, type = "text", placeholder}: Props) {
+export default function InputFieldBox(
+        {
+            value,
+            setValue,
+            error,
+            label,
+            name,
+            type = "text",
+            disabled = false,
+            focus = false,
+            placeholder,
+        }: Props,
+) {
     return (
             <>
                 <div className="flex flex-col border transition-all border-zinc-200/60 hover:border-zinc-200 focus-within:hover:border-zinc-300 focus-within:border-zinc-300 duration-300 dark:border-zinc-700/60 rounded-sm hover:dark:border-zinc-700 group focus-within:dark:border-zinc-600 hover:focus-within:dark:border-zinc-600">
@@ -25,6 +39,8 @@ export default function InputFieldBox({value, setValue, error, label, name, type
                            onChange={e => setValue(e.target.value)}
                            type={type}
                            name={name}
+                           autoFocus={focus}
+                           disabled={disabled}
                            id={name}
                            placeholder={placeholder}/>
 

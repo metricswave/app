@@ -17,9 +17,14 @@ type ApiFetcherParams<T> = {
     catcher: (err: Error) => void
 }
 
-const tokens = getTokens()
 
 export function fetchAuthApi<T>(path: string, {method = "GET", ...params}: ApiFetcherParams<T>) {
+    const tokens = getTokens()
+
+    if (tokens === null) {
+        return
+    }
+
     fetch(`${app.api}${path}`, {
         method,
         body: JSON.stringify(params.body),

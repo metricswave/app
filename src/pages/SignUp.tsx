@@ -6,6 +6,7 @@ import {FormEvent, useState} from "react"
 import {DeviceName} from "../storage/DeviceName"
 import {fetchApi} from "../helpers/ApiFetcher"
 import {Tokens} from "../types/Token"
+import FormErrorMessage from "../components/form/FormErrorMessage"
 
 export default function SignUp() {
     const [name, setName] = useState("")
@@ -99,6 +100,7 @@ export default function SignUp() {
                     <div className="flex flex-col space-y-4">
                         <InputFieldBox value={name}
                                        setValue={setName}
+                                       focus={true}
                                        error={errors.name}
                                        name="name"
                                        placeholder="John Doe"
@@ -128,7 +130,7 @@ export default function SignUp() {
                                        placeholder="Confirm password"
                                        label="Confirm password"/>
 
-                        {formError && <p className="text-red-500 text-sm py-2 text-center">{formError}</p>}
+                        <FormErrorMessage error={formError}/>
 
                         <PrimaryButton text="Sign Up" loading={loading}/>
                     </div>

@@ -10,7 +10,9 @@ export default function Authentication({children, footer}: { children: React.Rea
                     {children}
                 </div>
 
-                {footer}
+                <div className="text-center flex flex-col space-y-4">
+                    {footer}
+                </div>
             </div>
     )
 }
