@@ -19,7 +19,7 @@ export default function App() {
     return (
             <AuthContext.Provider value={{user}}>
                 <div className="">
-                    <header className="flex flex-row space-x-4 items-center justify-between py-3 px-5 border-b border-zinc-200/50 dark:border-zinc-700/50 text-sm">
+                    <header className="flex flex-row space-x-4 items-center justify-between py-3 px-5 border-b border-zinc-200/50 dark:border-zinc-800 text-sm">
                         <Logo/>
                         <div className="hidden sm:block">
                             <NavigationItems/>
@@ -27,9 +27,14 @@ export default function App() {
                         <div>
                             <ul className="flex flex-row space-x-4">
                                 <li>
-                                    <a href="#"
+                                    <a href="/settings"
                                        className={[
                                            "flex flex-row items-center justify-center transition-all duration-300 hover:bg-[var(--menu-item-hover)] rounded-full p-3",
+                                           (
+                                                   window.location.pathname === "/settings"
+                                                           ? "bg-[var(--menu-item-active)]"
+                                                           : ""
+                                           ),
                                        ].join(" ")}>
                                         <SettingsIcon className="text-base"/>
                                     </a>
@@ -42,7 +47,7 @@ export default function App() {
                         <Outlet/>
                     </div>
 
-                    <div className="fixed bottom-0 left-0 right-0 p-4 border-t border-zinc-200/60 dark:border-zinc-700/60 sm:hidden">
+                    <div className="fixed bottom-0 left-0 right-0 p-4 border-t border-zinc-200/60 dark:border-zinc-800 sm:hidden">
                         <MobileNavigationItems/>
                     </div>
                 </div>

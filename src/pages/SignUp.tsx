@@ -100,7 +100,7 @@ export default function SignUp() {
                     <div className="flex flex-col space-y-4">
                         <InputFieldBox value={name}
                                        setValue={setName}
-                                       focus={true}
+                                       focus
                                        error={errors.name}
                                        name="name"
                                        placeholder="John Doe"

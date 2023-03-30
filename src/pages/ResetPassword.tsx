@@ -101,7 +101,7 @@ export default function ResetPassword() {
                 <form onSubmit={handleSubmit} className="mt-8">
                     <div className="flex flex-col space-y-4">
                         <InputFieldBox value={email}
-                                       disabled={true}
+                                       disabled
                                        setValue={() => null}
                                        label="Email"
                                        name="email"
@@ -109,7 +109,7 @@ export default function ResetPassword() {
                                        type="email"/>
 
                         <InputFieldBox value={password}
-                                       focus={true}
+                                       focus
                                        setValue={setPassword}
                                        error={errors.password}
                                        type="password"

@@ -77,7 +77,7 @@ export default function ForgotPassword() {
                 <form onSubmit={handleSubmit} className="mt-8">
                     <div className="flex flex-col space-y-4">
                         <InputFieldBox value={email}
-                                       focus={true}
+                                       focus
                                        setValue={setEmail}
                                        label="Email"
                                        name="email"
