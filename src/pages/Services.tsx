@@ -9,8 +9,8 @@ export default function Services() {
     return (
             <>
                 {/* Connected services */}
-                <PageTitle title="Services" description="Currently connected services."/>
                 <SectionContainer>
+                    <PageTitle title="Services" description="Currently connected services."/>
 
                     {[0].map((item) => {
                         return (
@@ -36,8 +36,9 @@ export default function Services() {
                 </SectionContainer>
 
                 {/* Available services */}
-                <PageTitle title="Available" description="Connect with more services to be able to use more triggers."/>
                 <SectionContainer>
+                    <PageTitle title="Available"
+                               description="Connect with more services to be able to use more triggers."/>
 
                     {[0].map((item) => {
                         return (

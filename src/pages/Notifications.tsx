@@ -1,15 +1,13 @@
 import React from "react"
-import {AuthContext} from "../contexts/AuthContext"
 import PageTitle from "../components/sections/PageTitle"
 import SectionContainer from "../components/sections/SectionContainer"
 
 export default function Notifications() {
-    const {user} = React.useContext(AuthContext)
     return (
             <>
-                <PageTitle title="Notifications"/>
 
                 <SectionContainer>
+                    <PageTitle title="Notifications"/>
 
                     {[0, 1, 2, 3, 4].map((item) => {
                         return (
