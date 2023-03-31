@@ -13,6 +13,7 @@ import Triggers from "../pages/Triggers"
 import Settings from "../pages/Settings/Settings"
 import BillingSettings from "../pages/Settings/BillingSettings"
 import ProfileSettings from "../pages/Settings/ProfileSettings"
+import ServiceConnection from "../pages/ServiceConnection"
 
 export const routes: RouteObject[] = [
     {
@@ -47,6 +48,10 @@ export const routes: RouteObject[] = [
                 ],
             },
         ],
+    },
+    {
+        path: "/auth/:driver/callback",
+        element: <ServiceConnection/>,
     },
     {
         path: "/auth",

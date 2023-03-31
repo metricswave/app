@@ -1,0 +1,35 @@
+import {DAY_SECONDS, expirableLocalStorage} from "../helpers/ExpirableLocalStorage"
+import {useEffect, useState} from "react"
+import {Service} from "../types/Service"
+import {fetchAuthApi} from "../helpers/ApiFetcher"
+
+const SERVICES_KEY: string = "nw:services"
+const SERVICES_REFRESH_KEY: string = "nw:service:refresh"
+
+export function useServicesState() {
+    const [services, setServices] = useState<Service[]>(
+        expirableLocalStorage.get(SERVICES_KEY, []),
+    )
+    const [isFresh, setIsFresh] = useState<boolean>(
+        expirableLocalStorage.get(SERVICES_REFRESH_KEY, false),
+    )
+
+    const loadServices = () => {
+        if (isFresh) return
+
+        fetchAuthApi<{ services: Service[] }>("/services", {
+            success: (data) => {
+                setServices(data.data.services)
+                setIsFresh(true)
+                expirableLocalStorage.set(SERVICES_KEY, data.data.services)
+                expirableLocalStorage.set(SERVICES_REFRESH_KEY, true, DAY_SECONDS)
+            },
+            error: (data) => setIsFresh(false),
+            catcher: (data) => setIsFresh(false),
+        })
+    }
+
+    useEffect(loadServices, [])
+
+    return {services, loadServices}
+}
