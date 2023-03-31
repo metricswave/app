@@ -1,5 +1,10 @@
+import React from "react"
+import PageTitle from "../components/sections/PageTitle"
+
 export default function Triggers() {
     return (
-            <h1>Triggers</h1>
+            <>
+                <PageTitle title="Triggers"/>
+            </>
     )
 }

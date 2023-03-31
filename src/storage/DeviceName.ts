@@ -1,11 +1,12 @@
-function uuidv4(): string {
-    var dt = new Date().getTime()
-    const uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
-        var r = (dt + Math.random() * 16) % 16 | 0
-        dt = Math.floor(dt / 16)
-        return (c == "x" ? r : (r & 0x3 | 0x8)).toString(16)
-    })
-    return uuid
+function uuid(): string {
+    let dt = new Date().getTime()
+
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
+        .replace(/[xy]/g, function (c) {
+            let r = (dt + Math.random() * 16) % 16 | 0
+            dt = Math.floor(dt / 16)
+            return (c === "x" ? r : (r & 0x3 | 0x8)).toString(16)
+        })
 }
 
 export const DeviceName = {
@@ -13,7 +14,7 @@ export const DeviceName = {
         let deviceName = localStorage.getItem("nw:device_name")
 
         if (!deviceName) {
-            deviceName = uuidv4()
+            deviceName = uuid()
             localStorage.setItem("nw:device_name", deviceName)
         }
 

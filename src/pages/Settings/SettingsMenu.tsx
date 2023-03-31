@@ -33,6 +33,7 @@ export default function SettingsMenu() {
 
     return (
             <>
+                {/* Mobile menu */}
                 <div className="sm:hidden px-8 pt-8 pb-2">
                     <Select.Root value={currentItem.path} onValueChange={setMenuValue}>
                         <Select.Trigger
@@ -52,8 +53,10 @@ export default function SettingsMenu() {
                             <Select.Value placeholder={currentItem.name}/>
                         </Select.Trigger>
 
-                        <Select.Portal className="drop-shadow rounded p-4">
-                            <Select.Content className="overflow-hidden bg-[var(--form-select-content-background)] rounded-md shadow">
+                        <Select.Portal className="drop-shadow rounded p-4 max-w-screen">
+                            <Select.Content
+                                    className="overflow-hidden bg-[var(--form-select-content-background)] rounded-md shadow w-full"
+                            >
                                 <Select.ScrollUpButton className="flex items-center justify-center h-[25px] bg-white cursor-default">
                                     <ChevronUpIcon/>
                                 </Select.ScrollUpButton>
@@ -94,6 +97,7 @@ export default function SettingsMenu() {
                     </Select.Root>
                 </div>
 
+                {/* Sidebar */}
                 <div className="border-r soft-border p-8 min-h-screen flex-col space-y-8 min-w-[200px] hidden sm:flex">
                     <h1 className="font-bold">Settings</h1>
 

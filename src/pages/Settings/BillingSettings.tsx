@@ -55,10 +55,22 @@ export default function BillingSettings() {
                     </div>
 
                     <div>
-                        <div className="flex flex-row space-x-4">
+                        <div className="flex flex-col space-y-4">
+
                             <div className="flex flex-col space-y-3 bg-zinc-100/25 dark:bg-blue-900/5 border border-blue-200/50 dark:border-blue-900/50 rounded-sm p-4 w-full hover:border-blue-500/70 hover:dark:border-blue-700 hover:bg-blue-100/70 dark:hover:bg-blue-900/20 smooth cursor-pointer">
                                 <div className="font-bold text-blue-500">
-                                    Lifetime License &mdash; $9.99
+                                    Lifetime License &mdash; $29.50
+                                </div>
+                                <div className="text-sm opacity-70 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
+                                    <span>999 notifications per month</span>
+                                    <span className="hidden sm:inline">/</span>
+                                    <span>50 triggers</span>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col space-y-3 bg-zinc-100/25 dark:bg-blue-900/5 border border-blue-200/50 dark:border-blue-900/50 rounded-sm p-4 w-full hover:border-blue-500/70 hover:dark:border-blue-700 hover:bg-blue-100/70 dark:hover:bg-blue-900/20 smooth cursor-pointer">
+                                <div className="font-bold text-blue-500">
+                                    Lifetime License &mdash; $39.50
                                 </div>
                                 <div className="text-sm opacity-70 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
                                     <span>999 notifications per month</span>
