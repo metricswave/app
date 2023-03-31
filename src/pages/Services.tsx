@@ -8,8 +8,8 @@ import LinkButton from "../components/buttons/LinkButton"
 export default function Services() {
     return (
             <>
+                {/* Connected services */}
                 <PageTitle title="Services" description="Currently connected services."/>
-
                 <SectionContainer>
 
                     {[0].map((item) => {
@@ -21,11 +21,11 @@ export default function Services() {
                                             <GoogleIcon className="dark:text-white"/>
                                         </div>
 
-                                        <div className="flex flex-col sm:flex-row items-start justify-between sm:items-center sm:justify-between space-y-1 sm:space-y-0 sm:space-x-4 h-12">
+                                        <div className="flex flex-col items-start justify-between space-y-1">
                                             <h2 className="font-bold">Google</h2>
-                                            <div className="text-sm opacity-70 text-green-600 dark:text-green-500 flex flex-row space-x-2">
-                                                <CheckIcon className="w-4 h-4"/>
+                                            <div className="text-sm opacity-70 text-green-600 dark:text-green-500 flex flex-row space-x-2 font-bold">
                                                 <span>Connected</span>
+                                                <CheckIcon className="w-4 h-4"/>
                                             </div>
                                         </div>
                                     </div>
@@ -35,8 +35,8 @@ export default function Services() {
 
                 </SectionContainer>
 
+                {/* Available services */}
                 <PageTitle title="Available" description="Connect with more services to be able to use more triggers."/>
-
                 <SectionContainer>
 
                     {[0].map((item) => {
@@ -48,12 +48,12 @@ export default function Services() {
                                             <GoogleIcon className="dark:text-white"/>
                                         </div>
 
-                                        <div className="flex flex-col sm:flex-row items-start justify-between sm:items-center sm:justify-between space-y-1 sm:space-y-0 sm:space-x-4">
+                                        <div className="flex flex-col items-start justify-between space-y-1">
                                             <h2 className="font-bold">Google</h2>
                                             <div className="text-sm opacity-70">
                                                 <span>TTL, incoming meeting, topic search, and more.</span>
                                             </div>
-                                            <div className="pt-4">
+                                            <div className="pt-4 font-bold">
                                                 <LinkButton href="#" text="Connect →"/>
                                             </div>
                                         </div>

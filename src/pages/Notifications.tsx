@@ -20,7 +20,7 @@ export default function Notifications() {
                                             <span>🌊</span>
                                         </div>
 
-                                        <div className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between space-y-1 sm:space-y-0 sm:space-x-4">
+                                        <div className="flex flex-col items-start space-y-1">
                                             <h2 className="font-bold">Time to leave: Pádel</h2>
                                             <p className="text-sm opacity-70">Today at 10:30</p>
                                         </div>
