@@ -22,8 +22,13 @@ export function useAuthState() {
     }
 
     const logout = () => {
-        // todo: call logout endpoint to remove all tokens for current device
-
+        fetchAuthApi("/logout", {
+            method: "POST",
+            body: {device_name: DeviceName.name()},
+            success: () => null,
+            error: () => null,
+            catcher: () => null
+        })
         localStorage.clear()
         set(null)
         navigate("/auth/login")
