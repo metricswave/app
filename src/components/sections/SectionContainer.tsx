@@ -1,7 +1,7 @@
 export default function SectionContainer({children, ...props}: { children: React.ReactNode }) {
     return (
-            <div className="mt-1 p-6 flex flex-col space-y-4 max-w-[700px] mx-auto">
-                {children}
-            </div>
+        <div className="mt-1 sm:mt-4 p-6 flex flex-col space-y-4 max-w-[700px] mx-auto">
+            {children}
+        </div>
     )
 }

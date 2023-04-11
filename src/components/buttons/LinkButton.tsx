@@ -6,16 +6,23 @@ type LinkButtonProps = React.HTMLAttributes<HTMLAnchorElement> & {
     loading?: boolean
 }
 
-export default function LinkButton({href, text, loading, ...props}: LinkButtonProps) {
-    let classes = "text-blue-500 dark:text-blue-300 hover:text-blue-700 dark:hover:text-blue-600 smooth"
+type NoLinkButtonProps = React.HTMLAttributes<HTMLSpanElement> & Omit<LinkButtonProps, "href">
 
-    if (loading) {
-        classes = "text-zinc-500 dark:text-zinc-200 animate-pulse smooth cursor-not-allowed"
-    }
+const classes = "cursor-pointer text-blue-500 dark:text-blue-300 hover:text-blue-700 dark:hover:text-blue-600 smooth"
+const loadingClasses = "text-zinc-500 dark:text-zinc-200 animate-pulse smooth cursor-not-allowed"
 
+export function NoLinkButton({text, loading, ...props}: NoLinkButtonProps) {
     return (
-            <a href={href} className={classes} {...props}>
-                {text}
-            </a>
+        <span className={loading ? loadingClasses : classes} {...props}>
+           {text}
+       </span>
+    )
+}
+
+export function LinkButton({href, text, loading, ...props}: LinkButtonProps) {
+    return (
+        <a href={href} className={classes} {...props}>
+            {text}
+        </a>
     )
 }

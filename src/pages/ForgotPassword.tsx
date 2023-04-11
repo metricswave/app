@@ -1,7 +1,7 @@
 import InputFieldBox from "../components/form/InputFieldBox"
 import PrimaryButton from "../components/form/PrimaryButton"
 import Authentication from "../components/wrappers/Authentication"
-import LinkButton from "../components/buttons/LinkButton"
+import {LinkButton} from "../components/buttons/LinkButton"
 import {FormEvent, useState} from "react"
 import {fetchApi} from "../helpers/ApiFetcher"
 import FormErrorMessage from "../components/form/FormErrorMessage"
@@ -64,33 +64,33 @@ export default function ForgotPassword() {
     }
 
     return (
-            <Authentication footer={
-                <>
-                    <p className="text-sm">
-                        Want to login? <LinkButton href="/auth/login" text="Log In →"/>
-                    </p>
-                    <p className="text-sm">
-                        Do not have an account? <LinkButton href="/auth/signup" text="Sign Up →"/>
-                    </p>
-                </>
-            }>
-                <form onSubmit={handleSubmit} className="mt-8">
-                    <div className="flex flex-col space-y-4">
-                        <InputFieldBox value={email}
-                                       focus
-                                       setValue={setEmail}
-                                       label="Email"
-                                       name="email"
-                                       placeholder="john-doe@email.com"
-                                       type="email"/>
+        <Authentication footer={
+            <>
+                <p className="text-sm">
+                    Want to login? <LinkButton href="/auth/login" text="Log In →"/>
+                </p>
+                <p className="text-sm">
+                    Do not have an account? <LinkButton href="/auth/signup" text="Sign Up →"/>
+                </p>
+            </>
+        }>
+            <form onSubmit={handleSubmit} className="mt-8">
+                <div className="flex flex-col space-y-4">
+                    <InputFieldBox value={email}
+                                   focus
+                                   setValue={setEmail}
+                                   label="Email"
+                                   name="email"
+                                   placeholder="john-doe@email.com"
+                                   type="email"/>
 
-                        <FormErrorMessage error={formError}/>
+                    <FormErrorMessage error={formError}/>
 
-                        <FormSuccessMessage message={formSuccess}/>
+                    <FormSuccessMessage message={formSuccess}/>
 
-                        <PrimaryButton text="Reset password" loading={loading}/>
-                    </div>
-                </form>
-            </Authentication>
+                    <PrimaryButton text="Reset password" loading={loading}/>
+                </div>
+            </form>
+        </Authentication>
     )
 }
