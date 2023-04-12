@@ -23,7 +23,7 @@ export const DialogComponent = (
             </Dialog.Trigger>
             <Dialog.Portal>
                 <Dialog.Overlay className="bg-black/20 data-[state=open]:animate-overlayShow fixed inset-0 z-30"/>
-                <Dialog.Content className="data-[state=open]:animate-contentSlideFromBottom sm:data-[state=open]:animate-contentShow fixed bottom-0 sm:bottom-auto sm:top-[50%] left-[50%] max-h-[90vh] h-[90vh] sm:h-auto w-[98vw] max-w-[540px] translate-x-[-50%] sm:translate-y-[-50%] rounded-t sm:rounded-b bg-white p-6 shadow z-40 focus:outline-none">
+                <Dialog.Content className="data-[state=open]:animate-contentSlideFromBottom sm:data-[state=open]:animate-contentShow fixed bottom-0 sm:bottom-auto sm:top-[50%] left-[50%] max-h-[90vh] h-[90vh] sm:h-auto w-[98vw] max-w-[540px] translate-x-[-50%] sm:translate-y-[-50%] rounded-t sm:rounded-b bg-white pt-6 px-6 shadow z-40 focus:outline-none">
                     {title && <div className="flex flex-row space-x-10 mt-5 mb-2">
                         <div>
                             <Dialog.Title className="font-bold m-0 text-xl">
@@ -45,20 +45,8 @@ export const DialogComponent = (
                         </Dialog.Close>
                     </div>}
 
-                    <div className="max-h-[85vh] overflow-y-scroll">
+                    <div className="max-h-[85vh] overflow-y-scroll pb-6">
                         {children}
-                    </div>
-
-                    <div className="sm:hidden fixed bottom-0 left-0 right-0 p-4">
-                        <Dialog.Close asChild>
-                            <button
-                                    className="inline-flex h-[50px] w-full appearance-none items-center justify-center rounded focus:outline-none bg-blue-50/50 hover:bg-blue-50 smooth"
-                                    aria-label="Close"
-                            >
-                                <span>Close</span>
-                            </button>
-                        </Dialog.Close>
-
                     </div>
                 </Dialog.Content>
             </Dialog.Portal>

@@ -3,6 +3,7 @@ import React, {Dispatch, SetStateAction} from "react"
 import * as Dialog from "@radix-ui/react-dialog"
 import SearchInputField from "../form/SearchInputField"
 import {NoLinkButton} from "../buttons/LinkButton"
+import {DialogHeader} from "../dialog/DialogHeader"
 
 type TriggersAddChooseStepProps = {
     triggerTypes: TriggerType[],
@@ -14,7 +15,9 @@ export default function TriggersAddChooserStep({triggerTypes, chooser}: Triggers
 
     return (
             <>
-                <div className="flex flex-row space-x-10 mt-5 mb-2">
+                <DialogHeader/>
+
+                <div className="flex flex-row space-x-10 mt-5 sm:mt-0 mb-2 justify-between items-start">
                     <div>
                         <Dialog.Title className="font-bold m-0 text-xl">
                             Trigger Type
@@ -24,19 +27,16 @@ export default function TriggersAddChooserStep({triggerTypes, chooser}: Triggers
                             Choose a trigger type to get started.
                         </Dialog.Description>
                     </div>
-
-                    <Dialog.Close asChild className="hidden sm:block">
-                        <button
-                                className="inline-flex h-[35px] w-[35px] aspect-square appearance-none items-center justify-center rounded-full focus:outline-none bg-blue-50/50 hover:bg-blue-50 smooth"
-                                aria-label="Close"
-                        >
-                            <span className="rotate-45">+</span>
-                        </button>
-                    </Dialog.Close>
                 </div>
 
                 <div className="mb-4">
-                    <SearchInputField value={search} focus setValue={setSearch} name="Filter" placeholder="Filter..."/>
+                    <SearchInputField
+                            autoComplete="off"
+                            value={search}
+                            focus
+                            setValue={setSearch}
+                            name="Filter"
+                            placeholder="Filter..."/>
                 </div>
 
                 <div className="flex flex-col space-y-6">
@@ -45,7 +45,7 @@ export default function TriggersAddChooserStep({triggerTypes, chooser}: Triggers
                                  onClick={() => {
                                      chooser(triggerType)
                                  }}
-                                 className="flex flex-row space-x-4 items-start p-4 border rounded-sm soft-border hover:bg-blue-100/75 hover:border-blue-100 active:bg-blue-100/75 active:border-blue-100 smooth">
+                                 className="flex flex-row space-x-4 items-start p-4 border rounded-sm soft-border hover:bg-blue-100/75 hover:border-blue-100 active:bg-blue-100/75 active:border-blue-100 smooth cursor-pointer">
                                 <img src={`/images/trigger-types/${triggerType.icon}`}
                                      alt={triggerType.name}
                                      className="w-12 h-12 rounded-sm"/>

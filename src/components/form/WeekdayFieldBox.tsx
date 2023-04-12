@@ -1,0 +1,86 @@
+import React from "react"
+
+type Props = {
+    value: string,
+    disabled?: boolean,
+    setValue: (value: string) => void,
+    error?: false | string,
+    label: string,
+    name: string,
+    focus?: boolean,
+    multiple?: boolean,
+    required?: boolean,
+}
+
+const weekDays = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+
+export default function WeekdayFieldBox(
+        {
+            value,
+            name,
+            setValue,
+            error,
+            label,
+            disabled = false,
+            focus = false,
+            multiple = false,
+            required = false,
+        }: Props,
+) {
+    return (
+            <>
+                <div className="flex flex-col border transition-all border-zinc-200/60 hover:border-zinc-200 focus-within:hover:border-zinc-300 focus-within:border-zinc-300 duration-300 dark:border-zinc-700/60 rounded-sm hover:dark:border-zinc-700 group focus-within:dark:border-zinc-600 hover:focus-within:dark:border-zinc-600">
+
+                    <span className="text-xs pt-4 px-4 pb-1 transition-all group-focus-within::opacity-100 duration-300 opacity-50 dark:opacity-60 group-hover:opacity-80 group-focus-within:opacity-100 hover:group-focus-within:opacity-100">
+                        {label}
+                    </span>
+
+                    <div className="flex flex-col space-y-2 pt-3 pb-4">
+                        {multiple && weekDays.map((day, index) => (
+                                <div className="pl-4" key={day}>
+                                    <label className="flex flex-row space-x-4">
+                                        <input type="checkbox"
+                                               name={name}
+                                               disabled={disabled}
+                                               autoFocus={focus && index === 0}
+                                               value={day}
+                                               checked={value.includes(day)}
+                                               onChange={e => {
+                                                   if (e.target.checked) {
+                                                       setValue(value + day)
+                                                   } else {
+                                                       setValue(value.replace(day, ""))
+                                                   }
+                                               }}/>
+                                        <span>{day.charAt(0).toUpperCase() + day.slice(1)}</span>
+                                    </label>
+                                </div>
+                        ))}
+
+                        {!multiple && weekDays.map((day, index) => (
+                                <div className="pl-4" key={day}>
+                                    <label className="flex flex-row space-x-4">
+                                        <input type="radio"
+                                               name={name}
+                                               disabled={disabled}
+                                               autoFocus={focus && index === 0}
+                                               value={day}
+                                               checked={value.includes(day)}
+                                               onChange={e => {
+                                                   if (e.target.checked) {
+                                                       setValue(value + day)
+                                                   } else {
+                                                       setValue(value.replace(day, ""))
+                                                   }
+                                               }}/>
+                                        <span>{day.charAt(0).toUpperCase() + day.slice(1)}</span>
+                                    </label>
+                                </div>
+                        ))}
+                    </div>
+
+                    {error && <p className="text-red-500 text-xs mb-4 mx-4">{error}</p>}
+                </div>
+            </>
+    )
+}
