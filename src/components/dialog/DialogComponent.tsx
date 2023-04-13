@@ -1,24 +1,23 @@
 import React from "react"
 import * as Dialog from "@radix-ui/react-dialog"
-import {NoLinkButton} from "../buttons/LinkButton"
 
 interface DialogComponentProps {
     children: React.ReactNode
     title?: string
-    buttonText: string
+    button: React.ReactNode
     description?: string
     innerRef?: React.RefObject<HTMLDivElement>
 }
 
 export const DialogComponent = (
         {
-            buttonText, title, innerRef, description, children, ...props
+            button, title, innerRef, description, children, ...props
         }: DialogComponentProps,
 ) => (
         <Dialog.Root>
             <Dialog.Trigger asChild>
                 <div>
-                    <NoLinkButton text={buttonText}/>
+                    {button}
                 </div>
             </Dialog.Trigger>
             <Dialog.Portal>

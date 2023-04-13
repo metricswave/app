@@ -11,6 +11,8 @@
     /*  Colors */
     --text-color: #111;
     --background-color: rgb(249 246 241);
+    --background-50-color: rgba(243, 239, 236, 0.75);
+    --background-100-color: rgb(238, 234, 231);
     --menu-item-active: #feeddb;
     --menu-item-hover: rgba(254, 237, 219, 0.44);
     --form-select-background: #feeddb;
@@ -27,6 +29,8 @@
         /*  Colors */
         --text-color: #dfdfdf;
         --background-color: #181818;
+        --background-50-color: #27272A;
+        --background-100-color: #27272A;
         --menu-item-active: #27272A;
         --menu-item-hover: rgba(39, 39, 42, 0.55);
         --form-select-background: rgba(39, 39, 42, 0.55);
@@ -64,3 +68,6 @@ select:-webkit-autofill:focus {
     @apply border-zinc-400/20 dark:border-zinc-800;
 }
 
+.soft-border\/50 {
+    @apply border-zinc-400/10 dark:border-zinc-800/50;
+}
