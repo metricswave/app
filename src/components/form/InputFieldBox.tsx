@@ -1,4 +1,5 @@
 import React from "react"
+import InputLabel from "./InputLabel"
 
 type Props = {
     value: string,
@@ -8,6 +9,7 @@ type Props = {
     label: string,
     focus?: boolean,
     required?: boolean,
+    showRequired?: boolean,
     name: string,
     type?: string,
     placeholder: string
@@ -24,6 +26,7 @@ export default function InputFieldBox(
             disabled = false,
             focus = false,
             required = false,
+            showRequired = false,
             placeholder,
         }: Props,
 ) {
@@ -31,10 +34,7 @@ export default function InputFieldBox(
             <>
                 <div className="flex flex-col border transition-all border-zinc-200/60 hover:border-zinc-200 focus-within:hover:border-zinc-300 focus-within:border-zinc-300 duration-300 dark:border-zinc-700/60 rounded-sm hover:dark:border-zinc-700 group focus-within:dark:border-zinc-600 hover:focus-within:dark:border-zinc-600 w-full">
 
-                    <label className="text-xs pt-4 px-4 pb-1 transition-all group-focus-within::opacity-100 duration-300 opacity-50 dark:opacity-60 group-hover:opacity-80 group-focus-within:opacity-100 hover:group-focus-within:opacity-100"
-                           htmlFor={name}>
-                        {label}
-                    </label>
+                    <InputLabel name={name} label={label} required={required} showRequired={showRequired}/>
 
                     <input className={`pt-1 px-4 bg-transparent outline-none placeholder:opacity-70 ` + (error ? "pb-2" : "pb-4")}
                            value={value}

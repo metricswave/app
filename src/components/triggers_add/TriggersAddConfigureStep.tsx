@@ -1,32 +1,70 @@
 import {TriggerType} from "../../types/TriggerType"
 import InputFieldBox from "../form/InputFieldBox"
-import {useState} from "react"
+import {FormEvent, useState} from "react"
 import * as Dialog from "@radix-ui/react-dialog"
 import WeekdayFieldBox from "../form/WeekdayFieldBox"
 import TextareaFieldBox from "../form/TextareaFieldBox"
 import PrimaryButton from "../form/PrimaryButton"
 import {DialogHeader} from "../dialog/DialogHeader"
 import EmojiInputFieldBox from "../form/EmojiInputFieldBox"
-import {Emoji} from "../../types/Emoji"
+import {BellEmoji, Emoji} from "../../types/Emoji"
 import ParametersFieldBox from "../form/ParametersFieldBox"
+import {fetchAuthApi} from "../../helpers/ApiFetcher"
+import {generateUuid} from "../../helpers/UuidGenerator"
 
 type Props = {
     triggerType: TriggerType
-    back: () => void
+    back: () => void,
+    onTriggerCreated: (uuid: string) => void
 }
 
-export const TriggersAddConfigureStep = ({triggerType, back}: Props) => {
-    const [emoji, setEmoji] = useState<null | Emoji>({id: "bell", native: "🔔"})
+export const TriggersAddConfigureStep = ({triggerType, back, onTriggerCreated: triggerCreated}: Props) => {
+    const [loading, setLoading] = useState<boolean>(false)
+    const [emoji, setEmoji] = useState<null | Emoji>(BellEmoji)
     const [title, setTitle] = useState<string>("")
     const [content, setContent] = useState<string>("")
-    const [values, setValues] = useState<{ [key: string]: string }>(
+    const [values, setValues] = useState<{ [key: string]: string | string[] }>(
             triggerType.configuration.fields.reduce((acc, field) => {
-                acc[field.name] = ""
+                acc[field.name] = field.multiple ? [] : ""
                 return acc
-            }, {} as { [key: string]: string }),
+            }, {} as { [key: string]: string | string[] }),
     )
 
-    console.log({emoji})
+    const handleSubmit = (event: FormEvent) => {
+        setLoading(true)
+        event.preventDefault()
+        event.stopPropagation()
+
+        // todo: validate fields
+
+        const uuid = generateUuid()
+
+        fetchAuthApi("/triggers", {
+            method: "POST",
+            body: {
+                "uuid": uuid,
+                "trigger_type_id": triggerType.id,
+                "emoji": emoji?.native,
+                "title": title,
+                "content": content,
+                "configuration": {
+                    fields: values,
+                    version: triggerType.configuration.version,
+                },
+            },
+            success: (response) => {
+                triggerCreated(uuid)
+                setLoading(false)
+            },
+            error: (error) => {
+                // todo: manage invalid form errors
+                setLoading(false)
+            },
+            catcher: (error) => {
+                setLoading(false)
+            },
+        })
+    }
 
     return (
             <>
@@ -42,9 +80,9 @@ export const TriggersAddConfigureStep = ({triggerType, back}: Props) => {
                     </Dialog.Description>
                 </div>
 
-                <div className="flex flex-col space-y-4">
+                <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
                     <div className="flex flex-row space-x-4 justify-center w-full">
-                        <EmojiInputFieldBox value={emoji} setValue={setEmoji} name="emoji" placeholder="🔔"/>
+                        <EmojiInputFieldBox value={emoji} setValue={setEmoji}/>
 
                         <InputFieldBox
                                 value={title}
@@ -54,6 +92,7 @@ export const TriggersAddConfigureStep = ({triggerType, back}: Props) => {
                                 name="title"
                                 placeholder="Notification Title"
                                 required
+                                showRequired
                         />
                     </div>
 
@@ -64,6 +103,7 @@ export const TriggersAddConfigureStep = ({triggerType, back}: Props) => {
                             name="content"
                             placeholder="Notification Content"
                             required
+                            showRequired
                     />
 
                     {triggerType.configuration.fields.map((field, index) => {
@@ -79,6 +119,7 @@ export const TriggersAddConfigureStep = ({triggerType, back}: Props) => {
                                                 name={field.name}
                                                 multiple={field.multiple}
                                                 required={field.required}
+                                                showRequired
                                         />
                                     </div>
                             )
@@ -88,7 +129,7 @@ export const TriggersAddConfigureStep = ({triggerType, back}: Props) => {
                             return (
                                     <div key={field.name}>
                                         <ParametersFieldBox
-                                                value={values[field.name]}
+                                                value={values[field.name] as string}
                                                 setValue={(value) => {
                                                     setValues({...values, [field.name]: value})
                                                 }}
@@ -96,6 +137,7 @@ export const TriggersAddConfigureStep = ({triggerType, back}: Props) => {
                                                 name={field.name}
                                                 placeholder={field.label}
                                                 required={field.required}
+                                                showRequired
                                         />
                                     </div>
                             )
@@ -104,7 +146,7 @@ export const TriggersAddConfigureStep = ({triggerType, back}: Props) => {
                         return (
                                 <div key={field.name}>
                                     <InputFieldBox
-                                            value={values[field.name]}
+                                            value={values[field.name] as string}
                                             type={field.type}
                                             setValue={(value) => {
                                                 setValues({...values, [field.name]: value})
@@ -113,13 +155,14 @@ export const TriggersAddConfigureStep = ({triggerType, back}: Props) => {
                                             name={field.name}
                                             placeholder={field.label}
                                             required={field.required}
+                                            showRequired
                                     />
                                 </div>
                         )
                     })}
 
-                    <PrimaryButton text="Create"/>
-                </div>
+                    <PrimaryButton loading={loading} text="Create" onClick={handleSubmit}/>
+                </form>
             </>
     )
 }

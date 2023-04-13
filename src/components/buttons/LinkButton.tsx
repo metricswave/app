@@ -30,7 +30,15 @@ export function SecondaryNoLinkButton({text, loading, ...props}: NoLinkButtonPro
 
 export function LinkButton({href, text, loading, ...props}: LinkButtonProps) {
     return (
-            <a href={href} className={classes} {...props}>
+            <a href={href} className={loading ? loadingClasses : classes} {...props}>
+                {text}
+            </a>
+    )
+}
+
+export function SecondaryLinkButton({href, text, loading, ...props}: LinkButtonProps) {
+    return (
+            <a href={href} className={loading ? loadingClasses : secondaryClasses} {...props}>
                 {text}
             </a>
     )

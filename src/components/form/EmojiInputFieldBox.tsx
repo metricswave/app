@@ -5,29 +5,10 @@ import {Emoji} from "../../types/Emoji"
 
 type Props = {
     value: Emoji | null,
-    disabled?: boolean,
     setValue: (value: Emoji) => void,
-    error?: false | string,
-    focus?: boolean,
-    required?: boolean,
-    name: string,
-    type?: string,
-    placeholder: string
 }
 
-export default function EmojiInputFieldBox(
-        {
-            value,
-            setValue,
-            error,
-            name,
-            type = "text",
-            disabled = false,
-            focus = false,
-            required = false,
-            placeholder,
-        }: Props,
-) {
+export default function EmojiInputFieldBox({value, setValue}: Props) {
     const [emojiPickerVisible, setEmojiPickerVisible] = React.useState(false)
 
     return (
@@ -52,8 +33,6 @@ export default function EmojiInputFieldBox(
                                          setEmojiPickerVisible(false)
                                      }}/>
                     </div>
-
-                    {error && <p className="text-red-500 text-xs mb-4 mx-4">{error}</p>}
 
                 </div>
             </>
