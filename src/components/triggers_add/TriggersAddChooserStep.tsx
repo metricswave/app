@@ -4,6 +4,7 @@ import * as Dialog from "@radix-ui/react-dialog"
 import SearchInputField from "../form/SearchInputField"
 import {NoLinkButton} from "../buttons/LinkButton"
 import {DialogHeader} from "../dialog/DialogHeader"
+import BlockContainer from "../sections/BlockContainer"
 
 type TriggersAddChooseStepProps = {
     triggerTypes: TriggerType[],
@@ -41,11 +42,13 @@ export default function TriggersAddChooserStep({triggerTypes, chooser}: Triggers
 
                 <div className="flex flex-col space-y-6">
                     {triggerTypes.filter(tt => tt.name.toLowerCase().includes(search.toLowerCase()) || search === "").map((triggerType) => (
-                            <div key={triggerType.id}
-                                 onClick={() => {
-                                     chooser(triggerType)
-                                 }}
-                                 className="flex flex-row space-x-4 items-start p-4 border rounded-sm soft-border hover:bg-blue-100/75 hover:border-blue-100 active:bg-blue-100/75 active:border-blue-100 smooth cursor-pointer">
+                            <BlockContainer
+                                    key={triggerType.id}
+                                    onClick={() => {
+                                        chooser(triggerType)
+                                    }}
+                            >
+
                                 <img src={`/images/trigger-types/${triggerType.icon}`}
                                      alt={triggerType.name}
                                      className="w-12 h-12 rounded-sm"/>
@@ -55,7 +58,8 @@ export default function TriggersAddChooserStep({triggerTypes, chooser}: Triggers
                                     <p className="text-sm sm:text-base">{triggerType.description}</p>
                                     <p className="pt-2"><NoLinkButton text="Choose →"/></p>
                                 </div>
-                            </div>
+
+                            </BlockContainer>
                     ))}
                 </div>
             </>

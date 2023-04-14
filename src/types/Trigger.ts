@@ -1,5 +1,6 @@
-export type Triggers = {
+export type Trigger = {
     id: string
+    uuid: string
     emoji: string
     title: string
     content: string

@@ -30,7 +30,7 @@ export const routes: RouteObject[] = [
                 element: <Services/>,
             },
             {
-                path: "/triggers",
+                path: "/triggers/:triggerUuid?",
                 element: <Triggers/>,
             },
             {

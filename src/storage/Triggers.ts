@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react"
 import {fetchAuthApi} from "../helpers/ApiFetcher"
 import {DAY_SECONDS, expirableLocalStorage} from "../helpers/ExpirableLocalStorage"
-import {Triggers} from "../types/Triggers"
+import {Trigger} from "../types/Trigger"
 
 const TRIGGER_KEY: string = "nw:triggers"
 const TRIGGER_REFRESH_KEY: string = "nw:triggers:refresh"
@@ -10,7 +10,7 @@ export function useTriggersState() {
     const [isFresh, setIsFresh] = useState<true | false>(
         expirableLocalStorage.get(TRIGGER_REFRESH_KEY, false),
     )
-    const [triggers, setTriggers] = useState<Triggers[]>(
+    const [triggers, setTriggers] = useState<Trigger[]>(
         expirableLocalStorage.get(TRIGGER_KEY, []),
     )
 
@@ -19,7 +19,7 @@ export function useTriggersState() {
             return
         }
 
-        fetchAuthApi<{ triggers: Triggers[] }>("/triggers", {
+        fetchAuthApi<{ triggers: Trigger[] }>("/triggers", {
             success: (data) => {
                 const t = data.data.triggers
                 expirableLocalStorage.set(TRIGGER_REFRESH_KEY, true, DAY_SECONDS)

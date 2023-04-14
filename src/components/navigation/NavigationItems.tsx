@@ -1,11 +1,12 @@
 import React from "react"
 import {items} from "./Items"
+import {isCurrentRoute} from "../../helpers/Routes"
 
 export default function NavigationItems() {
     return (
             <ul className={"flex flex-row space-x-4"}>
                 {items.map(({icon, label, path}, index) => {
-                    const current = window.location.pathname === path
+                    const current = isCurrentRoute(window.location.pathname, path)
 
                     return (
                             <li key={`${index}_item`}>
