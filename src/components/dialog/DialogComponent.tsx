@@ -4,25 +4,40 @@ import * as Dialog from "@radix-ui/react-dialog"
 interface DialogComponentProps {
     children: React.ReactNode
     title?: string
-    button: React.ReactNode
+    button?: React.ReactNode
     description?: string
     innerRef?: React.RefObject<HTMLDivElement>
+    defaultOpen?: boolean
+    open?: boolean
+    onOpenChange?: (open: boolean) => void
 }
 
 export const DialogComponent = (
         {
-            button, title, innerRef, description, children, ...props
+            button,
+            title,
+            innerRef,
+            description,
+            children,
+            open = undefined,
+            defaultOpen = false,
+            onOpenChange = (open: boolean) => null,
+            ...props
         }: DialogComponentProps,
 ) => (
-        <Dialog.Root>
-            <Dialog.Trigger asChild>
-                <div>
-                    {button}
-                </div>
-            </Dialog.Trigger>
+        <Dialog.Root open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
+            {button !== undefined &&
+                    <Dialog.Trigger asChild>
+                        <div>
+                            {button}
+                        </div>
+                    </Dialog.Trigger>
+            }
+
             <Dialog.Portal>
                 <Dialog.Overlay className="bg-black/20 data-[state=open]:animate-overlayShow fixed inset-0 z-30"/>
-                <Dialog.Content className="data-[state=open]:animate-contentSlideFromBottom sm:data-[state=open]:animate-contentShow fixed bottom-0 sm:bottom-auto sm:top-[50%] left-[50%] max-h-[90vh] h-[90vh] sm:h-auto w-[98vw] max-w-[540px] translate-x-[-50%] sm:translate-y-[-50%] rounded-t sm:rounded-b bg-white dark:bg-zinc-800 pt-6 shadow z-40 focus:outline-none">
+                <Dialog.Content
+                        className="data-[state=open]:animate-contentSlideFromBottom sm:data-[state=open]:animate-contentShow fixed bottom-0 sm:bottom-auto sm:top-[50%] left-[50%] max-h-[90vh] h-[90vh] sm:h-auto w-[98vw] max-w-[540px] translate-x-[-50%] sm:translate-y-[-50%] rounded-t sm:rounded-b bg-white dark:bg-zinc-800 pt-6 shadow z-40 focus:outline-none">
                     {title && <div className="flex flex-row space-x-10 mt-5 mb-2 px-6">
                         <div>
                             <Dialog.Title className="font-bold m-0 text-xl">

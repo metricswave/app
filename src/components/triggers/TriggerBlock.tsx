@@ -1,18 +1,16 @@
 import React from "react"
-import {useNavigate} from "react-router-dom"
 import {useTriggerTypesState} from "../../storage/TriggerTypes"
 import {Trigger} from "../../types/Trigger"
 import BlockContainer from "../sections/BlockContainer"
 
-export default function TriggerBlock({trigger}: { trigger: Trigger }) {
-    const {getTriggerType} = useTriggerTypesState()
-    const triggerType = getTriggerType(trigger.trigger_type_id)
-    const navigate = useNavigate()
+export default function TriggerBlock({trigger, onClick: click}: { trigger: Trigger, onClick: (uuid: string) => void }) {
+    const {getTriggerTypeById} = useTriggerTypesState()
+    const triggerType = getTriggerTypeById(trigger.trigger_type_id)
 
     return (
             <BlockContainer
                     key={trigger.id}
-                    onClick={() => navigate(`/triggers/${trigger.uuid}`)}
+                    onClick={() => click(trigger.uuid)}
                     className="border soft-border rounded-sm p-4 flex flex-col space-y-4 cursor-pointer"
             >
 

@@ -35,7 +35,7 @@ export function useTriggerTypesState() {
     return {
         triggerTypes,
         setIsFresh,
-        getTriggerType(id: number): TriggerType | undefined {
+        getTriggerTypeById(id: number): TriggerType | undefined {
             return triggerTypes.find((tt) => tt.id === id)
         },
     }

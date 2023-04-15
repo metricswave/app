@@ -5,4 +5,7 @@ export type Trigger = {
     title: string
     content: string
     trigger_type_id: number
+    configuration: {
+        fields: { [key: string]: string | string[] }
+    }
 }

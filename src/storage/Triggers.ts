@@ -32,5 +32,9 @@ export function useTriggersState() {
         })
     }, [isFresh])
 
-    return {triggers, refreshTriggers: () => setIsFresh(false)}
+    return {
+        triggers,
+        refreshTriggers: () => setIsFresh(false),
+        triggerByUuid: (uuid: string) => triggers.find(t => t.uuid === uuid),
+    }
 }
