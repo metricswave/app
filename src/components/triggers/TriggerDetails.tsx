@@ -9,6 +9,7 @@ import DeleteButton from "../form/DeleteButton"
 import InputFieldBox from "../form/InputFieldBox"
 import {app} from "../../config/app"
 import {fetchAuthApi} from "../../helpers/ApiFetcher"
+import {LinkButton} from "../buttons/LinkButton"
 
 type Props = {
     trigger: Trigger
@@ -46,8 +47,11 @@ export default function TriggerDetails({trigger, onDeleted: deleted, onUpdate: u
                 const url = `${app.webhooks}/${trigger.uuid}?${query}`
 
                 return (<div className="flex flex-col space-y-4">
-                    <p>Call or open the next URL and you will receive a notification instantly. Here you can find more
-                        info about webhooks.</p>
+                    <p>Call or open the next URL and you will receive a notification
+                        instantly. <LinkButton target="_blank"
+                                               href={`${app.web}/documentation/triggers/webhooks`}
+                                               text="Here
+                            you can find more info about webhooks."/></p>
                     <InputFieldBox
                             value={url}
                             setValue={() => null}

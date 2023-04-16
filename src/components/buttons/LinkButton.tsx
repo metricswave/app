@@ -2,6 +2,7 @@ import React from "react"
 
 type LinkButtonProps = React.HTMLAttributes<HTMLAnchorElement> & {
     href: string,
+    target?: string,
     text: string,
     loading?: boolean
 }
