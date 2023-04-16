@@ -43,7 +43,7 @@ export default function TriggerDetails({trigger, onDeleted: deleted, onUpdate: u
                 const query = trigger.configuration.fields.parameters
                         .map((param) => `${param}={value}`)
                         .join("&")
-                const url = `${app.api}/webhooks/${trigger.uuid}?${query}`
+                const url = `${app.webhooks}/${trigger.uuid}?${query}`
 
                 return (<div className="flex flex-col space-y-4">
                     <p>Call or open the next URL and you will receive a notification instantly. Here you can find more
