@@ -44,6 +44,7 @@ export default function Triggers() {
                                         setTriggerUuid(undefined)
                                         refreshTriggers()
                                     }}
+                                    onUpdate={refreshTriggers}
                             />
                         </DialogComponent>
                 }

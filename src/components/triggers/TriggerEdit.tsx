@@ -3,16 +3,39 @@ import {DialogHeader} from "../dialog/DialogHeader"
 import * as Dialog from "@radix-ui/react-dialog"
 import {useTriggerTypesState} from "../../storage/TriggerTypes"
 import TriggerForm, {TriggerFormSubmit} from "./TriggerForm"
+import {fetchAuthApi} from "../../helpers/ApiFetcher"
 
-export default function TriggerEdit({trigger, onBack: back}: { trigger: Trigger, onBack: () => void }) {
+type Props = {
+    trigger: Trigger
+    onUpdate: () => void
+    onBack: () => void
+}
+
+export default function TriggerEdit({trigger, onBack: back, onUpdate: updated}: Props) {
     const {getTriggerTypeById} = useTriggerTypesState()
     const triggerType = getTriggerTypeById(trigger.trigger_type_id)!
 
     const handleSubmit: TriggerFormSubmit = async (
             {emoji, title, content, values},
     ) => {
-        // todo: create and call endpoint to update trigger
-        return
+        fetchAuthApi(`/triggers/${trigger.uuid}`, {
+            method: "PUT",
+            body: {
+                emoji: emoji.native,
+                title,
+                content,
+                "configuration": {
+                    fields: values,
+                    version: triggerType.configuration.version,
+                },
+            },
+            success: () => {
+                updated()
+                back()
+            },
+            error: (error) => null,
+            catcher: (error) => null,
+        })
     }
 
     return (

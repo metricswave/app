@@ -13,9 +13,10 @@ import {fetchAuthApi} from "../../helpers/ApiFetcher"
 type Props = {
     trigger: Trigger
     onDeleted: () => void
+    onUpdate: () => void
 }
 
-export default function TriggerDetails({trigger, onDeleted: deleted}: Props) {
+export default function TriggerDetails({trigger, onDeleted: deleted, onUpdate: updated}: Props) {
     const {getTriggerTypeById} = useTriggerTypesState()
     const triggerType = getTriggerTypeById(trigger.trigger_type_id)!
     const [step, setStep] = useState("details")
@@ -63,7 +64,6 @@ export default function TriggerDetails({trigger, onDeleted: deleted}: Props) {
 
     return (
             <>
-
                 {step === "details" &&
                         <>
                             <DialogHeader/>
@@ -95,7 +95,7 @@ export default function TriggerDetails({trigger, onDeleted: deleted}: Props) {
                 }
 
                 {step === "edit" &&
-                        <TriggerEdit trigger={trigger} onBack={() => setStep("details")}/>
+                        <TriggerEdit onUpdate={updated} trigger={trigger} onBack={() => setStep("details")}/>
                 }
             </>
     )

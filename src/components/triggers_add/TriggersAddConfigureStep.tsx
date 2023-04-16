@@ -22,11 +22,11 @@ export const TriggersAddConfigureStep = ({triggerType, back, onTriggerCreated: t
         fetchAuthApi("/triggers", {
             method: "POST",
             body: {
-                "uuid": uuid,
+                uuid,
                 "trigger_type_id": triggerType.id,
                 "emoji": emoji.native,
-                "title": title,
-                "content": content,
+                title,
+                content,
                 "configuration": {
                     fields: values,
                     version: triggerType.configuration.version,
