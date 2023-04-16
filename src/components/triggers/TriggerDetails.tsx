@@ -8,8 +8,14 @@ import PrimaryButton from "../form/PrimaryButton"
 import DeleteButton from "../form/DeleteButton"
 import InputFieldBox from "../form/InputFieldBox"
 import {app} from "../../config/app"
+import {fetchAuthApi} from "../../helpers/ApiFetcher"
 
-export default function TriggerDetails({trigger}: { trigger: Trigger }) {
+type Props = {
+    trigger: Trigger
+    onDeleted: () => void
+}
+
+export default function TriggerDetails({trigger, onDeleted: deleted}: Props) {
     const {getTriggerTypeById} = useTriggerTypesState()
     const triggerType = getTriggerTypeById(trigger.trigger_type_id)!
     const [step, setStep] = useState("details")
@@ -17,7 +23,12 @@ export default function TriggerDetails({trigger}: { trigger: Trigger }) {
     const listFormatter = new Intl.ListFormat("en")
 
     const handleDelete = async () => {
-        // todo: endpoint to delete a trigger
+        fetchAuthApi(`/triggers/${trigger.uuid}`, {
+            method: "DELETE",
+            success: deleted,
+            error: () => null,
+            catcher: () => null,
+        })
     }
 
     const triggerInstructions = (trigger: Trigger): ReactElement => {

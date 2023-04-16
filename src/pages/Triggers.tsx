@@ -38,7 +38,13 @@ export default function Triggers() {
                                     if (!state) setTriggerUuid(undefined)
                                 }}
                         >
-                            <TriggerDetails trigger={triggerByUuid(triggerUuid!)!}/>
+                            <TriggerDetails
+                                    trigger={triggerByUuid(triggerUuid!)!}
+                                    onDeleted={() => {
+                                        setTriggerUuid(undefined)
+                                        refreshTriggers()
+                                    }}
+                            />
                         </DialogComponent>
                 }
 
