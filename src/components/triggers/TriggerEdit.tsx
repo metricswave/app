@@ -4,7 +4,7 @@ import * as Dialog from "@radix-ui/react-dialog"
 import {useTriggerTypesState} from "../../storage/TriggerTypes"
 import TriggerForm, {TriggerFormSubmit} from "./TriggerForm"
 
-export default function TriggerEditForm({trigger, onBack: back}: { trigger: Trigger, onBack: () => void }) {
+export default function TriggerEdit({trigger, onBack: back}: { trigger: Trigger, onBack: () => void }) {
     const {getTriggerTypeById} = useTriggerTypesState()
     const triggerType = getTriggerTypeById(trigger.trigger_type_id)!
 

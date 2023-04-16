@@ -1,15 +1,54 @@
-import {Trigger} from "../../types/Trigger"
+import {Trigger, TriggerType} from "../../types/Trigger"
 import {DialogHeader} from "../dialog/DialogHeader"
 import * as Dialog from "@radix-ui/react-dialog"
 import {useTriggerTypesState} from "../../storage/TriggerTypes"
-import {NoLinkButton} from "../buttons/LinkButton"
-import TriggerEditForm from "./TriggerEditForm"
-import {useState} from "react"
+import TriggerEdit from "./TriggerEdit"
+import {ReactElement, useState} from "react"
+import PrimaryButton from "../form/PrimaryButton"
+import DeleteButton from "../form/DeleteButton"
+import InputFieldBox from "../form/InputFieldBox"
+import {app} from "../../config/app"
 
 export default function TriggerDetails({trigger}: { trigger: Trigger }) {
     const {getTriggerTypeById} = useTriggerTypesState()
     const triggerType = getTriggerTypeById(trigger.trigger_type_id)!
     const [step, setStep] = useState("details")
+
+    const listFormatter = new Intl.ListFormat("en")
+
+    const handleDelete = async () => {
+        // todo: endpoint to delete a trigger
+    }
+
+    const triggerInstructions = (trigger: Trigger): ReactElement => {
+        switch (trigger.trigger_type_id) {
+            case TriggerType.OnTime:
+                return (<>
+                    <p>You will receive a notification
+                        all {listFormatter.format(trigger.configuration.fields.weekdays)} at {trigger.configuration.fields.time}.</p>
+                </>)
+            case TriggerType.Webhook:
+                const query = trigger.configuration.fields.parameters
+                        .map((param) => `${param}={value}`)
+                        .join("&")
+                const url = `${app.api}/webhooks/${trigger.uuid}?${query}`
+
+                return (<div className="flex flex-col space-y-4">
+                    <p>Call or open the next URL and you will receive a notification instantly. Here you can find more
+                        info about webhooks.</p>
+                    <InputFieldBox
+                            value={url}
+                            setValue={() => null}
+                            label="Webhook Path"
+                            name="webhook_path"
+                            placeholder=""
+                            disabled
+                    />
+                </div>)
+            default:
+                return (<></>)
+        }
+    }
 
     return (
             <>
@@ -18,25 +57,34 @@ export default function TriggerDetails({trigger}: { trigger: Trigger }) {
                         <>
                             <DialogHeader/>
 
-                            <div className="mt-8 mb-4">
-                                <Dialog.Title className="font-bold m-0 text-xl">
-                                    Details
-                                </Dialog.Title>
+                            <div className="flex flex-col space-y-4">
+                                <div className="">
+                                    <Dialog.Title className="font-bold m-0 text-xl">
+                                        Details
+                                    </Dialog.Title>
 
-                                <div className="mt-2 mb-6 opacity-70 flex flex-row items-center space-x-2">
-                                    <img src={`/images/trigger-types/${triggerType.icon}`}
-                                         alt={triggerType.name}
-                                         className="w-4 h-4 rounded-sm"/>
-                                    <div className="">{triggerType.name}</div>
+                                    <div className="mt-2 opacity-70 flex flex-row items-center space-x-2">
+                                        <img src={`/images/trigger-types/${triggerType.icon}`}
+                                             alt={triggerType.name}
+                                             className="w-4 h-4 rounded-sm"/>
+                                        <div className="">{triggerType.name}</div>
+                                    </div>
+                                </div>
+
+                                <div className="py-4">
+                                    {triggerInstructions(trigger)}
+                                </div>
+
+                                <div className="w-full flex flex-col space-y-3">
+                                    <PrimaryButton text="Edit" onClick={() => setStep("edit")} className="w-full"/>
+                                    <DeleteButton text="Delete" onClick={handleDelete} className="w-full"/>
                                 </div>
                             </div>
-
-                            <NoLinkButton text="Edit" onClick={() => setStep("edit")}/>
                         </>
                 }
 
                 {step === "edit" &&
-                        <TriggerEditForm trigger={trigger} onBack={() => setStep("details")}/>
+                        <TriggerEdit trigger={trigger} onBack={() => setStep("details")}/>
                 }
             </>
     )
