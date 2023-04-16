@@ -72,7 +72,10 @@ export default function TriggerForm(
                     <ParametersFieldBox
                             value={values[field.name] as string}
                             setValue={(value) => {
-                                setValues({...values, [field.name]: value})
+                                const parameters = value.split(/\r?\n/)
+                                        .map((v) => v.trim())
+                                        .filter((v) => v.length > 0)
+                                setValues({...values, [field.name]: parameters})
                             }}
                             label={field.label}
                             name={field.name}
