@@ -8,12 +8,14 @@ import {NoLinkButton} from "../components/buttons/LinkButton"
 import TriggerBlock from "../components/triggers/TriggerBlock"
 import {useParams} from "react-router-dom"
 import TriggerDetails from "../components/triggers/TriggerDetails"
+import {useTriggerTypesState} from "../storage/TriggerTypes"
 
 export default function Triggers() {
     const [triggerUuid, setTriggerUuid] = React.useState<string | undefined>(
             useParams().triggerUuid as string | undefined,
     )
     const {triggers, refreshTriggers, triggerByUuid} = useTriggersState()
+    const {getTriggerTypeById} = useTriggerTypesState()
 
 
     return (
@@ -24,6 +26,7 @@ export default function Triggers() {
                     {triggers.map((trigger) => (
                             <TriggerBlock
                                     trigger={trigger}
+                                    triggerType={getTriggerTypeById(trigger.trigger_type_id)}
                                     key={trigger.id}
                                     onClick={setTriggerUuid}
                             />

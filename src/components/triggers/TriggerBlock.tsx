@@ -1,11 +1,15 @@
 import React from "react"
-import {useTriggerTypesState} from "../../storage/TriggerTypes"
 import {Trigger} from "../../types/Trigger"
 import BlockContainer from "../sections/BlockContainer"
+import {TriggerType} from "../../types/TriggerType"
 
-export default function TriggerBlock({trigger, onClick: click}: { trigger: Trigger, onClick: (uuid: string) => void }) {
-    const {getTriggerTypeById} = useTriggerTypesState()
-    const triggerType = getTriggerTypeById(trigger.trigger_type_id)
+type Props = {
+    trigger: Trigger,
+    triggerType: TriggerType | undefined,
+    onClick: (uuid: string) => void,
+}
+
+export default function TriggerBlock({trigger, triggerType, onClick: click}: Props) {
 
     return (
             <BlockContainer
