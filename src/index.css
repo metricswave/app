@@ -71,3 +71,20 @@ select:-webkit-autofill:focus {
 .soft-border\/50 {
     @apply border-zinc-400/10 dark:border-zinc-800/50;
 }
+
+@media screen and (max-device-width: 480px) and (orientation: portrait) {
+    @supports (-webkit-touch-callout: none) {
+        #top-nav-menu {
+            padding-top: 60px;
+        }
+
+        #bottom-nav-menu {
+            padding-bottom: 40px;
+        }
+
+        #app-container {
+            padding-top: 125px !important;
+            padding-bottom: 121px !important;
+        }
+    }
+}
