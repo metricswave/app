@@ -38,7 +38,9 @@ export default function TriggerDetails({trigger, onDeleted: deleted, onUpdate: u
             case TriggerType.OnTime:
                 return (<>
                     <p>You will receive a notification
-                        all {listFormatter.format(trigger.configuration.fields.weekdays)} at {trigger.configuration.fields.time}.</p>
+                        all {listFormatter.format(trigger.configuration.fields.weekdays)} at {trigger.configuration.fields.time}. <LinkButton
+                                href={`${app.web}/documentation/triggers/on-time`}
+                                text="More info about On Time triggers."/></p>
                 </>)
             case TriggerType.Webhook:
                 const query = trigger.configuration.fields.parameters
@@ -50,8 +52,7 @@ export default function TriggerDetails({trigger, onDeleted: deleted, onUpdate: u
                     <p>Call or open the next URL and you will receive a notification
                         instantly. <LinkButton target="_blank"
                                                href={`${app.web}/documentation/triggers/webhooks`}
-                                               text="Here
-                            you can find more info about webhooks."/></p>
+                                               text="Here you can find more info about webhooks."/></p>
                     <InputFieldBox
                             value={url}
                             setValue={() => null}
