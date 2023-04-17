@@ -4,7 +4,7 @@ import TextareaFieldBox from "../form/TextareaFieldBox"
 import PrimaryButton from "../form/PrimaryButton"
 import {Trigger} from "../../types/Trigger"
 import React, {FormEvent, ReactElement, useState} from "react"
-import {BellEmoji, Emoji} from "../../types/Emoji"
+import {BellEmoji, Emoji, emojiFromNative} from "../../types/Emoji"
 import WeekdayFieldBox from "../form/WeekdayFieldBox"
 import ParametersFieldBox from "../form/ParametersFieldBox"
 import {TriggerType, TriggerTypeField} from "../../types/TriggerType"
@@ -30,7 +30,7 @@ export default function TriggerForm(
         }: Props,
 ) {
     const [loading, setLoading] = useState<boolean>(false)
-    const [emoji, setEmoji] = useState<Emoji>(BellEmoji)
+    const [emoji, setEmoji] = useState<Emoji>(trigger ? emojiFromNative(trigger.emoji) : BellEmoji)
     const [title, setTitle] = useState<string>(trigger ? trigger.title : "")
     const [content, setContent] = useState<string>(trigger ? trigger.content : "")
     const [values, setValues] = useState<{ [key: string]: string | string[] }>(

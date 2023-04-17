@@ -18,6 +18,12 @@ export const BellEmoji: Emoji = {
     emoticons: [],
 }
 
+export const emojiFromNative = (native: string): Emoji => {
+    const emoji = BellEmoji
+    emoji.native = native
+    return emoji
+}
+
 interface Skin {
     unified: string
     native: string

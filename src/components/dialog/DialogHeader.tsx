@@ -14,7 +14,7 @@ export const DialogHeader = ({back, ...props}: Props) => {
 
                 <Dialog.Close asChild className="">
                     <button
-                            className="inline-flex h-[35px] w-[35px] appearance-none items-center justify-center rounded-sm focus:outline-none bg-blue-50/50 hover:bg-blue-50 smooth"
+                            className="inline-flex h-[35px] w-[35px] appearance-none items-center justify-center rounded-sm focus:outline-none bg-blue-50/50 hover:bg-blue-50 dark:bg-zinc-500/10 hover:dark:bg-blue-500/20 smooth"
                             aria-label="Close"
                     >
                         <span className="rotate-45">+</span>

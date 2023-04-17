@@ -76,7 +76,7 @@ export default function TriggerDetails({trigger, onDeleted: deleted, onUpdate: u
                             <div className="flex flex-col space-y-4">
                                 <div className="">
                                     <Dialog.Title className="font-bold m-0 text-xl">
-                                        Details
+                                        {trigger.emoji} {trigger.title}
                                     </Dialog.Title>
 
                                     <div className="mt-2 opacity-70 flex flex-row items-center space-x-2">
