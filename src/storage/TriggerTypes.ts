@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react"
 import {TriggerType} from "../types/TriggerType"
 import {fetchAuthApi} from "../helpers/ApiFetcher"
-import {DAY_SECONDS, expirableLocalStorage} from "../helpers/ExpirableLocalStorage"
+import {expirableLocalStorage, TEN_MINUTES_SECONDS} from "../helpers/ExpirableLocalStorage"
 
 const TRIGGER_TYPES_KEY: string = "nw:trigger-types"
 const TRIGGER_TYPES_REFRESH_KEY: string = "nw:trigger-types:refresh"
@@ -22,7 +22,7 @@ export function useTriggerTypesState() {
         fetchAuthApi<{ trigger_types: TriggerType[] }>("/trigger-types", {
             success: (data) => {
                 const tt = data.data.trigger_types
-                expirableLocalStorage.set(TRIGGER_TYPES_REFRESH_KEY, true, DAY_SECONDS)
+                expirableLocalStorage.set(TRIGGER_TYPES_REFRESH_KEY, true, TEN_MINUTES_SECONDS)
                 expirableLocalStorage.set(TRIGGER_TYPES_KEY, tt)
                 setTriggerTypes(tt)
                 setIsFresh(true)
