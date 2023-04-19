@@ -18,6 +18,11 @@ type ApiFetcherParams<T> = {
     catcher: (err: Error) => void
 }
 
+const defaultHeaders = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+    "x-timezone": Intl.DateTimeFormat().resolvedOptions().timeZone,
+}
 
 export function fetchAuthApi<T>(path: string, {
     method = "GET",
@@ -35,8 +40,7 @@ export function fetchAuthApi<T>(path: string, {
         method,
         body: JSON.stringify(params.body),
         headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
+            ...defaultHeaders,
             "Authorization": `Bearer ${token}`,
         },
     })
@@ -58,8 +62,7 @@ export function fetchApi<T>(path: string, {method = "GET", ...params}: ApiFetche
         method,
         body: JSON.stringify(params.body),
         headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
+            ...defaultHeaders,
         },
     })
         .then(async res => {
