@@ -1,6 +1,6 @@
 export enum TriggerType {
-    OnTime = 1,
-    Webhook = 2,
+    Webhook = 1,
+    OnTime = 2,
 }
 
 export type Trigger = {
