@@ -10,10 +10,10 @@ const panelItems = [
         name: "Profile",
         path: "/settings/profile",
     },
-    {
-        name: "Billing",
-        path: "/settings/billing",
-    },
+    // {
+    //     name: "Billing",
+    //     path: "/settings/billing",
+    // },
 ]
 
 export default function SettingsMenu() {

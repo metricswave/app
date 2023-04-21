@@ -1,3 +1,4 @@
+export const FIVE_SECONDS = 5
 export const THIRTY_SECONDS = 30
 export const TEN_MINUTES_SECONDS = 600
 export const DAY_SECONDS = 86400

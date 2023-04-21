@@ -10,6 +10,7 @@ import InputFieldBox from "../form/InputFieldBox"
 import {app} from "../../config/app"
 import {fetchAuthApi} from "../../helpers/ApiFetcher"
 import {LinkButton} from "../buttons/LinkButton"
+import CopyButton from "../form/CopyButton"
 
 type Props = {
     trigger: Trigger
@@ -25,7 +26,7 @@ export default function TriggerDetails({trigger, onDeleted: deleted, onUpdate: u
     const listFormatter = new Intl.ListFormat("en")
 
     const handleDelete = async () => {
-        fetchAuthApi(`/triggers/${trigger.uuid}`, {
+        await fetchAuthApi(`/triggers/${trigger.uuid}`, {
             method: "DELETE",
             success: deleted,
             error: () => null,
@@ -37,10 +38,15 @@ export default function TriggerDetails({trigger, onDeleted: deleted, onUpdate: u
         switch (trigger.trigger_type_id) {
             case TriggerType.OnTime:
                 return (<>
-                    <p>You will receive a notification
-                        all {listFormatter.format(trigger.configuration.fields.weekdays)} at {trigger.configuration.fields.time}. <LinkButton
-                                href={`${app.web}/documentation/triggers/on-time`}
-                                text="More info about On Time triggers."/></p>
+                    <p>
+                        You will receive a notification
+                        all {listFormatter.format(trigger.configuration.fields.weekdays)} at {trigger.configuration.fields.time}.
+                    </p>
+
+                    <p className="pb-1">
+                        <LinkButton href={`${app.web}/documentation/triggers/on-time`}
+                                    text="More info about On Time triggers."/>
+                    </p>
                 </>)
             case TriggerType.Webhook:
                 const query = trigger.configuration.fields.parameters
@@ -50,17 +56,27 @@ export default function TriggerDetails({trigger, onDeleted: deleted, onUpdate: u
 
                 return (<div className="flex flex-col space-y-4">
                     <p>Call or open the next URL and you will receive a notification
-                        instantly. <LinkButton target="_blank"
-                                               href={`${app.web}/documentation/triggers/webhooks`}
-                                               text="Here you can find more info about webhooks."/></p>
-                    <InputFieldBox
-                            value={url}
-                            setValue={() => null}
-                            label="Webhook Path"
-                            name="webhook_path"
-                            placeholder=""
-                            disabled
-                    />
+                        instantly.</p>
+
+                    <p className="pb-1">
+                        <LinkButton target="_blank"
+                                    href={`${app.web}/documentation/triggers/webhooks`}
+                                    text="Here you can find more info about webhooks."/>
+                    </p>
+
+                    <div>
+                        <InputFieldBox
+                                value={url}
+                                setValue={() => null}
+                                label="Webhook Path"
+                                name="webhook_path"
+                                placeholder=""
+                                disabled
+                        />
+
+                        <CopyButton textToCopy={url} className="w-full mt-2"/>
+                    </div>
+
                 </div>)
             default:
                 return (<></>)
@@ -93,7 +109,9 @@ export default function TriggerDetails({trigger, onDeleted: deleted, onUpdate: u
 
                                 <div className="w-full flex flex-col space-y-3">
                                     <PrimaryButton text="Edit" onClick={() => setStep("edit")} className="w-full"/>
-                                    <DeleteButton text="Delete" onClick={handleDelete} className="w-full"/>
+                                    <DeleteButton text="Delete"
+                                                  onClick={handleDelete}
+                                                  className="w-full"/>
                                 </div>
                             </div>
                         </>

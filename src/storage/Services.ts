@@ -14,7 +14,7 @@ export function useServicesState() {
         expirableLocalStorage.get(SERVICES_REFRESH_KEY, false),
     )
 
-    const loadServices = () => {
+    useEffect(() => {
         if (isFresh) return
 
         fetchAuthApi<{ services: Service[] }>("/services", {
@@ -27,9 +27,7 @@ export function useServicesState() {
             error: (data) => setIsFresh(false),
             catcher: (data) => setIsFresh(false),
         })
-    }
+    }, [isFresh])
 
-    useEffect(loadServices, [])
-
-    return {services, loadServices}
+    return {services, reloadServices: () => setIsFresh(false)}
 }

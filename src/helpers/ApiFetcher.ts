@@ -36,7 +36,7 @@ export function fetchAuthApi<T>(path: string, {
 
     const token = refreshToken ? tokens.refresh_token.token : tokens.token.token
 
-    fetch(`${app.api}${path}`, {
+    return fetch(`${app.api}${path}`, {
         method,
         body: JSON.stringify(params.body),
         headers: {
@@ -47,7 +47,7 @@ export function fetchAuthApi<T>(path: string, {
         .then(async res => {
             if (res.status >= 200 && res.status < 300) {
                 const data = res.status === 204 ? null : await res.json()
-                params.success(data)
+                await params.success(data)
                 return
             }
 

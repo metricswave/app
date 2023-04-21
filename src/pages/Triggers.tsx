@@ -17,7 +17,6 @@ export default function Triggers() {
     const {triggers, refreshTriggers, triggerByUuid} = useTriggersState()
     const {getTriggerTypeById} = useTriggerTypesState()
 
-
     return (
             <SectionContainer>
                 <PageTitle title="Triggers"/>
