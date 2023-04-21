@@ -2,12 +2,15 @@ import EmojiInputFieldBox from "../form/EmojiInputFieldBox"
 import InputFieldBox from "../form/InputFieldBox"
 import TextareaFieldBox from "../form/TextareaFieldBox"
 import PrimaryButton from "../form/PrimaryButton"
-import {Trigger} from "../../types/Trigger"
+import {Trigger, TriggerVia} from "../../types/Trigger"
 import React, {FormEvent, ReactElement, useState} from "react"
 import {BellEmoji, Emoji, emojiFromNative} from "../../types/Emoji"
 import WeekdayFieldBox from "../form/WeekdayFieldBox"
 import ParametersFieldBox from "../form/ParametersFieldBox"
 import {TriggerType, TriggerTypeField} from "../../types/TriggerType"
+import CheckboxInputGroup, {CheckboxGroupValue} from "../form/CheckboxInputGroup"
+import {useUserServicesState} from "../../storage/UserServices"
+import {mergeDefaultWithTriggerViaValues} from "../../helpers/TriggerViaValues"
 
 type Props = {
     onSubmit: TriggerFormSubmit,
@@ -20,6 +23,7 @@ export type TriggerFormSubmit = (params: {
     title: string,
     content: string,
     values: { [key: string]: string | string[] }
+    via: Array<TriggerVia>
 }) => Promise<void>
 
 export default function TriggerForm(
@@ -30,6 +34,8 @@ export default function TriggerForm(
         }: Props,
 ) {
     const [loading, setLoading] = useState<boolean>(false)
+    const {userServices} = useUserServicesState()
+
     const [emoji, setEmoji] = useState<Emoji>(trigger ? emojiFromNative(trigger.emoji) : BellEmoji)
     const [title, setTitle] = useState<string>(trigger ? trigger.title : "")
     const [content, setContent] = useState<string>(trigger ? trigger.content : "")
@@ -42,12 +48,16 @@ export default function TriggerForm(
                     }, {} as { [key: string]: string | string[] }),
     )
 
+    const [viaValues, setViaValues] = useState<Array<TriggerVia>>(
+            mergeDefaultWithTriggerViaValues(userServices, trigger),
+    )
+
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault()
         event.stopPropagation()
 
         setLoading(true)
-        await submit({emoji, title, content, values})
+        await submit({emoji, title, content, values, via: viaValues})
         setLoading(false)
     }
 
@@ -104,40 +114,49 @@ export default function TriggerForm(
 
     return (
             <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
-                <>
-                    <div className="flex flex-row space-x-4 justify-center w-full">
-                        <EmojiInputFieldBox value={emoji} setValue={setEmoji}/>
 
-                        <InputFieldBox
-                                value={title}
-                                setValue={setTitle}
-                                label="Title"
-                                focus={true}
-                                name="title"
-                                placeholder="Notification Title"
-                                required
-                                showRequired
-                        />
-                    </div>
+                <div className="flex flex-row space-x-4 justify-center w-full">
+                    <EmojiInputFieldBox value={emoji} setValue={setEmoji}/>
 
-                    <TextareaFieldBox
-                            value={content}
-                            setValue={setContent}
-                            label="Content"
-                            name="content"
-                            placeholder="Notification Content"
+                    <InputFieldBox
+                            value={title}
+                            setValue={setTitle}
+                            label="Title"
+                            focus={true}
+                            name="title"
+                            placeholder="Notification Title"
                             required
                             showRequired
                     />
+                </div>
 
-                    {triggerType.configuration.fields.map(renderDynamicField)}
+                <TextareaFieldBox
+                        value={content}
+                        setValue={setContent}
+                        label="Content"
+                        name="content"
+                        placeholder="Notification Content"
+                        required
+                        showRequired
+                />
 
-                    <PrimaryButton
-                            loading={loading}
-                            text={trigger === undefined ? "Create" : "Update"}
-                            onClick={handleSubmit}
-                    />
-                </>
+                <CheckboxInputGroup
+                        name="via"
+                        label="Notification Channels"
+                        values={viaValues as CheckboxGroupValue[]}
+                        onCheckedChanged={(values) => {
+                            setViaValues(values as Array<TriggerVia>)
+                        }}
+                />
+
+                {triggerType.configuration.fields.map(renderDynamicField)}
+
+                <PrimaryButton
+                        loading={loading}
+                        text={trigger === undefined ? "Create" : "Update"}
+                        onClick={handleSubmit}
+                />
+
             </form>
     )
 }

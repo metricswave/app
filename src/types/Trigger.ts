@@ -16,6 +16,7 @@ export type Trigger = {
             time: string,
         }
     }
+    via: TriggerVia[]
 } | {
     id: string
     uuid: string
@@ -28,4 +29,12 @@ export type Trigger = {
             parameters: Array<string>,
         }
     }
+    via: TriggerVia[]
+}
+
+export type TriggerVia = {
+    value: string
+    label: string
+    checked: boolean
+    type: string
 }

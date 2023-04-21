@@ -18,7 +18,7 @@ export default function CopyButton({textToCopy, className, ...props}: Props) {
                     {...props}
                     onClick={copy}
                     className={[
-                        "smooth rounded-sm p-3 text-blue-500 border border-blue-100 hover:bg-blue-100",
+                        "smooth rounded-sm p-3 text-blue-500 border soft-border hover:bg-blue-50 hover:dark:bg-blue-900/10",
                         className,
                     ].join(" ")}>
                 {copied ? "Copied!" : "Copy"}

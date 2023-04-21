@@ -1,10 +1,31 @@
-export type UserService = {
+export enum UserServiceType {
+    GitHub = 1,
+    Google = 2,
+    Telegram = 3,
+}
+
+type BaseUserService = {
     id: number
     user_id: string
-    service_id: number
+    created_at: string
+    updated_at: string
+}
+
+export type UserService = OauthService | TelegramUserService
+
+export type OauthService = BaseUserService & {
+    service_id: UserServiceType.GitHub | UserServiceType.Google
     service_data: {
         configuration: { [key: string]: string }
     }
-    created_at: string
-    updated_at: string
+}
+
+export type TelegramUserService = BaseUserService & {
+    service_id: UserServiceType.Telegram
+    service_data: {
+        configuration: {
+            channel_id: string
+            channel_name: string
+        }
+    }
 }

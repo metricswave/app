@@ -55,8 +55,7 @@ export default function TriggerDetails({trigger, onDeleted: deleted, onUpdate: u
                 const url = `${app.webhooks}/${trigger.uuid}?${query}`
 
                 return (<div className="flex flex-col space-y-4">
-                    <p>Call or open the next URL and you will receive a notification
-                        instantly.</p>
+                    <p>Call or open the next URL and you will receive a notification instantly.</p>
 
                     <p className="pb-1">
                         <LinkButton target="_blank"

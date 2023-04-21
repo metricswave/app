@@ -16,7 +16,7 @@ export default function TriggerEdit({trigger, onBack: back, onUpdate: updated}: 
     const triggerType = getTriggerTypeById(trigger.trigger_type_id)!
 
     const handleSubmit: TriggerFormSubmit = async (
-            {emoji, title, content, values},
+            {emoji, title, content, values, via},
     ) => {
         fetchAuthApi(`/triggers/${trigger.uuid}`, {
             method: "PUT",
@@ -28,6 +28,7 @@ export default function TriggerEdit({trigger, onBack: back, onUpdate: updated}: 
                     fields: values,
                     version: triggerType.configuration.version,
                 },
+                via,
             },
             success: () => {
                 updated()
