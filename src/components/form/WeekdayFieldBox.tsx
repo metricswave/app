@@ -1,20 +1,21 @@
 import React from "react"
 import InputLabel from "./InputLabel"
+import CheckboxInput from "./CheckboxInput"
+import RadioGroupComponent from "./RadioGroupComponent"
 
 type Props = {
     value: string | string[],
-    disabled?: boolean,
     setValue: (value: string | string[]) => void,
     error?: false | string,
     label: string,
     name: string,
-    focus?: boolean,
     multiple?: boolean,
     required?: boolean,
     showRequired?: boolean,
 }
 
 const weekDays = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+const radioWeekDays = weekDays.map((day) => ({label: day.charAt(0).toUpperCase() + day.slice(1), value: day}))
 
 export default function WeekdayFieldBox(
         {
@@ -23,8 +24,6 @@ export default function WeekdayFieldBox(
             setValue,
             error,
             label,
-            disabled = false,
-            focus = false,
             multiple = false,
             required = false,
             showRequired = false,
@@ -37,42 +36,31 @@ export default function WeekdayFieldBox(
                     <InputLabel name={name} label={label} required={required} showRequired={showRequired}/>
 
                     <div className="flex flex-col space-y-2 pt-3 pb-4">
-                        {multiple && Array.isArray(value) && weekDays.map((day, index) => (
+                        {multiple && Array.isArray(value) && weekDays.map((day) => (
                                 <div className="pl-4" key={day}>
-                                    <label className="flex flex-row space-x-4">
-                                        <input type="checkbox"
-                                               name={name}
-                                               disabled={disabled}
-                                               autoFocus={focus && index === 0}
-                                               value={day}
-                                               checked={value.includes(day)}
-                                               onChange={e => {
-                                                   if (e.target.checked) {
-                                                       setValue([...value, day])
-                                                   } else if (Array.isArray(value)) {
-                                                       setValue(value.filter(v => v !== day))
-                                                   }
-                                               }}/>
-                                        <span>{day.charAt(0).toUpperCase() + day.slice(1)}</span>
-                                    </label>
+                                    <CheckboxInput
+                                            name={`${name}-${day}`}
+                                            label={day.charAt(0).toUpperCase() + day.slice(1)}
+                                            checked={value.includes(day)}
+                                            onCheckedChanged={(status) => {
+                                                if (status) {
+                                                    setValue([...value, day])
+                                                } else if (Array.isArray(value)) {
+                                                    setValue(value.filter(v => v !== day))
+                                                }
+                                            }}
+                                    />
                                 </div>
                         ))}
 
-                        {!multiple && weekDays.map((day, index) => (
-                                <div className="pl-4" key={day}>
-                                    <label className="flex flex-row space-x-4">
-                                        <input type="radio"
-                                               name={name}
-                                               disabled={disabled}
-                                               autoFocus={focus && index === 0}
-                                               value={day}
-                                               checked={value.includes(day)}
-                                               onChange={() => setValue(day)}
-                                        />
-                                        <span>{day.charAt(0).toUpperCase() + day.slice(1)}</span>
-                                    </label>
+                        {!multiple && (<div className="pl-4">
+                                    <RadioGroupComponent
+                                            name={name}
+                                            values={radioWeekDays}
+                                            onChange={setValue}
+                                    />
                                 </div>
-                        ))}
+                        )}
                     </div>
 
                     {error && <p className="text-red-500 text-xs mb-4 mx-4">{error}</p>}

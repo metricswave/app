@@ -1,7 +1,7 @@
 import {useAuthState} from "../../storage/AuthToken"
 import * as Select from "@radix-ui/react-select"
 import {useNavigate} from "react-router-dom"
-import CheckIcon from "../../components/icons/CheckIcon"
+import {CheckIcon} from "@radix-ui/react-icons"
 import ChevronUpIcon from "../../components/icons/ChevronUpIcon"
 import ChevronDownIcon from "../../components/icons/ChevronDownIcon"
 

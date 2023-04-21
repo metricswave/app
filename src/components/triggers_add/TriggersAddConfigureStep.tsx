@@ -53,7 +53,7 @@ export const TriggersAddConfigureStep = ({triggerType, back, onTriggerCreated: t
                     </Dialog.Title>
 
                     <Dialog.Description className="mt-2 mb-6 opacity-70">
-                        Set a title, a description, and emoji and configure your trigger type.
+                        Set title, content, emoji, and configure your trigger parameters to create your notification.
                     </Dialog.Description>
                 </div>
 

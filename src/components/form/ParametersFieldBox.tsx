@@ -47,9 +47,11 @@ export default function ParametersFieldBox(
 
                     <p className={`text-xs opacity-50 pt-2 px-4 leading-normal ` + (error ? "pb-2" : "pb-4")}>
                         Add on parameter per line, you can use this parameters in the notification title or content. For
-                        example, if you add a <code className="bg-gray-100 rounded-sm py-0.5 px-1">email</code> param,
-                        you can add in the title
-                        <code className="bg-gray-100 rounded-sm py-0.5 px-1">{"{email}"}</code> and it will be replaced.
+                        example, if you add
+                        a <code className="bg-gray-100 dark:bg-gray-700 rounded-sm p-0.5">email</code> param,
+                        you can add in the
+                        title <code className="bg-gray-100 dark:bg-gray-700 rounded-sm p-0.5">{"{email}"}</code> and it
+                        will be replaced.
                     </p>
 
                     {error && <p className="text-red-500 text-xs mb-4 mx-4">{error}</p>}
