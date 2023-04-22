@@ -7,6 +7,7 @@ import {DeviceName} from "../storage/DeviceName"
 import {fetchApi} from "../helpers/ApiFetcher"
 import {Tokens} from "../types/Token"
 import FormErrorMessage from "../components/form/FormErrorMessage"
+import {app} from "../config/app"
 
 export default function SignUp() {
     const [name, setName] = useState("")
@@ -95,51 +96,59 @@ export default function SignUp() {
     }
 
     return (
-        <Authentication
-            footer={
-                <p className="text-sm">
-                    Already have an account? <LinkButton href="/auth/login" text="Log In →"/>
-                </p>
-            }>
-            <form onSubmit={handleSubmit} className="mt-8">
-                <div className="flex flex-col space-y-4">
-                    <InputFieldBox value={name}
-                                   setValue={setName}
-                                   focus
-                                   error={errors.name}
-                                   name="name"
-                                   placeholder="John Doe"
-                                   label="Name"/>
+            <Authentication
+                    footer={
+                        <p className="text-sm">
+                            Already have an account? <LinkButton href="/auth/login" text="Log In →"/>
+                        </p>
+                    }>
+                <form onSubmit={handleSubmit} className="mt-8">
+                    <div className="flex flex-col space-y-4">
+                        <div className="text-sm pb-3 leading-relaxed flex flex-col space-y-2">
+                            <p className="font-bold">For now, we still in closed beta.</p>
+                            <p className="text-sm">Only paying users can create an account right now and access the
+                                application. <LinkButton
+                                        href={`${app.web}/documentation/closed-beta`}
+                                        text="More information can be found here."/></p>
+                        </div>
 
-                    <InputFieldBox value={email}
-                                   setValue={setEmail}
-                                   error={errors.email}
-                                   type="email"
-                                   name="email"
-                                   placeholder="john-doe@email.com"
-                                   label="Email"/>
+                        <InputFieldBox value={name}
+                                       setValue={setName}
+                                       focus
+                                       error={errors.name}
+                                       name="name"
+                                       placeholder="John Doe"
+                                       label="Name"/>
 
-                    <InputFieldBox value={password}
-                                   setValue={setPassword}
-                                   error={errors.password}
-                                   type="password"
-                                   name="password"
-                                   placeholder="Password"
-                                   label="Password"/>
+                        <InputFieldBox value={email}
+                                       setValue={setEmail}
+                                       error={errors.email}
+                                       type="email"
+                                       name="email"
+                                       placeholder="john-doe@email.com"
+                                       label="Email"/>
 
-                    <InputFieldBox value={passwordConfirmation}
-                                   setValue={setPasswordConfirmation}
-                                   error={errors.passwordConfirmation}
-                                   type="password"
-                                   name="password_confirmation"
-                                   placeholder="Confirm password"
-                                   label="Confirm password"/>
+                        <InputFieldBox value={password}
+                                       setValue={setPassword}
+                                       error={errors.password}
+                                       type="password"
+                                       name="password"
+                                       placeholder="Password"
+                                       label="Password"/>
 
-                    <FormErrorMessage error={formError}/>
+                        <InputFieldBox value={passwordConfirmation}
+                                       setValue={setPasswordConfirmation}
+                                       error={errors.passwordConfirmation}
+                                       type="password"
+                                       name="password_confirmation"
+                                       placeholder="Confirm password"
+                                       label="Confirm password"/>
 
-                    <PrimaryButton text="Sign Up" loading={loading}/>
-                </div>
-            </form>
-        </Authentication>
+                        <FormErrorMessage error={formError}/>
+
+                        <PrimaryButton text="Sign Up" loading={loading}/>
+                    </div>
+                </form>
+            </Authentication>
     )
 }
