@@ -107,9 +107,8 @@ export default function SignUp() {
                         <div className="text-sm pb-3 leading-relaxed flex flex-col space-y-2">
                             <p className="font-bold">For now, we still in closed beta.</p>
                             <p className="text-sm">Only paying users can create an account right now and access the
-                                application. <LinkButton
-                                        href={`${app.web}/documentation/closed-beta`}
-                                        text="More information can be found here."/></p>
+                                application. <LinkButton target="_blank" href={`${app.web}/documentation/closed-beta`}
+                                                         text="More information can be found here."/></p>
                         </div>
 
                         <InputFieldBox value={name}
