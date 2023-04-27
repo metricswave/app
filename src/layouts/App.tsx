@@ -7,6 +7,7 @@ import {useAuthState} from "../storage/AuthToken"
 import NavigationItems from "../components/navigation/NavigationItems"
 import MobileNavigationItems from "../components/navigation/MobileNavigationItems"
 import SettingsIcon from "../components/icons/SettingsIcon"
+import * as amplitude from "@amplitude/analytics-browser"
 
 export default function App() {
     const {isAuth} = useAuthState()
@@ -15,6 +16,15 @@ export default function App() {
     if (expired || !isAuth) {
         return <Navigate to="/auth/signup"/>
     }
+
+    amplitude.init("4e2324f891c91461b816f3a7f41b6da6", undefined, {
+        defaultTracking: {
+            sessions: true,
+            pageViews: true,
+            formInteractions: true,
+            fileDownloads: true,
+        },
+    })
 
     return (
             <AuthContext.Provider value={{user}}>

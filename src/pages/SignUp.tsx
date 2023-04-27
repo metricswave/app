@@ -8,6 +8,7 @@ import {fetchApi} from "../helpers/ApiFetcher"
 import {Tokens} from "../types/Token"
 import FormErrorMessage from "../components/form/FormErrorMessage"
 import {app} from "../config/app"
+import eventTracker from "../helpers/EventTracker"
 
 export default function SignUp() {
     const [name, setName] = useState("")
@@ -65,6 +66,7 @@ export default function SignUp() {
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault()
+        eventTracker.track("Sign Up")
 
         if (!isValid()) return
 

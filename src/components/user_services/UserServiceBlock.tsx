@@ -61,7 +61,9 @@ export default function UserServiceBlock({userService, service, onDeleted: delet
                                         onConfirm={deleteService}
                                         confirmButton="Yes, delete"
                                 >
-                                    <DeleteNoLinkButton text={"Remove"} loading={loading}/>
+                                    <div>
+                                        <DeleteNoLinkButton text={"Remove"} loading={loading}/>
+                                    </div>
                                 </AlertDialogComponent>
                             </div>
                         </div>

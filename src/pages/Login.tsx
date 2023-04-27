@@ -9,6 +9,7 @@ import {DeviceName} from "../storage/DeviceName"
 import FormErrorMessage from "../components/form/FormErrorMessage"
 import {useNavigate} from "react-router-dom"
 import {useAuthState} from "../storage/AuthToken"
+import eventTracker from "../helpers/EventTracker"
 
 export default function Login() {
     const navigate = useNavigate()
@@ -49,6 +50,7 @@ export default function Login() {
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault()
+        eventTracker.track("Login")
 
         if (!isValid()) return
 
@@ -80,38 +82,38 @@ export default function Login() {
     }
 
     return (
-        <Authentication footer={
-            <>
-                <p className="text-sm">
-                    Forgot your password? <LinkButton href="/auth/forgot-password" text="Reset Password →"/>
-                </p>
-                <p className="text-sm">
-                    Do not have an account? <LinkButton href="/auth/signup" text="Sign Up →"/>
-                </p>
-            </>
-        }>
-            <form onSubmit={handleSubmit} className="mt-8">
-                <div className="flex flex-col space-y-4">
-                    <InputFieldBox value={email}
-                                   focus
-                                   setValue={setEmail}
-                                   label="Email"
-                                   name="email"
-                                   placeholder="john-doe@email.com"
-                                   type="email"/>
+            <Authentication footer={
+                <>
+                    <p className="text-sm">
+                        Forgot your password? <LinkButton href="/auth/forgot-password" text="Reset Password →"/>
+                    </p>
+                    <p className="text-sm">
+                        Do not have an account? <LinkButton href="/auth/signup" text="Sign Up →"/>
+                    </p>
+                </>
+            }>
+                <form onSubmit={handleSubmit} className="mt-8">
+                    <div className="flex flex-col space-y-4">
+                        <InputFieldBox value={email}
+                                       focus
+                                       setValue={setEmail}
+                                       label="Email"
+                                       name="email"
+                                       placeholder="john-doe@email.com"
+                                       type="email"/>
 
-                    <InputFieldBox value={password}
-                                   setValue={setPassword}
-                                   label="Password"
-                                   name="password"
-                                   placeholder="Password"
-                                   type="password"/>
+                        <InputFieldBox value={password}
+                                       setValue={setPassword}
+                                       label="Password"
+                                       name="password"
+                                       placeholder="Password"
+                                       type="password"/>
 
-                    <FormErrorMessage error={formError}/>
+                        <FormErrorMessage error={formError}/>
 
-                    <PrimaryButton text="Log In" loading={loading}/>
-                </div>
-            </form>
-        </Authentication>
+                        <PrimaryButton text="Log In" loading={loading}/>
+                    </div>
+                </form>
+            </Authentication>
     )
 }

@@ -47,6 +47,11 @@ export default function Services() {
 
                     {userServices.map((userService) => {
                         const service = services.find((service) => service.id === userService.service_id)!
+
+                        if (service === undefined) {
+                            return (<div key={userService.id}></div>)
+                        }
+
                         return (<UserServiceBlock
                                 key={userService.id}
                                 userService={userService}

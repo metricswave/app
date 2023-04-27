@@ -1,7 +1,9 @@
-const isProduction = process.env.NODE_ENV === "production"
+const isProduction = process.env.NODE_ENV === "production" || true
 
 export const app = {
     name: "NotifyWave",
+    env: process.env.NODE_ENV,
+    isProduction,
     web: isProduction ?
         "https://notifywave.com" :
         "http://notifywave.test",

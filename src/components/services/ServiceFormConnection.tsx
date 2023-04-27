@@ -41,10 +41,11 @@ export default function ServiceFormConnection({service, onCreated: created}: Pro
         })
     }
 
-    const renderDynamicField = (field: FormServiceField, focus: boolean = false) => {
+    const renderDynamicField = (field: FormServiceField, index: number = 0) => {
         return (
                 <InputFieldBox
-                        focus={focus}
+                        key={index}
+                        focus={index === 0}
                         value={values[field.name]}
                         setValue={(value) => {
                             setValues({...values, [field.name]: value})
@@ -78,7 +79,7 @@ export default function ServiceFormConnection({service, onCreated: created}: Pro
                     </div>
 
                     {service.configuration.form.fields.map((field, index) => {
-                        return renderDynamicField(field, index === 0)
+                        return renderDynamicField(field, index)
                     })}
 
                     <PrimaryButton
