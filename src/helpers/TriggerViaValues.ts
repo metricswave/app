@@ -14,7 +14,7 @@ export const mergeDefaultWithTriggerViaValues = (userServices: UserService[], tr
         })
 
     return uniqueArrayValues([
-        ...trigger ? trigger.via : [],
+        ...trigger && trigger.via !== null ? trigger.via : [],
         {value: "mail", label: "Mail", checked: false, type: "mail"},
         ...telegramChannelsVia,
     ])

@@ -13,7 +13,7 @@ type Props = {
 
 export const TriggersAddConfigureStep = ({triggerType, back, onTriggerCreated: triggerCreated}: Props) => {
     const handleSubmit: TriggerFormSubmit = async (
-            {emoji, title, content, values},
+            {emoji, title, content, values, via},
     ) => {
         // todo: validate fields
 
@@ -27,6 +27,7 @@ export const TriggersAddConfigureStep = ({triggerType, back, onTriggerCreated: t
                 "emoji": emoji.native,
                 title,
                 content,
+                via,
                 "configuration": {
                     fields: values,
                     version: triggerType.configuration.version,
