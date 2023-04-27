@@ -2,6 +2,7 @@ import React from "react"
 import PageTitle from "../components/sections/PageTitle"
 import SectionContainer from "../components/sections/SectionContainer"
 import {useNotificationsStage} from "../storage/Notifications"
+import DateJs from "../helpers/DateJs"
 
 export default function Notifications() {
     const {notifications} = useNotificationsStage()
@@ -23,7 +24,13 @@ export default function Notifications() {
 
                                         <div className="flex flex-col items-start space-y-1">
                                             <h2 className="font-bold">{notification.data.title}</h2>
-                                            <p className="text-sm opacity-70">Today at 10:30</p>
+
+                                            <p
+                                                    title={DateJs.toRfc(notification.created_at)}
+                                                    className="text-sm opacity-70 cursor-help"
+                                            >
+                                                {DateJs.relative(notification.created_at)}
+                                            </p>
                                         </div>
                                     </div>
 
