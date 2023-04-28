@@ -1,10 +1,10 @@
-import React from "react"
+import React, {useState} from "react"
 import InputLabel from "./InputLabel"
 
 type Props = {
-    value: string,
+    value: string[],
     disabled?: boolean,
-    setValue: (value: string) => void,
+    setValue: (value: string[]) => void,
     error?: false | string,
     label: string,
     focus?: boolean,
@@ -28,6 +28,8 @@ export default function ParametersFieldBox(
             placeholder,
         }: Props,
 ) {
+    const [viewValue, setViewValue] = useState<string>(value.join("\n"))
+
     return (
             <>
                 <div className="flex flex-col border transition-all border-zinc-200/60 hover:border-zinc-200 focus-within:hover:border-zinc-300 focus-within:border-zinc-300 duration-300 dark:border-zinc-700/60 rounded-sm hover:dark:border-zinc-700 group focus-within:dark:border-zinc-600 hover:focus-within:dark:border-zinc-600">
@@ -35,12 +37,20 @@ export default function ParametersFieldBox(
                     <InputLabel name={name} label={label} required={required} showRequired={showRequired}/>
 
                     <textarea className={`pt-1 px-4 h-32 bg-transparent outline-none placeholder:opacity-70 pb-2`}
-                              onChange={e => setValue(e.target.value)}
+                              onChange={e => {
+                                  const fieldValue = e.target.value
+                                  setViewValue(fieldValue)
+                                  setValue(
+                                          fieldValue.split("\n")
+                                                  .map((line) => line.trim())
+                                                  .filter((line) => line !== ""),
+                                  )
+                              }}
                               name={name}
                               autoFocus={focus}
                               disabled={disabled}
                               id={name}
-                              value={value}
+                              value={viewValue}
                               required={required}
                               placeholder={placeholder}
                     />

@@ -1,4 +1,4 @@
-const isProduction = process.env.NODE_ENV === "production" || true
+const isProduction = process.env.NODE_ENV === "production"
 
 export const app = {
     name: "NotifyWave",

@@ -10,8 +10,10 @@ import {useParams} from "react-router-dom"
 import TriggerDetails from "../components/triggers/TriggerDetails"
 import {useTriggerTypesState} from "../storage/TriggerTypes"
 import eventTracker from "../helpers/EventTracker"
+import {useUserServicesState} from "../storage/UserServices"
 
 export default function Triggers() {
+    useUserServicesState()
     const [triggerUuid, setTriggerUuid] = React.useState<string | undefined>(
             useParams().triggerUuid as string | undefined,
     )

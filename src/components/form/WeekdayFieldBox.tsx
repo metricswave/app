@@ -39,7 +39,7 @@ export default function WeekdayFieldBox(
                         {multiple && Array.isArray(value) && weekDays.map((day) => (
                                 <div className="pl-4" key={day}>
                                     <CheckboxInput
-                                            name={name}
+                                            name={name + "_" + day}
                                             label={day.charAt(0).toUpperCase() + day.slice(1)}
                                             checked={value.includes(day)}
                                             onCheckedChanged={(status) => {
