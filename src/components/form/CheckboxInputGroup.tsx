@@ -32,7 +32,7 @@ export default function CheckboxInputGroup(
                     <div className="flex flex-col space-y-2 pt-3 pb-4">
 
                         {values.map(({value, label, checked}) => (
-                                <div key={`${name}_${value}`} className="flex items-center pl-4">
+                                <div key={`${name}_${value}`} className="flex items-start pl-4">
                                     <Checkbox.Root
                                             className="smooth flex h-[25px] w-[25px] appearance-none items-center justify-center rounded-sm bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 hover:dark:bg-zinc-700 outline-none"
                                             checked={checked}
@@ -52,7 +52,7 @@ export default function CheckboxInputGroup(
                                             <CheckIcon className="h-[20px] w-[20px]"/>
                                         </Checkbox.Indicator>
                                     </Checkbox.Root>
-                                    <label className="pl-[15px] leading-none w-full" htmlFor={`${name}_${value}`}>
+                                    <label className="pl-[15px] w-full" htmlFor={`${name}_${value}`}>
                                         {label}
                                     </label>
                                 </div>

@@ -21,7 +21,7 @@ export default function CheckboxInput({name, label, checked, onCheckedChanged: c
                         <CheckIcon className="h-[20px] w-[20px]"/>
                     </Checkbox.Indicator>
                 </Checkbox.Root>
-                <label className="pl-[15px] leading-none w-full" htmlFor={name}>
+                <label className="py-1 pl-[15px] leading-none w-full" htmlFor={name}>
                     {label}
                 </label>
             </div>

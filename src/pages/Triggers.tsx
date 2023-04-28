@@ -11,6 +11,7 @@ import TriggerDetails from "../components/triggers/TriggerDetails"
 import {useTriggerTypesState} from "../storage/TriggerTypes"
 import eventTracker from "../helpers/EventTracker"
 import {useUserServicesState} from "../storage/UserServices"
+import TriggersPageEmptyState from "./TriggersPageEmptyState"
 
 export default function Triggers() {
     useUserServicesState()
@@ -20,9 +21,39 @@ export default function Triggers() {
     const {triggers, refreshTriggers, triggerByUuid} = useTriggersState()
     const {getTriggerTypeById} = useTriggerTypesState()
 
+    if (triggers.length === 0 || true) {
+        return <TriggersPageEmptyState>
+            {/* Add triggers dialog */}
+            <DialogComponent onOpenChange={status => {
+                if (status) {
+                    eventTracker.track("Add Trigger")
+                }
+            }} button={
+                <div className="border soft-border rounded-sm p-4 flex flex-col space-y-4 items-center hover:bg-[var(--background-50-color)] smooth cursor-pointer">
+                    <NoLinkButton text="Add trigger"/>
+                </div>
+            }>
+                <TriggersAdd onLastStep={refreshTriggers}/>
+            </DialogComponent>
+        </TriggersPageEmptyState>
+    }
+
     return (
             <SectionContainer>
                 <PageTitle title="Triggers"/>
+
+                {/* Add triggers dialog */}
+                <DialogComponent onOpenChange={status => {
+                    if (status) {
+                        eventTracker.track("Add Trigger")
+                    }
+                }} button={
+                    <div className="border soft-border rounded-sm p-4 flex flex-col space-y-4 items-center hover:bg-[var(--background-50-color)] smooth cursor-pointer">
+                        <NoLinkButton text="Add trigger"/>
+                    </div>
+                }>
+                    <TriggersAdd onLastStep={refreshTriggers}/>
+                </DialogComponent>
 
                 <div className="flex flex-col space-y-6">
                     {triggers.map((trigger) => (
@@ -36,7 +67,7 @@ export default function Triggers() {
                 </div>
 
                 {/* View trigger dialog */}
-                {triggerUuid !== undefined && triggerByUuid(triggerUuid) !== undefined &&
+                {triggerUuid !== undefined && triggerByUuid(triggerUuid!) !== undefined &&
                         <DialogComponent
                                 open={true}
                                 onOpenChange={(state) => {
@@ -54,18 +85,6 @@ export default function Triggers() {
                         </DialogComponent>
                 }
 
-                {/* Add triggers dialog */}
-                <DialogComponent onOpenChange={status => {
-                    if (status) {
-                        eventTracker.track("Add Trigger")
-                    }
-                }} button={
-                    <div className="border soft-border rounded-sm p-4 flex flex-col space-y-4 items-center hover:bg-[var(--background-50-color)] smooth cursor-pointer">
-                        <NoLinkButton text="Add trigger"/>
-                    </div>
-                }>
-                    <TriggersAdd onLastStep={refreshTriggers}/>
-                </DialogComponent>
             </SectionContainer>
     )
 }
