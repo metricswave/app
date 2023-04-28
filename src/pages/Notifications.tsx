@@ -3,9 +3,14 @@ import PageTitle from "../components/sections/PageTitle"
 import SectionContainer from "../components/sections/SectionContainer"
 import {useNotificationsStage} from "../storage/Notifications"
 import DateJs from "../helpers/DateJs"
+import NotificationsPageEmptyState from "./NotificationsPageEmptyState"
 
 export default function Notifications() {
     const {notifications} = useNotificationsStage()
+
+    if (notifications.length === 0) return (
+            <NotificationsPageEmptyState/>
+    )
 
     return (
             <>

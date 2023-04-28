@@ -21,7 +21,7 @@ export default function Triggers() {
     const {triggers, refreshTriggers, triggerByUuid} = useTriggersState()
     const {getTriggerTypeById} = useTriggerTypesState()
 
-    if (triggers.length === 0 || true) {
+    if (triggers.length === 0) {
         return <TriggersPageEmptyState>
             {/* Add triggers dialog */}
             <DialogComponent onOpenChange={status => {
