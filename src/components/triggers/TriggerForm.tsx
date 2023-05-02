@@ -11,6 +11,7 @@ import {TriggerType, TriggerTypeField} from "../../types/TriggerType"
 import CheckboxInputGroup, {CheckboxGroupValue} from "../form/CheckboxInputGroup"
 import {useUserServicesState} from "../../storage/UserServices"
 import {mergeDefaultWithTriggerViaValues} from "../../helpers/TriggerViaValues"
+import LocationFieldBox, {LocationValue} from "../form/LocationFieldBox"
 
 type Props = {
     onSubmit: TriggerFormSubmit,
@@ -22,7 +23,7 @@ export type TriggerFormSubmit = (params: {
     emoji: Emoji,
     title: string,
     content: string,
-    values: { [key: string]: string | string[] }
+    values: { [key: string]: string | string[] | LocationValue },
     via: Array<TriggerVia>
 }) => Promise<void>
 
@@ -39,11 +40,11 @@ export default function TriggerForm(
     const [emoji, setEmoji] = useState<Emoji>(trigger ? emojiFromNative(trigger.emoji) : BellEmoji)
     const [title, setTitle] = useState<string>(trigger ? trigger.title : "")
     const [content, setContent] = useState<string>(trigger ? trigger.content : "")
-    const [values, setValues] = useState<{ [key: string]: string | string[] }>(
+    const [values, setValues] = useState<{ [key: string]: string | string[] | LocationValue }>(
             trigger ?
                     trigger.configuration.fields :
                     triggerType.configuration.fields.reduce((acc, field) => {
-                        acc[field.name] = field.multiple ? [] : ""
+                        acc[field.name] = field.default ?? (field.multiple ? [] : "")
                         return acc
                     }, {} as { [key: string]: string | string[] }),
     )
@@ -63,10 +64,23 @@ export default function TriggerForm(
 
     const renderDynamicField = (field: TriggerTypeField): ReactElement => {
         switch (field.type) {
+            case "location":
+                return (<div key={field.name}>
+                    <LocationFieldBox
+                            value={values[field.name] as LocationValue}
+                            setValue={(value) => {
+                                setValues({...values, [field.name]: value})
+                            }}
+                            label={field.label}
+                            name={field.name}
+                            required={field.required}
+                            showRequired
+                    />
+                </div>)
             case "weekdays":
                 return (<div key={field.name}>
                     <WeekdayFieldBox
-                            value={values[field.name]}
+                            value={values[field.name] as string[]}
                             setValue={(value) => {
                                 setValues({...values, [field.name]: value})
                             }}

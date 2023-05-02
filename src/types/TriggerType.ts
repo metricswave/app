@@ -15,4 +15,5 @@ export type TriggerTypeField = {
     required: boolean
     multiple: boolean
     type: string
+    default?: string
 }
