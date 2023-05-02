@@ -4,6 +4,7 @@ import SectionContainer from "../components/sections/SectionContainer"
 import {useNotificationsStage} from "../storage/Notifications"
 import DateJs from "../helpers/DateJs"
 import NotificationsPageEmptyState from "./NotificationsPageEmptyState"
+import ReactMarkdown from "react-markdown"
 
 export default function Notifications() {
     const {notifications} = useNotificationsStage()
@@ -39,8 +40,10 @@ export default function Notifications() {
                                         </div>
                                     </div>
 
-                                    <div className="">
-                                        <p>{notification.data.content}</p>
+                                    <div className="prose dark:prose-invert prose-p:my-0.5">
+                                        <ReactMarkdown>
+                                            {notification.data.content.replaceAll("\n", "\n\n")}
+                                        </ReactMarkdown>
                                     </div>
                                 </div>
                         )
