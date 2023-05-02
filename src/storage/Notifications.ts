@@ -14,7 +14,7 @@ export function useNotificationsStage() {
         expirableLocalStorage.get(NOTIFICATIONS_KEY, []),
     )
 
-    useEffect(() => {
+    const reloadNotifications = () => {
         if (notifications.length > 0 && isFresh) {
             return
         }
@@ -30,7 +30,16 @@ export function useNotificationsStage() {
             error: (data) => setIsFresh(false),
             catcher: (err) => setIsFresh(false),
         })
+    }
+
+    useEffect(() => {
+        reloadNotifications()
     }, [isFresh])
+
+    useEffect(() => {
+        const interval = setInterval(reloadNotifications, FIVE_SECONDS * 1000)
+        return () => clearInterval(interval)
+    }, [])
 
     return {
         notifications,
