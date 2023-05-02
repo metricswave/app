@@ -43,8 +43,9 @@ export default function TriggerDetails({trigger, onDeleted: deleted, onUpdate: u
                         all {listFormatter.format(trigger.configuration.fields.weekdays)} at {trigger.configuration.fields.time}.
                     </p>
 
-                    <p className="pb-1">
+                    <p className="pt-2">
                         <LinkButton href={`${app.web}/documentation/triggers/on-time`}
+                                    target="_blank"
                                     text="More info about On Time triggers."/>
                     </p>
                 </>)
@@ -77,6 +78,20 @@ export default function TriggerDetails({trigger, onDeleted: deleted, onUpdate: u
                     </div>
 
                 </div>)
+            case TriggerType.WeatherSummary:
+                return (<>
+                    <p>
+                        You will receive a notification
+                        all {listFormatter.format(trigger.configuration.fields.weekdays)} at {trigger.configuration.fields.time} with
+                        a summary about that days weather.
+                    </p>
+
+                    <p className="pt-2">
+                        <LinkButton href={`${app.web}/documentation/triggers/weather-summary`}
+                                    target="_blank"
+                                    text="More info about Weather Summary triggers."/>
+                    </p>
+                </>)
             default:
                 return (<></>)
         }

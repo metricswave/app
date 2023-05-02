@@ -1,6 +1,9 @@
+import {LocationValue} from "../components/form/LocationFieldBox"
+
 export enum TriggerType {
     Webhook = 1,
     OnTime = 2,
+    WeatherSummary = 3,
 }
 
 export type Trigger = {
@@ -27,6 +30,21 @@ export type Trigger = {
     configuration: {
         fields: {
             parameters: Array<string>,
+        }
+    }
+    via: TriggerVia[]
+} | {
+    id: string
+    uuid: string
+    emoji: string
+    title: string
+    content: string
+    trigger_type_id: TriggerType.WeatherSummary
+    configuration: {
+        fields: {
+            weekdays: string[],
+            time: string,
+            location: LocationValue,
         }
     }
     via: TriggerVia[]

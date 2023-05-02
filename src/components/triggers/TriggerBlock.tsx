@@ -2,6 +2,7 @@ import React from "react"
 import {Trigger} from "../../types/Trigger"
 import BlockContainer from "../sections/BlockContainer"
 import {TriggerType} from "../../types/TriggerType"
+import ReactMarkdown from "react-markdown"
 
 type Props = {
     trigger: Trigger,
@@ -31,7 +32,11 @@ export default function TriggerBlock({trigger, triggerType, onClick: click}: Pro
                             {trigger.title}
                         </h3>
 
-                        <p className="text-sm">{trigger.content}</p>
+                        <div className="prose-sm dark:prose-invert prose-p:my-0.5">
+                            <ReactMarkdown>
+                                {trigger.content.replaceAll("\n", "\n\n")}
+                            </ReactMarkdown>
+                        </div>
 
                         {triggerType !== undefined &&
                                 <div className="flex flex-row items-center space-x-2 mt-4 w-full text-sm">
