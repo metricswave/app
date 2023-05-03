@@ -29,5 +29,8 @@ export function useServicesState() {
         })
     }, [isFresh])
 
-    return {services, reloadServices: () => setIsFresh(false)}
+    return {
+        services: services.filter(s => s.driver !== "google"),
+        reloadServices: () => setIsFresh(false)
+    }
 }

@@ -10,7 +10,7 @@ import DisconnectedService from "../components/services/DisconnectedService"
 import UserServiceBlock from "../components/user_services/UserServiceBlock"
 
 export default function Services() {
-    const {services, reloadServices} = useServicesState()
+    const {services} = useServicesState()
     const {userServices, reloadUserServices} = useUserServicesState()
     const [loading, setLoading] = useState<false | string>(false)
     const [searchParams] = useSearchParams()
