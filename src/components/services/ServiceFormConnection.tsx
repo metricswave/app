@@ -6,6 +6,7 @@ import {useState} from "react"
 import PrimaryButton from "../form/PrimaryButton"
 import {LinkButton} from "../buttons/LinkButton"
 import {fetchAuthApi} from "../../helpers/ApiFetcher"
+import {app} from "../../config/app"
 
 type Props = {
     service: FormService,
