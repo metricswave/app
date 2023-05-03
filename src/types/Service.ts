@@ -22,8 +22,8 @@ export type FormServiceField = {
     type: "input"
     label: string
     placeholder: string
-    required: boolean
-    validation: {
+    required?: boolean
+    validation?: {
         max_value?: number
         min_length?: number
         type?: "integer"

@@ -1,4 +1,4 @@
-import {DAY_SECONDS, expirableLocalStorage} from "../helpers/ExpirableLocalStorage"
+import {expirableLocalStorage, TEN_MINUTES_SECONDS} from "../helpers/ExpirableLocalStorage"
 import {useEffect, useState} from "react"
 import {Service} from "../types/Service"
 import {fetchAuthApi} from "../helpers/ApiFetcher"
@@ -22,7 +22,7 @@ export function useServicesState() {
                 setServices(data.data.services)
                 setIsFresh(true)
                 expirableLocalStorage.set(SERVICES_KEY, data.data.services)
-                expirableLocalStorage.set(SERVICES_REFRESH_KEY, true, DAY_SECONDS)
+                expirableLocalStorage.set(SERVICES_REFRESH_KEY, true, TEN_MINUTES_SECONDS)
             },
             error: (data) => setIsFresh(false),
             catcher: (data) => setIsFresh(false),
@@ -31,6 +31,6 @@ export function useServicesState() {
 
     return {
         services: services.filter(s => s.driver !== "google"),
-        reloadServices: () => setIsFresh(false)
+        reloadServices: () => setIsFresh(false),
     }
 }

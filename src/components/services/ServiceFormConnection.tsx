@@ -37,21 +37,23 @@ export default function ServiceFormConnection({service, onCreated: created}: Pro
                 return
             }
 
-            if (field.validation.type === "integer" && !Number.isInteger(Number(values[field.name]))) {
-                errors[field.name] = "This field should be a number"
-                return
-            }
+            if (field.validation !== undefined) {
+                if (field.validation.type === "integer" && !Number.isInteger(Number(values[field.name]))) {
+                    errors[field.name] = "This field should be a number"
+                    return
+                }
 
-            if (field.validation.min_length && values[field.name].length < field.validation.min_length) {
-                errors[field.name] = "This field should be at least " + field.validation.min_length + " characters"
-                return
-            }
+                if (field.validation.min_length && values[field.name].length < field.validation.min_length) {
+                    errors[field.name] = "This field should be at least " + field.validation.min_length + " characters"
+                    return
+                }
 
-            if (field.validation.max_value !== undefined && Number(values[field.name]) > field.validation.max_value) {
-                errors[field.name] = field.validation.max_value === 0 ?
-                        "This field should be negative" :
-                        "This field should be at most " + field.validation.max_value
-                return
+                if (field.validation.max_value !== undefined && Number(values[field.name]) > field.validation.max_value) {
+                    errors[field.name] = field.validation.max_value === 0 ?
+                            "This field should be negative" :
+                            "This field should be at most " + field.validation.max_value
+                    return
+                }
             }
         })
 
