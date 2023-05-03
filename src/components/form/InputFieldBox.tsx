@@ -1,7 +1,7 @@
-import React from "react"
+import React, {InputHTMLAttributes} from "react"
 import InputLabel from "./InputLabel"
 
-type Props = {
+type Props = InputHTMLAttributes<any> & {
     value: string,
     disabled?: boolean,
     setValue: (value: string) => void,
@@ -28,6 +28,7 @@ export default function InputFieldBox(
             required = false,
             showRequired = false,
             placeholder,
+            ...props
         }: Props,
 ) {
     return (
@@ -45,7 +46,9 @@ export default function InputFieldBox(
                            disabled={disabled}
                            id={name}
                            required={required}
-                           placeholder={placeholder}/>
+                           placeholder={placeholder}
+                           {...props}
+                    />
 
                     {error && <p className="text-red-500 text-xs mb-4 mx-4">{error}</p>}
 
