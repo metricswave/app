@@ -21,9 +21,47 @@ export default function ServiceFormConnection({service, onCreated: created}: Pro
                 return acc
             }, {} as { [key: string]: string }),
     )
+    const [errors, setErrors] = useState<{ [key: string]: string }>(
+            service.configuration.form.fields.reduce((acc, field) => {
+                acc[field.name] = ""
+                return acc
+            }, {} as { [key: string]: string }),
+    )
+
+    const isValid = (): boolean => {
+        let errors: { [key: string]: string } = {}
+
+        service.configuration.form.fields.forEach((field) => {
+            if (field.required && values[field.name] === "") {
+                errors[field.name] = "This field is required"
+                return
+            }
+
+            if (field.validation.type === "integer" && !Number.isInteger(Number(values[field.name]))) {
+                errors[field.name] = "This field should be a number"
+                return
+            }
+
+            if (field.validation.min_length && values[field.name].length < field.validation.min_length) {
+                errors[field.name] = "This field should be at least " + field.validation.min_length + " characters"
+                return
+            }
+
+            if (field.validation.max_value !== undefined && Number(values[field.name]) > field.validation.max_value) {
+                errors[field.name] = field.validation.max_value === 0 ?
+                        "This field should be negative" :
+                        "This field should be at most " + field.validation.max_value
+                return
+            }
+        })
+
+        setErrors(errors)
+
+        return Object.keys(errors).length === 0
+    }
 
     const handleSubmit = () => {
-        // todo: validate inputs
+        if (!isValid()) return
 
         setLoading(true)
 
@@ -51,6 +89,7 @@ export default function ServiceFormConnection({service, onCreated: created}: Pro
                         setValue={(value) => {
                             setValues({...values, [field.name]: value})
                         }}
+                        error={errors[field.name]}
                         label={field.label}
                         name={field.name}
                         placeholder={field.placeholder}
