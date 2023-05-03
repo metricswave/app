@@ -73,7 +73,7 @@ export default function ServiceFormConnection({service, onCreated: created}: Pro
 
                 <div className="flex flex-col space-y-4">
                     <div>
-                        <LinkButton href={service.configuration.form.help.href}
+                        <LinkButton href={`${app.web}${service.configuration.form.help.href}`}
                                     text={service.configuration.form.help.title}
                                     target="_blank"/>
                     </div>
