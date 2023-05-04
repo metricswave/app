@@ -42,7 +42,7 @@ export default function ParametersFieldBox(
                                   setViewValue(fieldValue)
                                   setValue(
                                           fieldValue.split("\n")
-                                                  .map((line) => line.trim())
+                                                  .map(line => line.trim().replaceAll("{", "").replaceAll("}", ""))
                                                   .filter((line) => line !== ""),
                                   )
                               }}
