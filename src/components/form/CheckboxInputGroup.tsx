@@ -8,6 +8,7 @@ type Props = {
     values: Array<CheckboxGroupValue>
     required?: boolean
     showRequired?: boolean
+    error?: false | string
     onCheckedChanged: (value: Array<CheckboxGroupValue>) => void
 }
 
@@ -20,6 +21,7 @@ export default function CheckboxInputGroup(
             required = false,
             showRequired = true,
             values,
+            error,
             onCheckedChanged: checkedChanged,
         }: Props,
 ) {
@@ -57,6 +59,8 @@ export default function CheckboxInputGroup(
                                     </label>
                                 </div>
                         ))}
+
+                        {error && <p className="text-red-500 text-xs pt-2 mb-4 mx-4">{error}</p>}
 
                     </div>
                 </div>

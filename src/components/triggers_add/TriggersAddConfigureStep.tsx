@@ -14,9 +14,8 @@ type Props = {
 export const TriggersAddConfigureStep = ({triggerType, back, onTriggerCreated: triggerCreated}: Props) => {
     const handleSubmit: TriggerFormSubmit = async (
             {emoji, title, content, values, via},
+            setErrors,
     ) => {
-        // todo: validate fields
-
         const uuid = generateUuid()
 
         fetchAuthApi("/triggers", {
@@ -37,7 +36,7 @@ export const TriggersAddConfigureStep = ({triggerType, back, onTriggerCreated: t
                 triggerCreated(uuid)
             },
             error: (error) => {
-                // todo: manage invalid form errors
+                setErrors(error.errors!)
             },
             catcher: (error) => {
             },

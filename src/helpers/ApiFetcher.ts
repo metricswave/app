@@ -6,7 +6,8 @@ type ApiResponse<T> = {
 }
 
 type ApiErrorResponse = {
-    message: string
+    message: string,
+    errors?: { [key: string]: string[] }
 }
 
 type ApiFetcherParams<T> = {

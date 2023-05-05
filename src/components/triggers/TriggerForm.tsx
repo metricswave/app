@@ -19,13 +19,16 @@ type Props = {
     triggerType: TriggerType,
 }
 
-export type TriggerFormSubmit = (params: {
-    emoji: Emoji,
-    title: string,
-    content: string,
-    values: { [key: string]: string | string[] | LocationValue },
-    via: Array<TriggerVia>
-}) => Promise<void>
+export type TriggerFormSubmit = (
+        params: {
+            emoji: Emoji,
+            title: string,
+            content: string,
+            values: { [key: string]: string | string[] | LocationValue },
+            via: Array<TriggerVia>,
+        },
+        setErrors: (errors: { [key: string]: string[] }) => void,
+) => Promise<void>
 
 export default function TriggerForm(
         {
@@ -48,7 +51,7 @@ export default function TriggerForm(
                         return acc
                     }, {} as { [key: string]: string | string[] }),
     )
-
+    const [errors, setErrors] = useState<{ [key: string]: string[] }>({})
     const [viaValues, setViaValues] = useState<Array<TriggerVia>>(
             mergeDefaultWithTriggerViaValues(userServices, trigger),
     )
@@ -57,8 +60,11 @@ export default function TriggerForm(
         event.preventDefault()
         event.stopPropagation()
 
+        setErrors({})
         setLoading(true)
-        await submit({emoji, title, content, values, via: viaValues})
+
+        await submit({emoji, title, content, values, via: viaValues}, setErrors)
+
         setLoading(false)
     }
 
@@ -136,6 +142,7 @@ export default function TriggerForm(
                             focus={true}
                             name="title"
                             placeholder="Notification Title"
+                            error={errors["title"] !== undefined ? errors["title"][0] : false}
                             required
                             showRequired
                     />
@@ -146,6 +153,7 @@ export default function TriggerForm(
                         setValue={setContent}
                         label="Content"
                         name="content"
+                        error={errors["content"] !== undefined ? errors["content"][0] : false}
                         placeholder="Notification Content"
                         required
                         showRequired
@@ -158,9 +166,26 @@ export default function TriggerForm(
                         onCheckedChanged={(values) => {
                             setViaValues(values as Array<TriggerVia>)
                         }}
+                        error={viaValues.filter((value) => value.checked).length === 0 ? "This trigger will not be sent to any channel" : false}
                 />
 
                 {triggerType.configuration.fields.map(renderDynamicField)}
+
+                {
+                        Object.keys(errors).length > 0
+                        && errors["configuration"] !== undefined
+                        && errors["configuration"].map((error, i) => (
+                                <p key={i} className="text-red-500 text-xs mb-4 mx-4">{error}</p>
+                        ))
+                }
+
+                {
+                        Object.keys(errors).length > 0
+                        && errors["configuration"] === undefined
+                        && (
+                                <p className="text-red-500 text-xs mb-4 mx-4">Fix form errors before continuing</p>
+                        )
+                }
 
                 <PrimaryButton
                         loading={loading}

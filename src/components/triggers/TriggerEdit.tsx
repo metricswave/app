@@ -17,6 +17,7 @@ export default function TriggerEdit({trigger, onBack: back, onUpdate: updated}: 
 
     const handleSubmit: TriggerFormSubmit = async (
             {emoji, title, content, values, via},
+            setErrors,
     ) => {
         fetchAuthApi(`/triggers/${trigger.uuid}`, {
             method: "PUT",
@@ -34,7 +35,9 @@ export default function TriggerEdit({trigger, onBack: back, onUpdate: updated}: 
                 updated()
                 back()
             },
-            error: (error) => null,
+            error: (error) => {
+                setErrors(error.errors!)
+            },
             catcher: (error) => null,
         })
     }
