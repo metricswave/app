@@ -1,6 +1,7 @@
 export const FIVE_SECONDS = 5
 export const THIRTY_SECONDS = 30
 export const TEN_MINUTES_SECONDS = 600
+export const FIFTEEN_MINUTES_SECONDS = 900
 export const DAY_SECONDS = 86400
 const ONE_MONTH_SECONDS = 2629746
 

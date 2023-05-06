@@ -32,9 +32,7 @@ export function useNotificationsStage() {
         })
     }
 
-    useEffect(() => {
-        reloadNotifications()
-    }, [isFresh])
+    useEffect(reloadNotifications, [isFresh])
 
     useEffect(() => {
         const interval = setInterval(reloadNotifications, FIVE_SECONDS * 1000)
