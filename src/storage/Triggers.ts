@@ -21,7 +21,7 @@ export function useTriggersState() {
 
         fetchAuthApi<{ triggers: Trigger[] }>("/triggers", {
             success: (data) => {
-                const t = data.data.triggers
+                const t = mapTriggers(data.data.triggers)
                 expirableLocalStorage.set(TRIGGER_REFRESH_KEY, true, THIRTY_SECONDS)
                 expirableLocalStorage.set(TRIGGER_KEY, t)
                 setTriggers(t)
@@ -31,6 +31,18 @@ export function useTriggersState() {
             catcher: (err) => setIsFresh(false),
         })
     }, [isFresh])
+
+    const mapTriggers = (triggers: Trigger[]) => {
+        return triggers.map((t: Trigger) => {
+            if ("time" in t.configuration.fields) {
+                const time = t.configuration.fields.time.split(":")
+                time[0] = (parseInt(time[0]) + (new Date().getTimezoneOffset() / 60) * -1).toString()
+                t.configuration.fields.time = time.join(":")
+            }
+
+            return t
+        })
+    }
 
     return {
         triggers,

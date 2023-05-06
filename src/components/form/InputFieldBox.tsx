@@ -37,7 +37,7 @@ export default function InputFieldBox(
 
                     <InputLabel name={name} label={label} required={required} showRequired={showRequired}/>
 
-                    <input className={`pt-1 px-4 bg-transparent outline-none placeholder:opacity-70 ` + (error ? "pb-2" : "pb-4")}
+                    <input className={`pt-1 px-4 bg-transparent outline-none placeholder:opacity-70 ` + (type === "time" || error ? "pb-2" : "pb-4")}
                            value={value}
                            onChange={e => setValue(e.target.value)}
                            type={type}
@@ -49,6 +49,10 @@ export default function InputFieldBox(
                            placeholder={placeholder}
                            {...props}
                     />
+
+                    {type === "time" && <p className={`text-xs opacity-60 px-4 ` + (error ? "pb-2" : "pb-4")}>
+                        Timezone: {Intl.DateTimeFormat().resolvedOptions().timeZone}
+                    </p>}
 
                     {error && <p className="text-red-500 text-xs mb-4 mx-4">{error}</p>}
 
