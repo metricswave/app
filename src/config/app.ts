@@ -13,4 +13,5 @@ export const app = {
     webhooks: isProduction ?
         "https://notifywave.com/webhooks" :
         "http://notifywave.test/webhooks",
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
 }

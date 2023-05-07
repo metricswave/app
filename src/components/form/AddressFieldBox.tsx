@@ -1,82 +1,69 @@
 import React, {useEffect} from "react"
 import InputLabel from "./InputLabel"
+import usePlacesAutocompleteService from "react-google-autocomplete/lib/usePlacesAutocompleteService"
+import {app} from "../../config/app"
 import * as ScrollArea from "@radix-ui/react-scroll-area"
 
-export type LocationValue = {
-    city: string,
-    country: string,
-    latitude: number,
-    longitude: number,
+export type AddressValue = {
+    address: string,
 }
 
 type Props = {
-    value: LocationValue | undefined,
-    setValue: (value: LocationValue) => void,
+    value: AddressValue | undefined
+    disabled?: boolean,
+    setValue: (value: AddressValue) => void,
     error?: false | string,
     label: string,
-    name: string,
+    focus?: boolean,
     required?: boolean,
     showRequired?: boolean,
-    focus?: boolean,
+    name: string,
+    placeholder: string
 }
 
-export default function LocationFieldBox(
+export default function AddressFieldBox(
         {
             value,
-            name,
             setValue,
             error,
             label,
+            name,
+            disabled = false,
+            focus = false,
             required = false,
             showRequired = false,
-            focus = false,
+            placeholder,
+            ...props
         }: Props,
 ) {
-    const [locations, setLocations] = React.useState<LocationValue[]>([])
-    const [visibleValue, setVisibleValue] = React.useState<string>(
-            value?.city !== undefined ? `${value.city}, ${value.country}` : "",
-    )
-    const [selected, setSelected] = React.useState<string>(
-            value?.city !== undefined ? `${value.city}, ${value.country}` : "",
-    )
+    const {
+        // placesService,
+        placePredictions,
+        getPlacePredictions,
+        // isPlacePredictionsLoading,
+    } = usePlacesAutocompleteService({
+        apiKey: app.googleMapsApiKey,
+    })
+    const [selected, setSelected] = React.useState<AddressValue | undefined>(value)
+    const [visibleValue, setVisibleValue] = React.useState<string>(value?.address ?? "")
+    const addresses = placePredictions.map((prediction) => ({
+        address: prediction.description,
+    }))
 
     useEffect(() => {
-        if (visibleValue.length < 3 || selected === visibleValue) {
-            setLocations([])
-            return
-        }
-
         const timeOutId = setTimeout(() => {
-            fetch(
-                    "https://geocoding-api.open-meteo.com/v1/search?name=" + visibleValue
-                    + "&count=10&language=en&format=json",
-            )
-                    .then(result => result.json())
-                    .then((result: {
-                        results: { name: string, country: string, latitude: number, longitude: number }[]
-                    }) => {
-                        const unique = result.results.filter((v, i, a) => a
-                                .findIndex(t => (t.name === v.name && t.country === v.country)) === i,
-                        )
-
-                        setLocations(unique.map(l => ({
-                            city: l.name,
-                            country: l.country,
-                            latitude: l.latitude,
-                            longitude: l.longitude,
-                        })))
-                    })
+            getPlacePredictions({input: visibleValue})
         }, 250)
         return () => clearTimeout(timeOutId)
     }, [visibleValue])
 
     return (
             <>
-                <div className="flex flex-col border transition-all border-zinc-200/60 hover:border-zinc-200 focus-within:hover:border-zinc-300 focus-within:border-zinc-300 duration-300 dark:border-zinc-700/60 rounded-sm hover:dark:border-zinc-700 group focus-within:dark:border-zinc-600 hover:focus-within:dark:border-zinc-600">
+                <div className="flex flex-col relative border transition-all border-zinc-200/60 hover:border-zinc-200 focus-within:hover:border-zinc-300 focus-within:border-zinc-300 duration-300 dark:border-zinc-700/60 rounded-sm hover:dark:border-zinc-700 group focus-within:dark:border-zinc-600 hover:focus-within:dark:border-zinc-600 w-full">
 
                     <InputLabel name={name} label={label} required={required} showRequired={showRequired}/>
 
-                    <input className={`pt-1 px-4 bg-transparent outline-none placeholder:opacity-70 ` + (locations.length > 0 ? "pb-2" : "pb-4")}
+                    <input className={`pt-1 px-4 bg-transparent outline-none placeholder:opacity-70 ` + (addresses.length > 0 ? "pb-2" : "pb-4")}
                            value={visibleValue}
                            onChange={e => setVisibleValue(e.target.value)}
                            type="text"
@@ -85,24 +72,25 @@ export default function LocationFieldBox(
                            id={name}
                            autoComplete="off"
                            required={required}
-                           placeholder="Choose a Location"/>
+                           placeholder={placeholder}
+                    />
 
-                    {locations.length > 0 &&
-                            <ScrollArea.Root className={"w-full h-[165px] overflow-hidden bg-white dark:bg-zinc-900 " + (error ? "pb-2" : "pb-4")}>
+                    {addresses.length > 0 && selected?.address !== visibleValue &&
+                            <ScrollArea.Root className={"w-full h-[165px] overflow-hidden bg-white dark:bg-zinc-900 absolute bottom-0 " + (error ? "pb-2" : "pb-4")}>
                                 <ScrollArea.Viewport className="w-full h-full">
                                     <div className="px-4">
-                                        {locations.map((location) => (
+                                        {addresses.map((a, k) => (
                                                 <div
                                                         className="cursor-pointer opacity-60 hover:bg-zinc-100 hover:dark:bg-zinc-800 hover:opacity-100 smooth text-sm rounded-sm px-2.5 py-2.5 border-t soft-border"
-                                                        key={`${location.latitude}-${location.longitude}`}
+                                                        key={k}
                                                         onClick={() => {
-                                                            setValue(location)
-                                                            setSelected(`${location.city}, ${location.country}`)
-                                                            setVisibleValue(`${location.city}, ${location.country}`)
-                                                            setLocations([])
+                                                            console.log(a)
+                                                            setVisibleValue(a.address)
+                                                            setSelected(a)
+                                                            setValue(a)
                                                         }}
                                                 >
-                                                    {location.city}, {location.country}
+                                                    {a.address}
                                                 </div>
                                         ))}
                                     </div>
@@ -123,6 +111,7 @@ export default function LocationFieldBox(
                             </ScrollArea.Root>}
 
                     {error && <p className="text-red-500 text-xs mb-4 mx-4">{error}</p>}
+
                 </div>
             </>
     )

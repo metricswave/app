@@ -12,6 +12,7 @@ import CheckboxInputGroup, {CheckboxGroupValue} from "../form/CheckboxInputGroup
 import {useUserServicesState} from "../../storage/UserServices"
 import {mergeDefaultWithTriggerViaValues} from "../../helpers/TriggerViaValues"
 import LocationFieldBox, {LocationValue} from "../form/LocationFieldBox"
+import AddressFieldBox, {AddressValue} from "../form/AddressFieldBox"
 
 type Props = {
     onSubmit: TriggerFormSubmit,
@@ -19,12 +20,14 @@ type Props = {
     triggerType: TriggerType,
 }
 
+type FieldValues = { [key: string]: string | string[] | AddressValue | LocationValue }
+
 export type TriggerFormSubmit = (
         params: {
             emoji: Emoji,
             title: string,
             content: string,
-            values: { [key: string]: string | string[] | LocationValue },
+            values: FieldValues,
             via: Array<TriggerVia>,
         },
         setErrors: (errors: { [key: string]: string[] }) => void,
@@ -43,7 +46,7 @@ export default function TriggerForm(
     const [emoji, setEmoji] = useState<Emoji>(trigger ? emojiFromNative(trigger.emoji) : BellEmoji)
     const [title, setTitle] = useState<string>(trigger ? trigger.title : "")
     const [content, setContent] = useState<string>(trigger ? trigger.content : "")
-    const [values, setValues] = useState<{ [key: string]: string | string[] | LocationValue }>(
+    const [values, setValues] = useState<FieldValues>(
             trigger ?
                     trigger.configuration.fields :
                     triggerType.configuration.fields.reduce((acc, field) => {
@@ -101,6 +104,20 @@ export default function TriggerForm(
                 return (<div key={field.name}>
                     <ParametersFieldBox
                             value={values[field.name] as string[]}
+                            setValue={(value) => {
+                                setValues({...values, [field.name]: value})
+                            }}
+                            label={field.label}
+                            name={field.name}
+                            placeholder={field.label}
+                            required={field.required}
+                            showRequired
+                    />
+                </div>)
+            case "address":
+                return (<div key={field.name}>
+                    <AddressFieldBox
+                            value={values[field.name] as AddressValue}
                             setValue={(value) => {
                                 setValues({...values, [field.name]: value})
                             }}
