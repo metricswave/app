@@ -5,6 +5,7 @@ import RadioGroupComponent from "./RadioGroupComponent"
 
 type Props = {
     value: string | string[],
+    options: { label: string, value: string }[],
     setValue: (value: string | string[]) => void,
     error?: false | string,
     label: string,
@@ -15,14 +16,11 @@ type Props = {
 }
 
 
-type weekDaysType = "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday"
-const weekDays: weekDaysType[] = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
-const radioWeekDays = weekDays.map((day) => ({label: day.charAt(0).toUpperCase() + day.slice(1), value: day}))
-
-export default function WeekdayFieldBox(
+export default function SelectFieldBox(
         {
             value,
             name,
+            options,
             setValue,
             error,
             label,
@@ -38,28 +36,30 @@ export default function WeekdayFieldBox(
                     <InputLabel name={name} label={label} required={required} showRequired={showRequired}/>
 
                     <div className="flex flex-col space-y-2 pt-3 pb-4">
-                        {multiple && Array.isArray(value) && weekDays.map((day) => (
-                                <div className="pl-4" key={day}>
-                                    <CheckboxInput
-                                            name={name + "_" + day}
-                                            label={day.charAt(0).toUpperCase() + day.slice(1)}
-                                            checked={value.includes(day)}
-                                            onCheckedChanged={(status) => {
-                                                if (status) {
-                                                    setValue([...value, day])
-                                                } else if (Array.isArray(value)) {
-                                                    setValue(value.filter(v => v !== day))
-                                                }
-                                            }}
-                                    />
-                                </div>
-                        ))}
+                        {multiple && Array.isArray(value) && options.map(({label, value: key}) => {
+                            return (
+                                    <div className="pl-4" key={key}>
+                                        <CheckboxInput
+                                                name={name + "_" + key}
+                                                label={label}
+                                                checked={value.includes(key)}
+                                                onCheckedChanged={(status) => {
+                                                    if (status) {
+                                                        setValue([...value, key])
+                                                    } else if (Array.isArray(value)) {
+                                                        setValue(value.filter(v => v !== key))
+                                                    }
+                                                }}
+                                        />
+                                    </div>
+                            )
+                        })}
 
                         {!multiple && (<div className="pl-4">
                                     <RadioGroupComponent
                                             name={name}
                                             value={value as string}
-                                            values={radioWeekDays}
+                                            values={options}
                                             onChange={setValue}
                                     />
                                 </div>

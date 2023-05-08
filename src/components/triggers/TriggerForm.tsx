@@ -13,6 +13,7 @@ import {useUserServicesState} from "../../storage/UserServices"
 import {mergeDefaultWithTriggerViaValues} from "../../helpers/TriggerViaValues"
 import LocationFieldBox, {LocationValue} from "../form/LocationFieldBox"
 import AddressFieldBox, {AddressValue} from "../form/AddressFieldBox"
+import SelectFieldBox from "../form/SelectFieldBox"
 
 type Props = {
     onSubmit: TriggerFormSubmit,
@@ -90,6 +91,21 @@ export default function TriggerForm(
                 return (<div key={field.name}>
                     <WeekdayFieldBox
                             value={values[field.name] as string[]}
+                            setValue={(value) => {
+                                setValues({...values, [field.name]: value})
+                            }}
+                            label={field.label}
+                            name={field.name}
+                            multiple={field.multiple}
+                            required={field.required}
+                            showRequired
+                    />
+                </div>)
+            case "select":
+                return (<div key={field.name}>
+                    <SelectFieldBox
+                            options={field.options!}
+                            value={values[field.name] as string | string[]}
                             setValue={(value) => {
                                 setValues({...values, [field.name]: value})
                             }}

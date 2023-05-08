@@ -16,4 +16,5 @@ export type TriggerTypeField = {
     multiple: boolean
     type: string
     default?: string
+    options?: { label: string, value: string }[]
 }
