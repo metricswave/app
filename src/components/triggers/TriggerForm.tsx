@@ -2,7 +2,7 @@ import EmojiInputFieldBox from "../form/EmojiInputFieldBox"
 import InputFieldBox from "../form/InputFieldBox"
 import TextareaFieldBox from "../form/TextareaFieldBox"
 import PrimaryButton from "../form/PrimaryButton"
-import {Trigger, TriggerVia} from "../../types/Trigger"
+import {Trigger, TriggerTypeId, TriggerVia} from "../../types/Trigger"
 import React, {FormEvent, ReactElement, useState} from "react"
 import {BellEmoji, Emoji, emojiFromNative} from "../../types/Emoji"
 import WeekdayFieldBox from "../form/WeekdayFieldBox"
@@ -34,6 +34,35 @@ export type TriggerFormSubmit = (
         setErrors: (errors: { [key: string]: string[] }) => void,
 ) => Promise<void>
 
+function getTriggerInitialState(trigger: Trigger | undefined, triggerType: TriggerType): { [key: string]: string | string[] } {
+    return trigger ?
+            trigger.configuration.fields :
+            triggerType.configuration.fields.reduce((acc, field) => {
+                acc[field.name] = field.default ?? (field.multiple ? [] : "")
+                return acc
+            }, {} as { [key: string]: string | string[] })
+}
+
+function triggerInitialStateTitle(triggerType: TriggerType): string {
+    switch (triggerType.id) {
+        case TriggerTypeId.WeatherSummary:
+            return "Today: {weather.today.condition}"
+    }
+
+    return ""
+}
+
+function triggerIntialStateContent(triggerType: TriggerType): string {
+    switch (triggerType.id) {
+        case TriggerTypeId.WeatherSummary:
+            return "**Temperature:** {weather.today.temperature2m_min}°-{weather.today.temperature2m_max}°\n" +
+                    "**Precipitation probability:** {weather.today.precipitation_probability_max}\n" +
+                    "**Sunrise:** {weather.today.sunrise} / {weather.today.sunset}"
+    }
+
+    return ""
+}
+
 export default function TriggerForm(
         {
             onSubmit: submit,
@@ -45,16 +74,9 @@ export default function TriggerForm(
     const {userServices} = useUserServicesState()
 
     const [emoji, setEmoji] = useState<Emoji>(trigger ? emojiFromNative(trigger.emoji) : BellEmoji)
-    const [title, setTitle] = useState<string>(trigger ? trigger.title : "")
-    const [content, setContent] = useState<string>(trigger ? trigger.content : "")
-    const [values, setValues] = useState<FieldValues>(
-            trigger ?
-                    trigger.configuration.fields :
-                    triggerType.configuration.fields.reduce((acc, field) => {
-                        acc[field.name] = field.default ?? (field.multiple ? [] : "")
-                        return acc
-                    }, {} as { [key: string]: string | string[] }),
-    )
+    const [title, setTitle] = useState<string>(trigger ? trigger.title : triggerInitialStateTitle(triggerType))
+    const [content, setContent] = useState<string>(trigger ? trigger.content : triggerIntialStateContent(triggerType))
+    const [values, setValues] = useState<FieldValues>(getTriggerInitialState(trigger, triggerType))
     const [errors, setErrors] = useState<{ [key: string]: string[] }>({})
     const [viaValues, setViaValues] = useState<Array<TriggerVia>>(
             mergeDefaultWithTriggerViaValues(userServices, trigger),

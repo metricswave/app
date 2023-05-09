@@ -1,5 +1,7 @@
+import {TriggerTypeId} from "./Trigger"
+
 export type TriggerType = {
-    id: number
+    id: TriggerTypeId
     name: string
     description: string
     icon: string

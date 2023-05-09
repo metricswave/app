@@ -1,14 +1,14 @@
 import {LocationValue} from "../components/form/LocationFieldBox"
 import {WeekDaysType} from "../components/form/WeekdayFieldBox"
 
-export enum TriggerType {
+export enum TriggerTypeId {
     Webhook = 1,
     OnTime = 2,
     WeatherSummary = 3,
     TimeToLeave = 4,
 }
 
-export type Trigger = OnTimeTrigger | WebhookTrigger | WeatherSummaryTrigger
+export type Trigger = OnTimeTrigger | WebhookTrigger | WeatherSummaryTrigger | TimeToLeaveTrigger
 
 export type BaseTrigger = {
     id: string
@@ -16,7 +16,7 @@ export type BaseTrigger = {
     emoji: string
     title: string
     content: string
-    trigger_type_id: TriggerType
+    trigger_type_id: TriggerTypeId
     configuration: {
         fields: { [key: string]: string }
     }
@@ -24,7 +24,7 @@ export type BaseTrigger = {
 }
 
 export type OnTimeTrigger = BaseTrigger & {
-    trigger_type_id: TriggerType.OnTime
+    trigger_type_id: TriggerTypeId.OnTime
     configuration: {
         fields: {
             weekdays: WeekDaysType[],
@@ -34,7 +34,7 @@ export type OnTimeTrigger = BaseTrigger & {
 }
 
 export type WebhookTrigger = BaseTrigger & {
-    trigger_type_id: TriggerType.Webhook
+    trigger_type_id: TriggerTypeId.Webhook
     configuration: {
         fields: {
             parameters: Array<string>,
@@ -43,7 +43,7 @@ export type WebhookTrigger = BaseTrigger & {
 }
 
 export type WeatherSummaryTrigger = BaseTrigger & {
-    trigger_type_id: TriggerType.WeatherSummary
+    trigger_type_id: TriggerTypeId.WeatherSummary
     configuration: {
         fields: {
             weekdays: string[],
@@ -54,7 +54,7 @@ export type WeatherSummaryTrigger = BaseTrigger & {
 }
 
 export type TimeToLeaveTrigger = BaseTrigger & {
-    trigger_type_id: TriggerType.TimeToLeave,
+    trigger_type_id: TriggerTypeId.TimeToLeave,
     configuration: {
         fields: {
             origin: string,

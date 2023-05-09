@@ -1,4 +1,4 @@
-import {Trigger, TriggerType} from "../../types/Trigger"
+import {Trigger, TriggerTypeId} from "../../types/Trigger"
 import {DialogHeader} from "../dialog/DialogHeader"
 import * as Dialog from "@radix-ui/react-dialog"
 import {useTriggerTypesState} from "../../storage/TriggerTypes"
@@ -36,7 +36,20 @@ export default function TriggerDetails({trigger, onDeleted: deleted, onUpdate: u
 
     const triggerInstructions = (trigger: Trigger): ReactElement => {
         switch (trigger.trigger_type_id) {
-            case TriggerType.OnTime:
+            case TriggerTypeId.TimeToLeave:
+                return (<>
+                    <p>
+                        You will receive a notification
+                        all {listFormatter.format(trigger.configuration.fields.weekdays)} at {trigger.configuration.fields.arrival_time}.
+                    </p>
+
+                    <p className="pt-2">
+                        <LinkButton href={`${app.web}/documentation/triggers/time-to-leave`}
+                                    target="_blank"
+                                    text="More info about Time To Leave triggers."/>
+                    </p>
+                </>)
+            case TriggerTypeId.OnTime:
                 return (<>
                     <p>
                         You will receive a notification
@@ -49,7 +62,7 @@ export default function TriggerDetails({trigger, onDeleted: deleted, onUpdate: u
                                     text="More info about On Time triggers."/>
                     </p>
                 </>)
-            case TriggerType.Webhook:
+            case TriggerTypeId.Webhook:
                 const query = trigger.configuration.fields.parameters
                         .map((param) => `${param}={value}`)
                         .join("&")
@@ -78,7 +91,7 @@ export default function TriggerDetails({trigger, onDeleted: deleted, onUpdate: u
                     </div>
 
                 </div>)
-            case TriggerType.WeatherSummary:
+            case TriggerTypeId.WeatherSummary:
                 return (<>
                     <p>
                         You will receive a notification
