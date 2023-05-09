@@ -47,17 +47,21 @@ function triggerInitialStateTitle(triggerType: TriggerType): string {
     switch (triggerType.id) {
         case TriggerTypeId.WeatherSummary:
             return "Today: {weather.today.condition}"
+        case TriggerTypeId.TimeToLeave:
+            return "Time to leave for {destination}"
     }
 
     return ""
 }
 
-function triggerIntialStateContent(triggerType: TriggerType): string {
+function triggerInitialStateContent(triggerType: TriggerType): string {
     switch (triggerType.id) {
         case TriggerTypeId.WeatherSummary:
             return "**Temperature:** {weather.today.temperature2m_min}°-{weather.today.temperature2m_max}°\n" +
                     "**Precipitation probability:** {weather.today.precipitation_probability_max}\n" +
                     "**Sunrise:** {weather.today.sunrise} / {weather.today.sunset}"
+        case TriggerTypeId.TimeToLeave:
+            return "Depending on current traffic, it will take {duration} to be {mode}. You have 15 minutes to leave if you want to be there on time."
     }
 
     return ""
@@ -75,7 +79,7 @@ export default function TriggerForm(
 
     const [emoji, setEmoji] = useState<Emoji>(trigger ? emojiFromNative(trigger.emoji) : BellEmoji)
     const [title, setTitle] = useState<string>(trigger ? trigger.title : triggerInitialStateTitle(triggerType))
-    const [content, setContent] = useState<string>(trigger ? trigger.content : triggerIntialStateContent(triggerType))
+    const [content, setContent] = useState<string>(trigger ? trigger.content : triggerInitialStateContent(triggerType))
     const [values, setValues] = useState<FieldValues>(getTriggerInitialState(trigger, triggerType))
     const [errors, setErrors] = useState<{ [key: string]: string[] }>({})
     const [viaValues, setViaValues] = useState<Array<TriggerVia>>(
