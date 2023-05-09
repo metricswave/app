@@ -15,8 +15,8 @@ type Props = {
 }
 
 
-type weekDaysType = "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday"
-const weekDays: weekDaysType[] = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+export type WeekDaysType = "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday"
+const weekDays: WeekDaysType[] = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
 const radioWeekDays = weekDays.map((day) => ({label: day.charAt(0).toUpperCase() + day.slice(1), value: day}))
 
 export default function WeekdayFieldBox(

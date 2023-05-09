@@ -4,14 +4,10 @@ import usePlacesAutocompleteService from "react-google-autocomplete/lib/usePlace
 import {app} from "../../config/app"
 import * as ScrollArea from "@radix-ui/react-scroll-area"
 
-export type AddressValue = {
-    address: string,
-}
-
 type Props = {
-    value: AddressValue | undefined
+    value: string | undefined
     disabled?: boolean,
-    setValue: (value: AddressValue) => void,
+    setValue: (value: string) => void,
     error?: false | string,
     label: string,
     focus?: boolean,
@@ -36,19 +32,10 @@ export default function AddressFieldBox(
             ...props
         }: Props,
 ) {
-    const {
-        // placesService,
-        placePredictions,
-        getPlacePredictions,
-        // isPlacePredictionsLoading,
-    } = usePlacesAutocompleteService({
-        apiKey: app.googleMapsApiKey,
-    })
-    const [selected, setSelected] = React.useState<AddressValue | undefined>(value)
-    const [visibleValue, setVisibleValue] = React.useState<string>(value?.address ?? "")
-    const addresses = placePredictions.map((prediction) => ({
-        address: prediction.description,
-    }))
+    const {placePredictions, getPlacePredictions} = usePlacesAutocompleteService({apiKey: app.googleMapsApiKey})
+    const [selected, setSelected] = React.useState<string | undefined>(value)
+    const [visibleValue, setVisibleValue] = React.useState<string>(value ?? "")
+    const addresses: string[] = placePredictions.map((prediction) => prediction.description)
 
     useEffect(() => {
         const timeOutId = setTimeout(() => {
@@ -75,7 +62,7 @@ export default function AddressFieldBox(
                            placeholder={placeholder}
                     />
 
-                    {addresses.length > 0 && selected?.address !== visibleValue &&
+                    {addresses.length > 0 && selected !== visibleValue &&
                             <ScrollArea.Root className={"w-full h-[165px] overflow-hidden bg-white dark:bg-zinc-900 absolute bottom-0 " + (error ? "pb-2" : "pb-4")}>
                                 <ScrollArea.Viewport className="w-full h-full">
                                     <div className="px-4">
@@ -84,13 +71,12 @@ export default function AddressFieldBox(
                                                         className="cursor-pointer opacity-60 hover:bg-zinc-100 hover:dark:bg-zinc-800 hover:opacity-100 smooth text-sm rounded-sm px-2.5 py-2.5 border-t soft-border"
                                                         key={k}
                                                         onClick={() => {
-                                                            console.log(a)
-                                                            setVisibleValue(a.address)
+                                                            setVisibleValue(a)
                                                             setSelected(a)
                                                             setValue(a)
                                                         }}
                                                 >
-                                                    {a.address}
+                                                    {a}
                                                 </div>
                                         ))}
                                     </div>

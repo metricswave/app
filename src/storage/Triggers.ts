@@ -6,6 +6,8 @@ import {Trigger} from "../types/Trigger"
 const TRIGGER_KEY: string = "nw:triggers"
 const TRIGGER_REFRESH_KEY: string = "nw:triggers:refresh"
 
+const TIME_FIELDS: string[] = ["time", "arrival_time"]
+
 export function useTriggersState() {
     const [isFresh, setIsFresh] = useState<true | false>(
         expirableLocalStorage.get(TRIGGER_REFRESH_KEY, false),
@@ -34,23 +36,25 @@ export function useTriggersState() {
 
     const mapTriggers = (triggers: Trigger[]) => {
         return triggers.map((t: Trigger) => {
-            if ("time" in t.configuration.fields) {
-                const time = t.configuration.fields.time.split(":")
-                let hour = (parseInt(time[0]) + (new Date().getTimezoneOffset() / 60) * -1)
+            TIME_FIELDS.forEach((field) => {
+                if (field in t.configuration.fields) {
+                    const time = t.configuration.fields[field].split(":")
+                    let hour = (parseInt(time[0]) + (new Date().getTimezoneOffset() / 60) * -1)
 
-                if (hour < 0) {
-                    hour = 24 + hour
-                } else if (hour > 23) {
-                    hour = hour - 24
+                    if (hour < 0) {
+                        hour = 24 + hour
+                    } else if (hour > 23) {
+                        hour = hour - 24
+                    }
+
+                    time[0] = hour.toString()
+                    if (time[0].length === 1) {
+                        time[0] = "0" + time[0]
+                    }
+
+                    t.configuration.fields[field] = time.join(":")
                 }
-
-                time[0] = hour.toString()
-                if (time[0].length === 1) {
-                    time[0] = "0" + time[0]
-                }
-
-                t.configuration.fields.time = time.join(":")
-            }
+            })
 
             return t
         })

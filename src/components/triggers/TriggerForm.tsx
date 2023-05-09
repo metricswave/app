@@ -12,7 +12,7 @@ import CheckboxInputGroup, {CheckboxGroupValue} from "../form/CheckboxInputGroup
 import {useUserServicesState} from "../../storage/UserServices"
 import {mergeDefaultWithTriggerViaValues} from "../../helpers/TriggerViaValues"
 import LocationFieldBox, {LocationValue} from "../form/LocationFieldBox"
-import AddressFieldBox, {AddressValue} from "../form/AddressFieldBox"
+import AddressFieldBox from "../form/AddressFieldBox"
 import SelectFieldBox from "../form/SelectFieldBox"
 
 type Props = {
@@ -21,7 +21,7 @@ type Props = {
     triggerType: TriggerType,
 }
 
-type FieldValues = { [key: string]: string | string[] | AddressValue | LocationValue }
+type FieldValues = { [key: string]: string | string[] | LocationValue }
 
 export type TriggerFormSubmit = (
         params: {
@@ -133,7 +133,7 @@ export default function TriggerForm(
             case "address":
                 return (<div key={field.name}>
                     <AddressFieldBox
-                            value={values[field.name] as AddressValue}
+                            value={values[field.name] as string}
                             setValue={(value) => {
                                 setValues({...values, [field.name]: value})
                             }}
