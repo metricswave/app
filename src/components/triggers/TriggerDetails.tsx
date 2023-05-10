@@ -40,7 +40,8 @@ export default function TriggerDetails({trigger, onDeleted: deleted, onUpdate: u
                 return (<>
                     <p>
                         You will receive a notification
-                        all {listFormatter.format(trigger.configuration.fields.weekdays)} at {trigger.configuration.fields.arrival_time}.
+                        all {listFormatter.format(trigger.configuration.fields.weekdays)} at time to leave to arrive at
+                        destination 15 minutes before {trigger.configuration.fields.arrival_time}.
                     </p>
 
                     <p className="pt-2">
