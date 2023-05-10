@@ -1,7 +1,5 @@
 import React from "react"
-import InputLabel from "./InputLabel"
-import CheckboxInput from "./CheckboxInput"
-import RadioGroupComponent from "./RadioGroupComponent"
+import SelectFieldBox from "./SelectFieldBox"
 
 type Props = {
     value: string | string[],
@@ -14,10 +12,7 @@ type Props = {
     showRequired?: boolean,
 }
 
-
 export type WeekDaysType = "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday"
-const weekDays: WeekDaysType[] = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
-const radioWeekDays = weekDays.map((day) => ({label: day.charAt(0).toUpperCase() + day.slice(1), value: day}))
 
 export default function WeekdayFieldBox(
         {
@@ -32,42 +27,24 @@ export default function WeekdayFieldBox(
         }: Props,
 ) {
     return (
-            <>
-                <div className="flex flex-col border transition-all border-zinc-200/60 hover:border-zinc-200 focus-within:hover:border-zinc-300 focus-within:border-zinc-300 duration-300 dark:border-zinc-700/60 rounded-sm hover:dark:border-zinc-700 group focus-within:dark:border-zinc-600 hover:focus-within:dark:border-zinc-600">
-
-                    <InputLabel name={name} label={label} required={required} showRequired={showRequired}/>
-
-                    <div className="flex flex-col space-y-2 pt-3 pb-4">
-                        {multiple && Array.isArray(value) && weekDays.map((day) => (
-                                <div className="pl-4" key={day}>
-                                    <CheckboxInput
-                                            name={name + "_" + day}
-                                            label={day.charAt(0).toUpperCase() + day.slice(1)}
-                                            checked={value.includes(day)}
-                                            onCheckedChanged={(status) => {
-                                                if (status) {
-                                                    setValue([...value, day])
-                                                } else if (Array.isArray(value)) {
-                                                    setValue(value.filter(v => v !== day))
-                                                }
-                                            }}
-                                    />
-                                </div>
-                        ))}
-
-                        {!multiple && (<div className="pl-4">
-                                    <RadioGroupComponent
-                                            name={name}
-                                            value={value as string}
-                                            values={radioWeekDays}
-                                            onChange={setValue}
-                                    />
-                                </div>
-                        )}
-                    </div>
-
-                    {error && <p className="text-red-500 text-xs mb-4 mx-4">{error}</p>}
-                </div>
-            </>
+            <SelectFieldBox
+                    value={value}
+                    multiple={multiple}
+                    error={error}
+                    required={required}
+                    showRequired={showRequired}
+                    options={[
+                        {label: "Monday", value: "monday"},
+                        {label: "Tuesday", value: "tuesday"},
+                        {label: "Wednesday", value: "wednesday"},
+                        {label: "Thursday", value: "thursday"},
+                        {label: "Friday", value: "friday"},
+                        {label: "Saturday", value: "saturday"},
+                        {label: "Sunday", value: "sunday"},
+                    ]}
+                    setValue={setValue}
+                    label={label}
+                    name={name}
+            />
     )
 }
