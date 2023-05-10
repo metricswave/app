@@ -61,7 +61,7 @@ function triggerInitialStateContent(triggerType: TriggerType): string {
                     "**Precipitation probability:** {weather.today.precipitation_probability_max}\n" +
                     "**Sunrise:** {weather.today.sunrise} / {weather.today.sunset}"
         case TriggerTypeId.TimeToLeave:
-            return "Depending on current traffic, it will take {duration} to be {mode}. You have 15 minutes to leave if you want to be there on time."
+            return "Depending on current traffic, it will take {duration} to be {travel_mode}. You have 15 minutes to leave if you want to be there on time."
     }
 
     return ""
