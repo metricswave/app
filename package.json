@@ -25,6 +25,7 @@
     "@types/node": "^16.18.21",
     "@types/react": "^18.0.30",
     "@types/react-dom": "^18.0.11",
+    "@webscopeio/react-textarea-autocomplete": "^4.9.2",
     "date-fns": "^2.29.3",
     "emoji-mart": "^5.5.2",
     "html-react-parser": "^3.0.15",

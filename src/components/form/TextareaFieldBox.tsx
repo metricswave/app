@@ -34,7 +34,7 @@ export default function TextareaFieldBox(
 
                     <InputLabel name={name} label={label} required={required} showRequired={showRequired}/>
 
-                    <textarea className={`pt-1 px-4 bg-transparent outline-none placeholder:opacity-70 ` + (error ? "pb-2" : "pb-4")}
+                    <textarea className={`h-[180px] pt-1 px-4 bg-transparent outline-none placeholder:opacity-70 ` + (error ? "pb-2" : "pb-4")}
                               onChange={e => setValue(e.target.value)}
                               name={name}
                               autoFocus={focus}

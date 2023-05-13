@@ -88,3 +88,8 @@ select:-webkit-autofill:focus {
         }
     }
 }
+
+.rta__item--selected {
+    opacity: 100 !important;
+    @apply text-blue-500;
+}

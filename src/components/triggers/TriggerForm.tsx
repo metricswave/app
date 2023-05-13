@@ -1,6 +1,5 @@
 import EmojiInputFieldBox from "../form/EmojiInputFieldBox"
 import InputFieldBox from "../form/InputFieldBox"
-import TextareaFieldBox from "../form/TextareaFieldBox"
 import PrimaryButton from "../form/PrimaryButton"
 import {Trigger, TriggerTypeId, TriggerVia} from "../../types/Trigger"
 import React, {FormEvent, ReactElement, useState} from "react"
@@ -14,6 +13,7 @@ import {mergeDefaultWithTriggerViaValues} from "../../helpers/TriggerViaValues"
 import LocationFieldBox, {LocationValue} from "../form/LocationFieldBox"
 import AddressFieldBox from "../form/AddressFieldBox"
 import SelectFieldBox from "../form/SelectFieldBox"
+import AutocompleteTextareaFieldBox from "../form/AutocompleteTextareaFieldBox"
 
 type Props = {
     onSubmit: TriggerFormSubmit,
@@ -65,6 +65,71 @@ function triggerInitialStateContent(triggerType: TriggerType): string {
     }
 
     return ""
+}
+
+function autocompleteOptionsForTriggerType(triggerType: TriggerType, values: FieldValues): string[] {
+    switch (triggerType.id) {
+        case TriggerTypeId.WeatherSummary:
+            return [
+                "weather.today.code",
+                "weather.today.condition",
+                "weather.today.temperature2m_max",
+                "weather.today.temperature2m_min",
+                "weather.today.apparent_temperature_max",
+                "weather.today.apparent_temperature_min",
+                "weather.today.sunrise",
+                "weather.today.sunset",
+                "weather.today.uv_index_max",
+                "weather.today.uv_index_clear_sky_max",
+                "weather.today.precipitation_sum",
+                "weather.today.rain_sum",
+                "weather.today.showers_sum",
+                "weather.today.snowfall_sum",
+                "weather.today.precipitation_hours",
+                "weather.today.precipitation_probability_max",
+                "weather.today.wind_speed10m_max",
+                "weather.today.wind_gusts10m_max",
+                "weather.today.wind_direction10m_dominant",
+                "weather.today.shortwave_radiation_sum",
+                "weather.today.et0_fao_evapotranspiration",
+                "weather.tomorrow.code",
+                "weather.tomorrow.condition",
+                "weather.tomorrow.temperature2m_max",
+                "weather.tomorrow.temperature2m_min",
+                "weather.tomorrow.apparent_temperature_max",
+                "weather.tomorrow.apparent_temperature_min",
+                "weather.tomorrow.sunrise",
+                "weather.tomorrow.sunset",
+                "weather.tomorrow.uv_index_max",
+                "weather.tomorrow.uv_index_clear_sky_max",
+                "weather.tomorrow.precipitation_sum",
+                "weather.tomorrow.rain_sum",
+                "weather.tomorrow.showers_sum",
+                "weather.tomorrow.snowfall_sum",
+                "weather.tomorrow.precipitation_hours",
+                "weather.tomorrow.precipitation_probability_max",
+                "weather.tomorrow.wind_speed10m_max",
+                "weather.tomorrow.wind_gusts10m_max",
+                "weather.tomorrow.wind_direction10m_dominant",
+                "weather.tomorrow.shortwave_radiation_sum",
+                "weather.tomorrow.et0_fao_evapotranspiration",
+            ]
+        case TriggerTypeId.TimeToLeave:
+            return [
+                "origin",
+                "destination",
+                "travel_mode",
+                "arrival_time",
+                "distance",
+                "meters",
+                "duration",
+                "seconds",
+            ]
+        case TriggerTypeId.Webhook:
+            return values["parameters"] as string[] ?? []
+    }
+
+    return []
 }
 
 export default function TriggerForm(
@@ -207,11 +272,12 @@ export default function TriggerForm(
                     />
                 </div>
 
-                <TextareaFieldBox
+                <AutocompleteTextareaFieldBox
                         value={content}
                         setValue={setContent}
                         label="Content"
                         name="content"
+                        autocompleteOptions={autocompleteOptionsForTriggerType(triggerType, values)}
                         error={errors["content"] !== undefined ? errors["content"][0] : false}
                         placeholder="Notification Content"
                         required
