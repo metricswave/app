@@ -30,7 +30,7 @@ export function useServicesState() {
     }, [isFresh])
 
     return {
-        services: services.filter(s => s.driver !== "google"),
+        services: services.filter(s => s.driver !== "google" || localStorage.getItem("nw:services:show-all") === "1"),
         reloadServices: () => setIsFresh(false),
     }
 }
