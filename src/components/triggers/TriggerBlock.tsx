@@ -32,7 +32,7 @@ export default function TriggerBlock({trigger, triggerType, onClick: click}: Pro
                             {trigger.title}
                         </h3>
 
-                        <div className="prose-sm dark:prose-invert prose-p:my-0.5">
+                        <div className="prose-sm break-all dark:prose-invert prose-p:my-0.5">
                             <ReactMarkdown>
                                 {trigger.content.replaceAll("\n", "\n\n")}
                             </ReactMarkdown>
