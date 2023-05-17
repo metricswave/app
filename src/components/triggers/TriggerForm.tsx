@@ -57,7 +57,7 @@ function triggerInitialStateTitle(triggerType: TriggerType): string {
 function triggerInitialStateContent(triggerType: TriggerType): string {
     switch (triggerType.id) {
         case TriggerTypeId.WeatherSummary:
-            return "**Temperature:** {weather.today.temperature2m_min}°-{weather.today.temperature2m_max}°\n" +
+            return "**Temperature:** {weather.today.temperature2m_min}°/{weather.today.temperature2m_max}°\n" +
                     "**Precipitation probability:** {weather.today.precipitation_probability_max}\n" +
                     "**Sunrise:** {weather.today.sunrise} / {weather.today.sunset}"
         case TriggerTypeId.TimeToLeave:
