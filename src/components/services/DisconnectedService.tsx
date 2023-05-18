@@ -51,11 +51,15 @@ export default function DisconnectedService({service, loading, connectService, o
                                                 By granting access, our app will be able to read
                                                 your calendar events. We will only use this information to provide you
                                                 with the requested service and will not share it with any third parties.
-                                                By authorizing access, you agree to our terms of service
-                                                and <a onClick={e => e.stopPropagation()}
+                                                By authorizing access, you agree to
+                                                our <a onClick={e => e.stopPropagation()}
                                                        target="_blank"
-                                                       className="underline"
-                                                       href={`${app.web}/privacy-policy`}>privacy policy</a>.
+                                                       className="underline" href={`${app.web}/terms-and-conditions`}>terms
+                                                of service</a> and <a onClick={e => e.stopPropagation()}
+                                                                      target="_blank"
+                                                                      className="underline"
+                                                                      href={`${app.web}/privacy-policy`}>privacy
+                                                policy</a>.
                                             </Tooltip>
                                         </div>
                                 }
