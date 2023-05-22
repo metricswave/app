@@ -1,6 +1,6 @@
 import ServiceIcon from "../icons/ServiceIcon"
 import React from "react"
-import {UserService} from "../../types/UserService"
+import {TelegramUserService, UserService} from "../../types/UserService"
 import {Service} from "../../types/Service"
 import {DeleteNoLinkButton} from "../buttons/LinkButton"
 import AlertDialogComponent from "../alert-dialog/AlertDialogComponent"
@@ -41,10 +41,10 @@ export default function UserServiceBlock({userService, service, onDeleted: delet
                         { // Show channel name if it's a telegram service
                                 service.configuration.type === "form"
                                 && service.driver === "telegram"
-                                && userService.service_data.configuration["channel_name"] !== undefined
+                                && (userService as TelegramUserService).service_data.configuration["channel_name"] !== undefined
                                 && (
                                         <div className="text-sm opacity-70">
-                                            Channel: {userService.service_data.configuration["channel_name"]}
+                                            Channel: {(userService as TelegramUserService).service_data.configuration["channel_name"]}
                                         </div>
                                 )
                         }

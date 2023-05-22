@@ -1,7 +1,7 @@
 import InputFieldBox from "../components/form/InputFieldBox"
 import PrimaryButton from "../components/form/PrimaryButton"
 import Authentication from "../components/wrappers/Authentication"
-import {LinkButton} from "../components/buttons/LinkButton"
+import {LinkButton, NoLinkButton} from "../components/buttons/LinkButton"
 import {FormEvent, useState} from "react"
 import {fetchApi} from "../helpers/ApiFetcher"
 import {Tokens} from "../types/Token"
@@ -10,10 +10,12 @@ import FormErrorMessage from "../components/form/FormErrorMessage"
 import {useNavigate} from "react-router-dom"
 import {useAuthState} from "../storage/AuthToken"
 import eventTracker from "../helpers/EventTracker"
+import SocialAuth from "../components/social/SocialAuth"
 
 export default function Login() {
     const navigate = useNavigate()
     const {setTokens} = useAuthState()
+    const [withEmail, setWithEmail] = useState(false)
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [loading, setLoading] = useState(false)
@@ -93,25 +95,54 @@ export default function Login() {
                 </>
             }>
                 <form onSubmit={handleSubmit} className="mt-8">
+                    <div className="pb-10 leading-relaxed flex flex-col space-y-2">
+                        <p className="font-bold">Log In</p>
+                        <p className="text-sm">Access into your account with social networks or with your email and
+                            password.</p>
+                    </div>
+
                     <div className="flex flex-col space-y-4">
-                        <InputFieldBox value={email}
-                                       focus
-                                       setValue={setEmail}
-                                       label="Email"
-                                       name="email"
-                                       placeholder="john-doe@email.com"
-                                       type="email"/>
+                        {!withEmail && <div>
+                            <SocialAuth/>
 
-                        <InputFieldBox value={password}
-                                       setValue={setPassword}
-                                       label="Password"
-                                       name="password"
-                                       placeholder="Password"
-                                       type="password"/>
+                            <NoLinkButton text="or Log In with Email"
+                                          className="block w-full text-center p-3"
+                                          onClick={(e) => {
+                                              e.preventDefault()
+                                              setWithEmail(true)
+                                          }}
+                                          loading={false}/>
+                        </div>}
 
-                        <FormErrorMessage error={formError}/>
+                        {withEmail && (
+                                <>
+                                    <InputFieldBox value={email}
+                                                   focus
+                                                   setValue={setEmail}
+                                                   label="Email"
+                                                   name="email"
+                                                   placeholder="john-doe@email.com"
+                                                   type="email"/>
 
-                        <PrimaryButton text="Log In" loading={loading}/>
+                                    <InputFieldBox value={password}
+                                                   setValue={setPassword}
+                                                   label="Password"
+                                                   name="password"
+                                                   placeholder="Password"
+                                                   type="password"/>
+
+                                    <FormErrorMessage error={formError}/>
+
+                                    <PrimaryButton text="Log In" loading={loading}/>
+
+                                    <NoLinkButton text="Back"
+                                                  className="w-full text-center text-sm pt-4"
+                                                  onClick={(e) => {
+                                                      e.preventDefault()
+                                                      setWithEmail(false)
+                                                  }}/>
+                                </>
+                        )}
                     </div>
                 </form>
             </Authentication>

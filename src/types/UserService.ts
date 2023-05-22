@@ -15,9 +15,7 @@ export type UserService = OauthService | TelegramUserService
 
 export type OauthService = BaseUserService & {
     service_id: UserServiceType.GitHub | UserServiceType.Google
-    service_data: {
-        configuration: { [key: string]: string }
-    }
+    service_data: { [key: string]: string | string[] }
 }
 
 export type TelegramUserService = BaseUserService & {

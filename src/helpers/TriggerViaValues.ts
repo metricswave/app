@@ -1,13 +1,13 @@
 import {Trigger, TriggerVia} from "../types/Trigger"
-import {UserService, UserServiceType} from "../types/UserService"
+import {TelegramUserService, UserService, UserServiceType} from "../types/UserService"
 
 export const mergeDefaultWithTriggerViaValues = (userServices: UserService[], trigger: Trigger | undefined) => {
     const telegramChannelsVia = userServices
         .filter((service) => service.service_id === UserServiceType.Telegram)
         .map((service) => {
             return ({
-                value: service.service_data.configuration.channel_id,
-                label: `Telegram: ${service.service_data.configuration.channel_name}`,
+                value: (service as TelegramUserService).service_data.configuration.channel_id,
+                label: `Telegram: ${(service as TelegramUserService).service_data.configuration.channel_name}`,
                 checked: false,
                 type: "telegram",
             })

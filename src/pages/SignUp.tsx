@@ -1,16 +1,18 @@
-import InputFieldBox from "../components/form/InputFieldBox"
 import PrimaryButton from "../components/form/PrimaryButton"
 import Authentication from "../components/wrappers/Authentication"
-import {LinkButton} from "../components/buttons/LinkButton"
+import {LinkButton, NoLinkButton} from "../components/buttons/LinkButton"
 import {FormEvent, useState} from "react"
 import {DeviceName} from "../storage/DeviceName"
 import {fetchApi} from "../helpers/ApiFetcher"
 import {Tokens} from "../types/Token"
-import FormErrorMessage from "../components/form/FormErrorMessage"
 import {app} from "../config/app"
 import eventTracker from "../helpers/EventTracker"
+import SocialAuth from "../components/social/SocialAuth"
+import InputFieldBox from "../components/form/InputFieldBox"
+import FormErrorMessage from "../components/form/FormErrorMessage"
 
 export default function SignUp() {
+    const [withEmail, setWithEmail] = useState(false)
     const [name, setName] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -106,48 +108,72 @@ export default function SignUp() {
                     }>
                 <form onSubmit={handleSubmit} className="mt-8">
                     <div className="flex flex-col space-y-4">
-                        <div className="text-sm pb-3 leading-relaxed flex flex-col space-y-2">
-                            <p className="font-bold">For now, we still in closed beta.</p>
-                            <p className="text-sm">Only paying users can create an account right now and access the
-                                application. <LinkButton target="_blank" href={`${app.web}/documentation/closed-beta`}
-                                                         text="More information can be found here."/></p>
+                        <div className="pb-6 leading-relaxed flex flex-col space-y-2">
+                            <p className="font-bold">Sign Up</p>
+                            <p className="text-sm">For now, we still in closed beta.</p>
+                            <p className="text-sm">Only paying users can create an account right
+                                now. <LinkButton target="_blank" href={`${app.web}/documentation/closed-beta`}
+                                                 text="More information can be found here."/></p>
                         </div>
 
-                        <InputFieldBox value={name}
-                                       setValue={setName}
-                                       focus
-                                       error={errors.name}
-                                       name="name"
-                                       placeholder="John Doe"
-                                       label="Name"/>
+                        {!withEmail && <div>
+                            <SocialAuth/>
 
-                        <InputFieldBox value={email}
-                                       setValue={setEmail}
-                                       error={errors.email}
-                                       type="email"
-                                       name="email"
-                                       placeholder="john-doe@email.com"
-                                       label="Email"/>
+                            <NoLinkButton text="or Sign Up with Email"
+                                          className="block w-full text-center p-3"
+                                          onClick={(e) => {
+                                              e.preventDefault()
+                                              setWithEmail(true)
+                                          }}
+                                          loading={false}/>
+                        </div>}
 
-                        <InputFieldBox value={password}
-                                       setValue={setPassword}
-                                       error={errors.password}
-                                       type="password"
-                                       name="password"
-                                       placeholder="Password"
-                                       label="Password"/>
+                        {withEmail && (
+                                <>
+                                    <InputFieldBox value={name}
+                                                   setValue={setName}
+                                                   focus
+                                                   error={errors.name}
+                                                   name="name"
+                                                   placeholder="John Doe"
+                                                   label="Name"/>
 
-                        <InputFieldBox value={passwordConfirmation}
-                                       setValue={setPasswordConfirmation}
-                                       error={errors.passwordConfirmation}
-                                       type="password"
-                                       name="password_confirmation"
-                                       placeholder="Confirm password"
-                                       label="Confirm password"/>
+                                    <InputFieldBox value={email}
+                                                   setValue={setEmail}
+                                                   error={errors.email}
+                                                   type="email"
+                                                   name="email"
+                                                   placeholder="john-doe@email.com"
+                                                   label="Email"/>
 
-                        <FormErrorMessage error={formError}/>
+                                    <InputFieldBox value={password}
+                                                   setValue={setPassword}
+                                                   error={errors.password}
+                                                   type="password"
+                                                   name="password"
+                                                   placeholder="Password"
+                                                   label="Password"/>
 
-                        <PrimaryButton text="Sign Up" loading={loading}/>
+                                    <InputFieldBox value={passwordConfirmation}
+                                                   setValue={setPasswordConfirmation}
+                                                   error={errors.passwordConfirmation}
+                                                   type="password"
+                                                   name="password_confirmation"
+                                                   placeholder="Confirm password"
+                                                   label="Confirm password"/>
+
+                                    <FormErrorMessage error={formError}/>
+
+                                    <PrimaryButton text="Sign Up" loading={loading}/>
+
+                                    <NoLinkButton className="w-full text-center text-sm pt-4"
+                                                  text="Back"
+                                                  onClick={(e) => {
+                                                      e.preventDefault()
+                                                      setWithEmail(false)
+                                                  }}/>
+                                </>
+                        )}
                     </div>
                 </form>
             </Authentication>

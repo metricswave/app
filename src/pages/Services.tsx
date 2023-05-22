@@ -3,11 +3,11 @@ import React, {useState} from "react"
 import PageTitle from "../components/sections/PageTitle"
 import {useServicesState} from "../storage/Services"
 import {useUserServicesState} from "../storage/UserServices"
-import {fetchAuthApi} from "../helpers/ApiFetcher"
 import {useSearchParams} from "react-router-dom"
 import {Service} from "../types/Service"
 import DisconnectedService from "../components/services/DisconnectedService"
 import UserServiceBlock from "../components/user_services/UserServiceBlock"
+import {connectServiceMethod} from "../components/services/ConnectServiceMethod"
 
 export default function Services() {
     const {services} = useServicesState()
@@ -26,17 +26,10 @@ export default function Services() {
             .filter((service) => !connectedServicesIds.includes(service.id) || service.multiple)
             .sort((a, b) => a.name.localeCompare(b.name))
 
-    const connectService = (service: Service) => {
-        if (service.configuration.type === "oauth") {
-            setLoading(service.driver)
-            fetchAuthApi<{ path: string }>(`/auth/${service.driver}/redirect`, {
-                success: (data) => {
-                    window.location.href = data.data.path
-                },
-                error: (error) => setLoading(false),
-                catcher: () => setLoading(false),
-            })
-        }
+    const connectService = async (service: Service) => {
+        setLoading(service.driver)
+        await connectServiceMethod(service, true)
+        setLoading(false)
     }
 
     return (
@@ -74,7 +67,7 @@ export default function Services() {
                                     service={service}
                                     loading={loading === service.driver}
                                     connectService={connectService}
-                                    onConneted={reloadUserServices}
+                                    onConnected={reloadUserServices}
                             />,
                     )}
                 </SectionContainer>}

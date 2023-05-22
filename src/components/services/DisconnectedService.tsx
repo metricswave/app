@@ -13,10 +13,10 @@ type Props = {
     service: Service
     loading: boolean
     connectService: (service: Service) => void
-    onConneted: () => void
+    onConnected: () => void
 }
 
-export default function DisconnectedService({service, loading, connectService, onConneted: connected}: Props) {
+export default function DisconnectedService({service, loading, connectService, onConnected: connected}: Props) {
     const [open, setOpen] = useState(false)
 
     if (service.configuration.type === "oauth") {

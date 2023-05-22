@@ -1,7 +1,8 @@
 import {expirableLocalStorage, TEN_MINUTES_SECONDS} from "../helpers/ExpirableLocalStorage"
 import {useEffect, useState} from "react"
 import {Service} from "../types/Service"
-import {fetchAuthApi} from "../helpers/ApiFetcher"
+import {fetchApi} from "../helpers/ApiFetcher"
+import {app} from "../config/app"
 
 const SERVICES_KEY: string = "nw:services"
 const SERVICES_REFRESH_KEY: string = "nw:service:refresh"
@@ -17,7 +18,7 @@ export function useServicesState() {
     useEffect(() => {
         if (isFresh) return
 
-        fetchAuthApi<{ services: Service[] }>("/services", {
+        fetchApi<{ services: Service[] }>("/services", {
             success: (data) => {
                 setServices(data.data.services)
                 setIsFresh(true)
@@ -30,7 +31,12 @@ export function useServicesState() {
     }, [isFresh])
 
     return {
-        services: services.filter(s => s.driver !== "google" || localStorage.getItem("nw:services:show-all") === "1"),
+        services: services.filter(
+            s => s.driver !== "google"
+                || localStorage.getItem("nw:services:show-all") === "1"
+                || !app.isProduction,
+        ),
+        authServices: services.filter(s => s.driver === "google"),
         reloadServices: () => setIsFresh(false),
     }
 }
