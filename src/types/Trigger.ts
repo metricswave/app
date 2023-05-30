@@ -6,12 +6,13 @@ export enum TriggerTypeId {
     OnTime = 2,
     WeatherSummary = 3,
     TimeToLeave = 4,
+    CalendarTimeToLeave = 5,
 }
 
 export type Trigger = OnTimeTrigger | WebhookTrigger | WeatherSummaryTrigger | TimeToLeaveTrigger
 
 export type BaseTrigger = {
-    id: string
+    id: number
     uuid: string
     emoji: string
     title: string

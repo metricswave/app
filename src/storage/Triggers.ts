@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react"
 import {fetchAuthApi} from "../helpers/ApiFetcher"
 import {expirableLocalStorage, THIRTY_SECONDS} from "../helpers/ExpirableLocalStorage"
-import {Trigger} from "../types/Trigger"
+import {Trigger, TriggerTypeId} from "../types/Trigger"
 
 const TRIGGER_KEY: string = "nw:triggers"
 const TRIGGER_REFRESH_KEY: string = "nw:triggers:refresh"
@@ -35,29 +35,34 @@ export function useTriggersState() {
     }, [isFresh])
 
     const mapTriggers = (triggers: Trigger[]) => {
-        return triggers.map((t: Trigger) => {
-            TIME_FIELDS.forEach((field) => {
-                if (field in t.configuration.fields) {
-                    const time = t.configuration.fields[field].split(":")
-                    let hour = (parseInt(time[0]) + (new Date().getTimezoneOffset() / 60) * -1)
-
-                    if (hour < 0) {
-                        hour = 24 + hour
-                    } else if (hour > 23) {
-                        hour = hour - 24
-                    }
-
-                    time[0] = hour.toString()
-                    if (time[0].length === 1) {
-                        time[0] = "0" + time[0]
-                    }
-
-                    t.configuration.fields[field] = time.join(":")
-                }
+        return triggers
+            .filter((t: Trigger) => {
+                return t.id !== TriggerTypeId.CalendarTimeToLeave
+                    || localStorage.getItem("nw:triggers:show-all") === "1"
             })
+            .map((t: Trigger) => {
+                TIME_FIELDS.forEach((field) => {
+                    if (field in t.configuration.fields) {
+                        const time = t.configuration.fields[field].split(":")
+                        let hour = (parseInt(time[0]) + (new Date().getTimezoneOffset() / 60) * -1)
 
-            return t
-        })
+                        if (hour < 0) {
+                            hour = 24 + hour
+                        } else if (hour > 23) {
+                            hour = hour - 24
+                        }
+
+                        time[0] = hour.toString()
+                        if (time[0].length === 1) {
+                            time[0] = "0" + time[0]
+                        }
+
+                        t.configuration.fields[field] = time.join(":")
+                    }
+                })
+
+                return t
+            })
     }
 
     return {
