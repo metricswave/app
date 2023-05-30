@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react"
 import {fetchAuthApi} from "../helpers/ApiFetcher"
 import {expirableLocalStorage, THIRTY_SECONDS} from "../helpers/ExpirableLocalStorage"
-import {Trigger, TriggerTypeId} from "../types/Trigger"
+import {Trigger} from "../types/Trigger"
 
 const TRIGGER_KEY: string = "nw:triggers"
 const TRIGGER_REFRESH_KEY: string = "nw:triggers:refresh"
@@ -36,10 +36,6 @@ export function useTriggersState() {
 
     const mapTriggers = (triggers: Trigger[]) => {
         return triggers
-            .filter((t: Trigger) => {
-                return t.id !== TriggerTypeId.CalendarTimeToLeave
-                    || localStorage.getItem("nw:triggers:show-all") === "1"
-            })
             .map((t: Trigger) => {
                 TIME_FIELDS.forEach((field) => {
                     if (field in t.configuration.fields) {
