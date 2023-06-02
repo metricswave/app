@@ -4,7 +4,7 @@ import {expirableLocalStorage, THIRTY_SECONDS} from "../helpers/ExpirableLocalSt
 import {Trigger} from "../types/Trigger"
 
 const TRIGGER_KEY: string = "nw:triggers"
-const TRIGGER_REFRESH_KEY: string = "nw:triggers:refresh"
+const TRIGGER_REFRESH_KEY: string = "nw:triggers:refresh:v2"
 
 const TIME_FIELDS: string[] = ["time", "arrival_time"]
 

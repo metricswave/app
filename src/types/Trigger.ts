@@ -68,7 +68,7 @@ export type TimeToLeaveTrigger = BaseTrigger & {
 }
 
 export type TriggerVia = {
-    value: string
+    id: number,
     label: string
     checked: boolean
     type: string
