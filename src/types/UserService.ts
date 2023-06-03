@@ -7,6 +7,7 @@ export enum UserServiceType {
 type BaseUserService = {
     id: number
     user_id: string
+    reconectable: boolean
     created_at: string
     updated_at: string
 }
