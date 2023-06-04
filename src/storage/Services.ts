@@ -2,7 +2,6 @@ import {expirableLocalStorage, TEN_MINUTES_SECONDS} from "../helpers/ExpirableLo
 import {useEffect, useState} from "react"
 import {Service} from "../types/Service"
 import {fetchApi} from "../helpers/ApiFetcher"
-import {app} from "../config/app"
 
 const SERVICES_KEY: string = "nw:services"
 const SERVICES_REFRESH_KEY: string = "nw:service:refresh"
@@ -31,11 +30,7 @@ export function useServicesState() {
     }, [isFresh])
 
     return {
-        services: services.filter(
-            s => s.driver !== "google"
-                || localStorage.getItem("nw:services:show-all") === "1"
-                || !app.isProduction,
-        ),
+        services,
         authServices: services.filter(s => s.driver === "google"),
         reloadServices: () => setIsFresh(false),
     }
