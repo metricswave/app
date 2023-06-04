@@ -51,6 +51,8 @@ function triggerInitialStateTitle(triggerType: TriggerType): string {
             return "Today: {weather.today.condition}"
         case TriggerTypeId.TimeToLeave:
             return "Time to leave for {destination}"
+        case TriggerTypeId.CalendarTimeToLeave:
+            return "Time to leave for {event.title}"
     }
 
     return ""
@@ -64,6 +66,8 @@ function triggerInitialStateContent(triggerType: TriggerType): string {
                 "**Sunrise:** {weather.today.sunrise} / {weather.today.sunset}"
         case TriggerTypeId.TimeToLeave:
             return "Depending on current traffic, it will take {duration} to be {travel_mode}. You have 15 minutes to leave if you want to be there on time."
+        case TriggerTypeId.CalendarTimeToLeave:
+            return "Depending on current traffic, it will take {duration} to be {travel_mode}. You have 15 minutes to leave if you want to be there at {event.time}."
     }
 
     return ""
@@ -71,6 +75,20 @@ function triggerInitialStateContent(triggerType: TriggerType): string {
 
 function autocompleteOptionsForTriggerType(triggerType: TriggerType, values: FieldValues): string[] {
     switch (triggerType.id) {
+        case TriggerTypeId.CalendarTimeToLeave:
+            return [
+                "origin",
+                "destination",
+                "travel_mode",
+                "arrival_time",
+                "distance",
+                "meters",
+                "duration",
+                "seconds",
+                "event.title",
+                "event.date",
+                "event.time",
+            ]
         case TriggerTypeId.WeatherSummary:
             return [
                 "weather.today.code",

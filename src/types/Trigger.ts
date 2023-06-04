@@ -9,7 +9,12 @@ export enum TriggerTypeId {
     CalendarTimeToLeave = 5,
 }
 
-export type Trigger = OnTimeTrigger | WebhookTrigger | WeatherSummaryTrigger | TimeToLeaveTrigger
+export type Trigger =
+    OnTimeTrigger
+    | WebhookTrigger
+    | WeatherSummaryTrigger
+    | TimeToLeaveTrigger
+    | CalendarTimeToLeaveTrigger
 
 export type BaseTrigger = {
     id: number
@@ -63,6 +68,16 @@ export type TimeToLeaveTrigger = BaseTrigger & {
             mode: "driving" | "walking" | "bicycling" | "transit",
             arrival_time: string,
             weekdays: WeekDaysType[],
+        }
+    }
+}
+
+export type CalendarTimeToLeaveTrigger = BaseTrigger & {
+    trigger_type_id: TriggerTypeId.CalendarTimeToLeave,
+    configuration: {
+        fields: {
+            origin: string,
+            mode: "driving" | "walking" | "bicycling" | "transit",
         }
     }
 }

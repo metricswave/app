@@ -36,6 +36,19 @@ export default function TriggerDetails({trigger, onDeleted: deleted, onUpdate: u
 
     const triggerInstructions = (trigger: Trigger): ReactElement => {
         switch (trigger.trigger_type_id) {
+            case TriggerTypeId.CalendarTimeToLeave:
+                return (<>
+                    <p>
+                        You will receive a notification for all your events with a location. The notification will be
+                        sent at time to leave to arrive at from {trigger.configuration.fields.origin}.
+                    </p>
+
+                    <p className="pt-2">
+                        <LinkButton href={`${app.web}/documentation/triggers/calendar-time-to-leave`}
+                                    target="_blank"
+                                    text="More info about Calendar Time To Leave triggers."/>
+                    </p>
+                </>)
             case TriggerTypeId.TimeToLeave:
                 return (<>
                     <p>
@@ -65,8 +78,8 @@ export default function TriggerDetails({trigger, onDeleted: deleted, onUpdate: u
                 </>)
             case TriggerTypeId.Webhook:
                 const query = trigger.configuration.fields.parameters
-                        .map((param) => `${param}={value}`)
-                        .join("&")
+                    .map((param) => `${param}={value}`)
+                    .join("&")
                 const url = `${app.webhooks}/${trigger.uuid}?${query}`
 
                 return (<div className="flex flex-col space-y-4">
@@ -80,12 +93,12 @@ export default function TriggerDetails({trigger, onDeleted: deleted, onUpdate: u
 
                     <div>
                         <InputFieldBox
-                                value={url}
-                                setValue={() => null}
-                                label="Webhook Path"
-                                name="webhook_path"
-                                placeholder=""
-                                disabled
+                            value={url}
+                            setValue={() => null}
+                            label="Webhook Path"
+                            name="webhook_path"
+                            placeholder=""
+                            disabled
                         />
 
                         <CopyButton textToCopy={url} className="w-full mt-2"/>
@@ -112,42 +125,42 @@ export default function TriggerDetails({trigger, onDeleted: deleted, onUpdate: u
     }
 
     return (
-            <>
-                {step === "details" &&
-                        <>
-                            <DialogHeader/>
+        <>
+            {step === "details" &&
+                <>
+                    <DialogHeader/>
 
-                            <div className="flex flex-col space-y-4">
-                                <div className="">
-                                    <Dialog.Title className="font-bold m-0 text-xl">
-                                        {trigger.emoji} {trigger.title}
-                                    </Dialog.Title>
+                    <div className="flex flex-col space-y-4">
+                        <div className="">
+                            <Dialog.Title className="font-bold m-0 text-xl">
+                                {trigger.emoji} {trigger.title}
+                            </Dialog.Title>
 
-                                    <div className="mt-2 opacity-70 flex flex-row items-center space-x-2">
-                                        <img src={`/images/trigger-types/${triggerType.icon}`}
-                                             alt={triggerType.name}
-                                             className="w-4 h-4 rounded-sm"/>
-                                        <div className="">{triggerType.name}</div>
-                                    </div>
-                                </div>
-
-                                <div className="py-4">
-                                    {triggerInstructions(trigger)}
-                                </div>
-
-                                <div className="w-full flex flex-col space-y-3">
-                                    <PrimaryButton text="Edit" onClick={() => setStep("edit")} className="w-full"/>
-                                    <DeleteButton text="Delete"
-                                                  onClick={handleDelete}
-                                                  className="w-full"/>
-                                </div>
+                            <div className="mt-2 opacity-70 flex flex-row items-center space-x-2">
+                                <img src={`/images/trigger-types/${triggerType.icon}`}
+                                     alt={triggerType.name}
+                                     className="w-4 h-4 rounded-sm"/>
+                                <div className="">{triggerType.name}</div>
                             </div>
-                        </>
-                }
+                        </div>
 
-                {step === "edit" &&
-                        <TriggerEdit onUpdate={updated} trigger={trigger} onBack={() => setStep("details")}/>
-                }
-            </>
+                        <div className="py-4">
+                            {triggerInstructions(trigger)}
+                        </div>
+
+                        <div className="w-full flex flex-col space-y-3">
+                            <PrimaryButton text="Edit" onClick={() => setStep("edit")} className="w-full"/>
+                            <DeleteButton text="Delete"
+                                          onClick={handleDelete}
+                                          className="w-full"/>
+                        </div>
+                    </div>
+                </>
+            }
+
+            {step === "edit" &&
+                <TriggerEdit onUpdate={updated} trigger={trigger} onBack={() => setStep("details")}/>
+            }
+        </>
     )
 }
