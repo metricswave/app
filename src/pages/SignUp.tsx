@@ -109,6 +109,8 @@ export default function SignUp() {
                 <div className="flex flex-col space-y-4">
                     <div className="pb-6 leading-relaxed flex flex-col space-y-2">
                         <p className="font-bold">Sign Up</p>
+                        <p className="text-sm">Create a new account with social networks or with your email and
+                            password.</p>
                     </div>
 
                     {!withEmail && <div>
