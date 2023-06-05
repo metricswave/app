@@ -49,7 +49,7 @@ export default function BillingSettings() {
                                 <div className="text-sm opacity-70 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
                                     <span>20 notifications per month</span>
                                     <span className="hidden sm:inline">/</span>
-                                    <span>5 triggers</span>
+                                    <span>Unlimited triggers</span>
                                 </div>
                             </div>
                         </div>
