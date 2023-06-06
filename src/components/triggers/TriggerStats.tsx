@@ -1,18 +1,58 @@
 import PageTitle from "../sections/PageTitle"
 import {Trigger} from "../../types/Trigger"
-import {useTriggerStatsState} from "../../storage/TriggerStats"
+import {Stats, useTriggerStatsState} from "../../storage/TriggerStats"
 import {Bar, BarChart, ResponsiveContainer, XAxis, YAxis} from "recharts"
 import {useState} from "react"
 import {NoLinkButton} from "../buttons/LinkButton"
+import {eachDayOfInterval, eachMonthOfInterval} from "date-fns"
+
+function getGraphData(stats: Stats, view: "daily" | "monthly") {
+    const data = stats[view].map((stat) => ({
+        name: stat.date,
+        total: stat.score,
+    }))
+
+
+    // Fill missing days in data from today to 30 days ago
+    const today = new Date()
+    if (view === "daily") {
+        const thirtyDaysAgo = new Date()
+        thirtyDaysAgo.setDate(today.getDate() - 30)
+        const graphData: Date[] = eachDayOfInterval({start: thirtyDaysAgo, end: today})
+        graphData.forEach((date) => {
+            const dateStr = date.toISOString().split("T")[0]
+            if (!stats[view].find((stat) => new Date(stat.date).toISOString().split("T")[0] === dateStr)) {
+                data.push({
+                    name: date,
+                    total: 0,
+                })
+            }
+        })
+    }
+
+    if (view === "monthly") {
+        const twelveMonthsAgo = new Date()
+        twelveMonthsAgo.setMonth(today.getMonth() - 12)
+        const graphData: Date[] = eachMonthOfInterval({start: twelveMonthsAgo, end: today})
+        graphData.forEach((date) => {
+            const dateStr = date.toISOString().split("T")[0]
+            if (!stats[view].find((stat) => new Date(stat.date).toISOString().split("T")[0] === dateStr)) {
+                data.push({
+                    name: date,
+                    total: 0,
+                })
+            }
+        })
+    }
+
+    data.sort((a, b) => new Date(a.name).getTime() - new Date(b.name).getTime())
+    return data
+}
 
 export function TriggerStats({trigger}: { trigger: Trigger }) {
     const [view, setView] = useState<"daily" | "monthly">("daily")
     const {stats} = useTriggerStatsState(trigger)
-
-    const data = stats[view].reverse().map((stat) => ({
-        name: stat.date,
-        total: stat.score,
-    }))
+    const data = getGraphData(stats, view)
 
     return (
         <div className="bg-white rounded-sm p-5 pb-1 shadow">
@@ -54,7 +94,7 @@ export function TriggerStats({trigger}: { trigger: Trigger }) {
                            }}/>
                     <YAxis stroke="#888888"
                            fontSize={12}
-                           width={20}
+                           width={24}
                            tickLine={false}
                            axisLine={false}
                            tickFormatter={(value) => `${value}`}/>

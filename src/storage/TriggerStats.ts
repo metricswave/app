@@ -2,7 +2,7 @@ import {Trigger} from "../types/Trigger"
 import {useEffect, useState} from "react"
 import {fetchAuthApi} from "../helpers/ApiFetcher"
 
-type Stats = {
+export type Stats = {
     daily: StatRow[],
     monthly: StatRow[],
 }
