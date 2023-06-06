@@ -1,27 +1,26 @@
 import {Trigger, TriggerTypeId} from "../../types/Trigger"
-import {DialogHeader} from "../dialog/DialogHeader"
-import * as Dialog from "@radix-ui/react-dialog"
 import {useTriggerTypesState} from "../../storage/TriggerTypes"
-import TriggerEdit from "./TriggerEdit"
-import {ReactElement, useState} from "react"
-import PrimaryButton from "../form/PrimaryButton"
+import {ReactElement} from "react"
 import DeleteButton from "../form/DeleteButton"
 import InputFieldBox from "../form/InputFieldBox"
 import {app} from "../../config/app"
 import {fetchAuthApi} from "../../helpers/ApiFetcher"
 import {LinkButton} from "../buttons/LinkButton"
 import CopyButton from "../form/CopyButton"
+import {useNavigate} from "react-router-dom"
+import PageTitle from "../sections/PageTitle"
+import {Pencil1Icon} from "@radix-ui/react-icons"
+import SecondaryButton from "../form/SecondaryButton"
 
 type Props = {
     trigger: Trigger
     onDeleted: () => void
-    onUpdate: () => void
 }
 
-export default function TriggerDetails({trigger, onDeleted: deleted, onUpdate: updated}: Props) {
+export default function TriggerDetails({trigger, onDeleted: deleted}: Props) {
+    const navigate = useNavigate()
     const {getTriggerTypeById} = useTriggerTypesState()
     const triggerType = getTriggerTypeById(trigger.trigger_type_id)!
-    const [step, setStep] = useState("details")
 
     const listFormatter = new Intl.ListFormat("en")
 
@@ -126,41 +125,22 @@ export default function TriggerDetails({trigger, onDeleted: deleted, onUpdate: u
 
     return (
         <>
-            {step === "details" &&
-                <>
-                    <DialogHeader/>
+            <div className="flex flex-col sm:flex-row items-start justify-center sm:items-center sm:justify-between">
+                <PageTitle title={`${trigger.emoji} ${trigger.title}`} description={triggerType.name}/>
+                <div className="flex flex-row space-x-3 w-full sm:w-auto mt-4 sm:mt-0">
+                    <SecondaryButton onClick={() => navigate(`/triggers/${trigger.uuid}/edit`)}
+                                     className="w-full sm:w-auto flex flex-row items-center space-x-3">
+                        <Pencil1Icon/> <span className="sm:hidden">Edit</span>
+                    </SecondaryButton>
+                    <DeleteButton justIcon onClick={handleDelete}/>
+                </div>
+            </div>
 
-                    <div className="flex flex-col space-y-4">
-                        <div className="">
-                            <Dialog.Title className="font-bold m-0 text-xl">
-                                {trigger.emoji} {trigger.title}
-                            </Dialog.Title>
-
-                            <div className="mt-2 opacity-70 flex flex-row items-center space-x-2">
-                                <img src={`/images/trigger-types/${triggerType.icon}`}
-                                     alt={triggerType.name}
-                                     className="w-4 h-4 rounded-sm"/>
-                                <div className="">{triggerType.name}</div>
-                            </div>
-                        </div>
-
-                        <div className="py-4">
-                            {triggerInstructions(trigger)}
-                        </div>
-
-                        <div className="w-full flex flex-col space-y-3">
-                            <PrimaryButton text="Edit" onClick={() => setStep("edit")} className="w-full"/>
-                            <DeleteButton text="Delete"
-                                          onClick={handleDelete}
-                                          className="w-full"/>
-                        </div>
-                    </div>
-                </>
-            }
-
-            {step === "edit" &&
-                <TriggerEdit onUpdate={updated} trigger={trigger} onBack={() => setStep("details")}/>
-            }
+            <div className="flex flex-col space-y-4">
+                <div className="py-2">
+                    {triggerInstructions(trigger)}
+                </div>
+            </div>
         </>
     )
 }

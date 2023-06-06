@@ -5,7 +5,8 @@ import className = ReactMarkdown.propTypes.className
 type LinkButtonProps = React.HTMLAttributes<HTMLAnchorElement> & {
     href: string,
     target?: string,
-    text: string,
+    text?: string,
+    children?: React.ReactNode,
     loading?: boolean
 }
 
@@ -17,42 +18,42 @@ const loadingClasses = "text-zinc-500 dark:text-zinc-200 animate-pulse smooth cu
 
 const deleteClasses = "text-sm opacity-70 text-red-600 hover:text-red-900 dark:text-red-50/90 dark:hover:text-red-500/90 smooth flex flex-row space-x-2 cursor-pointer"
 
-export function NoLinkButton({text, loading, className, ...props}: NoLinkButtonProps) {
+export function NoLinkButton({text, children, loading, className, ...props}: NoLinkButtonProps) {
     return (
-            <span className={(loading ? loadingClasses : classes) + ` ${className}`} {...props}>
-           {text}
+        <span className={(loading ? loadingClasses : classes) + ` ${className}`} {...props}>
+           {text ?? children}
        </span>
     )
 }
 
-export function SecondaryNoLinkButton({text, loading, ...props}: NoLinkButtonProps) {
+export function SecondaryNoLinkButton({text, children, loading, ...props}: NoLinkButtonProps) {
     return (
-            <span className={(loading ? loadingClasses : secondaryClasses) + ` ${className}`} {...props}>
-           {text}
+        <span className={(loading ? loadingClasses : secondaryClasses) + ` ${className}`} {...props}>
+           {text ?? children}
        </span>
     )
 }
 
-export function DeleteNoLinkButton({text, loading, ...props}: NoLinkButtonProps) {
+export function DeleteNoLinkButton({text, children, loading, ...props}: NoLinkButtonProps) {
     return (
-            <span className={(loading ? loadingClasses : deleteClasses) + ` ${className}`} {...props}>
-           {text}
+        <span className={(loading ? loadingClasses : deleteClasses) + ` ${className}`} {...props}>
+           {text ?? children}
        </span>
     )
 }
 
-export function LinkButton({href, text, loading, ...props}: LinkButtonProps) {
+export function LinkButton({href, text, children, loading, ...props}: LinkButtonProps) {
     return (
-            <a href={href} className={(loading ? loadingClasses : classes) + ` ${className}`} {...props}>
-                {text}
-            </a>
+        <a href={href} className={(loading ? loadingClasses : classes) + ` ${className}`} {...props}>
+            {text ?? children}
+        </a>
     )
 }
 
-export function SecondaryLinkButton({href, text, loading, ...props}: LinkButtonProps) {
+export function SecondaryLinkButton({href, text, children, loading, ...props}: LinkButtonProps) {
     return (
-            <a href={href} className={(loading ? loadingClasses : secondaryClasses) + ` ${className}`} {...props}>
-                {text}
-            </a>
+        <a href={href} className={(loading ? loadingClasses : secondaryClasses) + ` ${className}`} {...props}>
+            {text ?? children}
+        </a>
     )
 }

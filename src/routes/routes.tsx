@@ -14,6 +14,8 @@ import Settings from "../pages/Settings/Settings"
 import BillingSettings from "../pages/Settings/BillingSettings"
 import ProfileSettings from "../pages/Settings/ProfileSettings"
 import ServiceConnection from "../pages/ServiceConnection"
+import Trigger from "../pages/Trigger"
+import TriggerEdit from "../pages/TriggerEdit"
 
 export const routes: RouteObject[] = [
     {
@@ -30,8 +32,16 @@ export const routes: RouteObject[] = [
                 element: <Services/>,
             },
             {
-                path: "/triggers/:triggerUuid?",
+                path: "/triggers/",
                 element: <Triggers/>,
+            },
+            {
+                path: "/triggers/:triggerUuid",
+                element: <Trigger/>,
+            },
+            {
+                path: "/triggers/:triggerUuid/edit",
+                element: <TriggerEdit/>,
             },
             {
                 path: "/settings",

@@ -21,8 +21,6 @@ export const mergeDefaultWithTriggerViaValues = (userServices: UserService[], tr
 }
 
 export const uniqueArrayValues = (array: TriggerVia[]): TriggerVia[] => {
-    console.log(array)
-
     const onlyUnique = (value: TriggerVia, index: number, array: TriggerVia[]) => {
         return array.findIndex(i => i.id === value.id && i.type === value.type) === index
     }

@@ -63,7 +63,10 @@ export function useTriggersState() {
 
     return {
         triggers,
-        refreshTriggers: () => setIsFresh(false),
+        refreshTriggers: () => {
+            expirableLocalStorage.delete(TRIGGER_REFRESH_KEY)
+            setIsFresh(false)
+        },
         triggerByUuid: (uuid: string) => triggers.find(t => t.uuid === uuid),
     }
 }
