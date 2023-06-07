@@ -1,17 +1,14 @@
 const isProduction = process.env.NODE_ENV === "production"
 
+const productionPath = "https://notifywave.com"
+const developmentPath = "http://notifywave.test"
+
 export const app = {
     name: "NotifyWave",
     env: process.env.NODE_ENV,
     isProduction,
-    web: isProduction ?
-        "https://notifywave.com" :
-        "http://notifywave.test",
-    api: isProduction ?
-        "https://notifywave.com/api" :
-        "http://notifywave.test/api",
-    webhooks: isProduction ?
-        "https://notifywave.com/webhooks" :
-        "http://notifywave.test/webhooks",
+    web: isProduction ? `${productionPath}` : `${developmentPath}`,
+    api: isProduction ? `${productionPath}/api` : `${developmentPath}/api`,
+    webhooks: isProduction ? `${productionPath}/webhooks` : `${developmentPath}/webhooks`,
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
 }
