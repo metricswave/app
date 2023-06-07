@@ -20,8 +20,8 @@ export function useTriggerStatsState(trigger: Trigger) {
             `/triggers/${trigger.uuid}/stats`,
             {
                 success: (data) => setStats(data.data),
-                error: (data) => setStats({monthly: [], daily: []}),
-                catcher: (data) => setStats({monthly: [], daily: []}),
+                error: () => setStats({monthly: [], daily: []}),
+                catcher: () => setStats({monthly: [], daily: []}),
             },
         )
     }, [trigger])

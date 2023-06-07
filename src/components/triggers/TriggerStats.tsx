@@ -1,10 +1,11 @@
 import PageTitle from "../sections/PageTitle"
 import {Trigger} from "../../types/Trigger"
 import {Stats, useTriggerStatsState} from "../../storage/TriggerStats"
-import {Bar, BarChart, ResponsiveContainer, XAxis, YAxis} from "recharts"
+import {Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts"
 import {useState} from "react"
 import {NoLinkButton} from "../buttons/LinkButton"
 import {eachDayOfInterval, eachMonthOfInterval} from "date-fns"
+import {number_formatter} from "../../helpers/NumberFormatter"
 
 function getGraphData(stats: Stats, view: "daily" | "monthly") {
     const data = stats[view].map((stat) => ({
@@ -53,13 +54,16 @@ export function TriggerStats({trigger}: { trigger: Trigger }) {
     const [view, setView] = useState<"daily" | "monthly">("daily")
     const {stats} = useTriggerStatsState(trigger)
     const data = getGraphData(stats, view)
+    const average = number_formatter(data.reduce((acc, curr) => acc + curr.total, 0) / data.length)
 
     return (
-        <div className="bg-white rounded-sm p-5 pb-1 shadow">
+        <div className="bg-white dark:bg-zinc-800 rounded-sm p-5 pb-1 shadow">
             <div className="pb-8 flex flex-col sm:flex-row space-y-3 sm:space-y-0 items-start sm:items-center justify-between">
-                {view === "daily" && <PageTitle title="📊 Daily Stats"/>}
+                {view === "daily" &&
+                    <PageTitle title="📊 Daily Stats" description={`${average} average hits per day.`}/>}
 
-                {view === "monthly" && <PageTitle title="📊 Monthly Stats"/>}
+                {view === "monthly" &&
+                    <PageTitle title="📊 Monthly Stats" description={`${average} average hits per month`}/>}
 
                 <div className="text-sm text-right">
                     {view === "daily" ? (
@@ -72,6 +76,27 @@ export function TriggerStats({trigger}: { trigger: Trigger }) {
 
             <ResponsiveContainer width="100%" height={350}>
                 <BarChart data={data}>
+                    <Tooltip
+                        cursor={{fill: "#ffffff", opacity: "0.05"}}
+                        content={({active, payload, label}) => {
+                            const date = new Date(label)
+                            const formattedDate = view === "daily" ? date.toLocaleDateString(undefined, {
+                                month: "short",
+                                day: "numeric",
+                            }) : date.toLocaleDateString(undefined, {
+                                month: "short",
+                                year: "numeric",
+                            })
+                            const score = payload?.[0]?.value ?? 0
+
+                            return (<>
+                                <div className="bg-white dark:bg-zinc-800 p-2 shadow rounded-sm text-sm">
+                                    <p>{formattedDate}: <span>{score}</span></p>
+                                </div>
+                            </>)
+                        }}
+
+                    />
                     <XAxis dataKey="name"
                            stroke="#888888"
                            fontSize={12}
@@ -104,3 +129,5 @@ export function TriggerStats({trigger}: { trigger: Trigger }) {
         </div>
     )
 }
+
+
