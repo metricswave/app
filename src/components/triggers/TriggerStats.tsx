@@ -22,9 +22,9 @@ function getGraphData(stats: Stats, view: "daily" | "monthly") {
         const graphData: Date[] = eachDayOfInterval({start: thirtyDaysAgo, end: today})
         graphData.forEach((date) => {
             const dateStr = date.toISOString().split("T")[0]
-            if (!stats[view].find((stat) => new Date(stat.date).toISOString().split("T")[0] === dateStr)) {
+            if (!stats[view].find((stat) => stat.date.split("T")[0] === dateStr)) {
                 data.push({
-                    name: date,
+                    name: dateStr,
                     total: 0,
                 })
             }
@@ -36,10 +36,10 @@ function getGraphData(stats: Stats, view: "daily" | "monthly") {
         twelveMonthsAgo.setMonth(today.getMonth() - 12)
         const graphData: Date[] = eachMonthOfInterval({start: twelveMonthsAgo, end: today})
         graphData.forEach((date) => {
-            const dateStr = date.toISOString().split("T")[0]
-            if (!stats[view].find((stat) => new Date(stat.date).toISOString().split("T")[0] === dateStr)) {
+            const dateStr = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().split("T")[0]
+            if (!stats[view].find((stat) => stat.date.split("T")[0] === dateStr)) {
                 data.push({
-                    name: date,
+                    name: dateStr,
                     total: 0,
                 })
             }

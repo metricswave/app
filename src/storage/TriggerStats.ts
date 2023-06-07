@@ -8,7 +8,7 @@ export type Stats = {
 }
 
 type StatRow = {
-    date: Date,
+    date: string,
     score: number,
 }
 
