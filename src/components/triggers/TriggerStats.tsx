@@ -123,11 +123,49 @@ export function TriggerStats({trigger}: { trigger: Trigger }) {
                            tickLine={false}
                            axisLine={false}
                            tickFormatter={(value) => `${value}`}/>
-                    <Bar dataKey="total" fill="#3b82f6" radius={[4, 4, 0, 0]}/>
+                    <defs>
+                        <linearGradient
+                            id="colorUv"
+                            x1="0"
+                            y1="0"
+                            x2="0"
+                            y2="100%"
+                            color={"transparent"}
+                            gradientUnits="userSpaceOnUse"
+                        >
+                            <stop offset="0" stopColor="#3b82f6" stopOpacity={.99}/>
+                            <stop offset=".7" stopColor="#3b82f6" stopOpacity={0}/>
+                            {/*<stop offset="1" stopColor="transparent"/>*/}
+                        </linearGradient>
+                    </defs>
+                    <Bar dataKey="total"
+                         stackId="total"
+                         radius={[2, 2, 0, 0]}
+                         fill="url(#colorUv)"
+                         shape={BarWithBorder(1, "#3b82f6")}
+                    />
                 </BarChart>
             </ResponsiveContainer>
         </div>
     )
 }
 
-
+const BarWithBorder = (borderHeight: number, borderColor: string) => {
+    return (props: any) => {
+        const {fill, x, y, width, height} = props
+        return (
+            <g>
+                <rect opacity={.7} x={x} y={y + 1} width={width} height={height} stroke="none" fill={fill}/>
+                <rect opacity={.7} x={x} y={y} width={width} height={borderHeight} stroke="none" fill={borderColor}/>
+                <rect opacity={.7} x={x} y={y} width={borderHeight} height={height} stroke="none" fill={borderColor}/>
+                <rect opacity={.7}
+                      x={x + width}
+                      y={y}
+                      width={borderHeight}
+                      height={height}
+                      stroke="none"
+                      fill={borderColor}/>
+            </g>
+        )
+    }
+}
