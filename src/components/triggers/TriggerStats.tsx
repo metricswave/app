@@ -135,7 +135,6 @@ export function TriggerStats({trigger}: { trigger: Trigger }) {
                         >
                             <stop offset="0" stopColor="#3b82f6" stopOpacity={.99}/>
                             <stop offset=".7" stopColor="#3b82f6" stopOpacity={0}/>
-                            {/*<stop offset="1" stopColor="transparent"/>*/}
                         </linearGradient>
                     </defs>
                     <Bar dataKey="total"

@@ -1,5 +1,5 @@
-import React, {useEffect} from "react"
-import {Navigate, Outlet, useLocation} from "react-router-dom"
+import React from "react"
+import {Navigate, Outlet} from "react-router-dom"
 import {AuthContext} from "../contexts/AuthContext"
 import Logo from "../components/logo/Logo"
 import {useUserState} from "../storage/User"
@@ -8,15 +8,13 @@ import NavigationItems from "../components/navigation/NavigationItems"
 import MobileNavigationItems from "../components/navigation/MobileNavigationItems"
 import SettingsIcon from "../components/icons/SettingsIcon"
 import * as amplitude from "@amplitude/analytics-browser"
+import {TrackVisit} from "../storage/VisitTracker"
 
 export default function App() {
     const {isAuth} = useAuthState()
     const {user, expired} = useUserState(isAuth)
-    const location = useLocation()
 
-    useEffect(() => {
-        fetch("https://notifywave.com/webhooks/f41ff0fd-4475-499c-b086-82d6012bbf16?path=" + location.pathname, {mode: "no-cors"})
-    }, [location])
+    TrackVisit()
 
     if (expired || !isAuth) {
         return <Navigate to="/auth/signup"/>
