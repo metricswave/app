@@ -36,7 +36,7 @@ export function TriggerParamsStats({trigger}: { trigger: Trigger }) {
     return (
         <div className="bg-white dark:bg-zinc-800 rounded-sm p-5 pb-4 shadow">
             <div className="pb-8 flex flex-col sm:flex-row space-y-3 sm:space-y-0 items-start sm:items-center justify-between">
-                <PageTitle title="Stats by Param" description={`${totalScore} hits in period.`}/>
+                <PageTitle title="Stats by Parameter" description={`${totalScore} hits in period.`}/>
             </div>
             <div className="flex flex-row items-center justify-between">
                 <div className="w-1/3">
