@@ -60,10 +60,10 @@ export function TriggerStats({trigger}: { trigger: Trigger }) {
         <div className="bg-white dark:bg-zinc-800 rounded-sm p-5 pb-1 shadow">
             <div className="pb-8 flex flex-col sm:flex-row space-y-3 sm:space-y-0 items-start sm:items-center justify-between">
                 {view === "daily" &&
-                    <PageTitle title="Daily Stats" description={`${average} average hits per day.`}/>}
+                    <PageTitle title="Stats" description={`${average} average hits per day.`}/>}
 
                 {view === "monthly" &&
-                    <PageTitle title="Monthly Stats" description={`${average} average hits per month`}/>}
+                    <PageTitle title="Stats" description={`${average} average hits per month`}/>}
 
                 <div className="text-sm text-right">
                     {view === "daily" ? (
