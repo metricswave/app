@@ -58,8 +58,8 @@ export function TriggerParamsStats({trigger}: { trigger: Trigger }) {
                             setParameter(value as string)
                         }}
                         className="w-1/3"
-                        label="Param"
-                        name="param"
+                        label="Parameter"
+                        name="parameter"
                     />
 
                     <DropDownSelectFieldBox
