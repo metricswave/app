@@ -5,6 +5,7 @@ import TriggerDetails from "../components/triggers/TriggerDetails"
 import {useUserServicesState} from "../storage/UserServices"
 import {TriggerStats} from "../components/triggers/TriggerStats"
 import {useState} from "react"
+import {TriggerParamsStats} from "../components/triggers/TriggerParamsStats"
 
 export default function Trigger() {
     const navigate = useNavigate()
@@ -12,9 +13,10 @@ export default function Trigger() {
     const [triggerUuid] = useState<string>(useParams().triggerUuid as string)
     const {triggerByUuid, refreshTriggers} = useTriggersState()
     const trigger = triggerByUuid(triggerUuid)!
+    const hasParams = trigger.configuration.fields["parameters"] !== undefined
 
     return (
-        <>
+        <div className="pb-36">
             <SectionContainer>
                 <TriggerDetails
                     trigger={trigger}
@@ -25,9 +27,15 @@ export default function Trigger() {
                 />
             </SectionContainer>
 
-            <SectionContainer>
+            <SectionContainer size="big">
                 <TriggerStats trigger={trigger}/>
             </SectionContainer>
-        </>
+
+            {hasParams && (
+                <SectionContainer size="big">
+                    <TriggerParamsStats trigger={trigger}/>
+                </SectionContainer>
+            )}
+        </div>
     )
 }
