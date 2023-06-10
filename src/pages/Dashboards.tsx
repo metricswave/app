@@ -32,6 +32,12 @@ const dashboards: Dashboard[] = [
         name: "Default",
         items: [
             {
+                eventUuid: "29c31fab-a1c6-491d-92ff-081e69744651",
+                title: "New Leads",
+                size: "large",
+                type: "stats",
+            },
+            {
                 eventUuid: "fbe17995-b16b-45d5-b33e-7a43b9a41313",
                 title: "Landing Visits",
                 size: "base",
@@ -79,13 +85,24 @@ export function Dashboards() {
         <SectionContainer size={"big"}>
             <PageTitle title={"Dashboards"}/>
 
-            <div className="flex flex-row items-center justify-between pt-4">
-                <div>
-                    Select dashboard
+            <div className="flex flex-row items-center space-x-3 justify-between pt-4">
+                <div className="flex-grow">
+                    <DropDownSelectFieldBox
+                        value={dashboardIndex.toString()}
+                        options={dashboards.map((dashboard, index) => ({
+                            value: index.toString(),
+                            label: dashboard.name,
+                        }))}
+                        setValue={(value) => {
+                            setDashboardIndex(parseInt(value as string))
+                        }}
+                        label="Dashboard"
+                        name="dashboard"
+                    />
                 </div>
 
-                <div className="flex flex-row flex-grow items-center justify-end space-x-3">
-                    <div className="w-1/3">
+                <div className="flex flex-row items-center justify-end space-x-3">
+                    <div className="min-w-[180px]">
                         <InputFieldBox
                             setValue={setDate}
                             label="Date"
@@ -97,7 +114,7 @@ export function Dashboards() {
                     </div>
 
                     <DropDownSelectFieldBox
-                        className="w-1/3"
+                        className="min-w-[180px]"
                         value={period}
                         options={[
                             {
@@ -120,7 +137,7 @@ export function Dashboards() {
         </SectionContainer>
 
         <SectionContainer size={"extra-big"}>
-            <div className="-mx-2.5">
+            <div className="-mx-2.5 pb-64">
                 {dashboards[dashboardIndex].items.map(({eventUuid, title, size, type}, key) => {
                     const trigger = triggerByUuid(eventUuid)!
                     return (
