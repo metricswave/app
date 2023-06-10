@@ -2,6 +2,7 @@ import {useEffect, useState} from "react"
 import {TriggerType} from "../types/TriggerType"
 import {fetchAuthApi} from "../helpers/ApiFetcher"
 import {expirableLocalStorage, TEN_MINUTES_SECONDS} from "../helpers/ExpirableLocalStorage"
+import {TriggerTypeId} from "../types/Trigger"
 
 const TRIGGER_TYPES_KEY: string = "nw:trigger-types"
 const TRIGGER_TYPES_REFRESH_KEY: string = "nw:trigger-types:refresh"
@@ -38,6 +39,7 @@ export function useTriggerTypesState() {
 
     return {
         triggerTypes,
+        defaultTriggerType: triggerTypes.find((tt) => tt.id === TriggerTypeId.Webhook),
         triggersTypesToAdd: filterTriggersToAddList(triggerTypes),
         refreshTriggerTypes: () => setIsFresh(false),
         getTriggerTypeById(id: number): TriggerType | undefined {

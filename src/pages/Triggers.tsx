@@ -37,7 +37,7 @@ export default function Triggers() {
 
     return (
         <SectionContainer>
-            <PageTitle title="Triggers"/>
+            <PageTitle title="Events"/>
 
             {/* Add triggers dialog */}
             <DialogComponent onOpenChange={status => {
@@ -46,7 +46,7 @@ export default function Triggers() {
                 }
             }} button={
                 <div className="border soft-border rounded-sm p-4 flex flex-col space-y-4 items-center hover:bg-[var(--background-50-color)] smooth cursor-pointer">
-                    <NoLinkButton text="Add trigger"/>
+                    <NoLinkButton text="Add Event"/>
                 </div>
             }>
                 <TriggersAdd onLastStep={refreshTriggers}/>

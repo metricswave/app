@@ -15,8 +15,8 @@ export default function TriggersAdd(
         onLastStep?: () => void
     },
 ) {
-    const {triggersTypesToAdd} = useTriggerTypesState()
-    const [triggerType, setTriggerType] = useState<TriggerType | null>(null)
+    const {triggersTypesToAdd, defaultTriggerType} = useTriggerTypesState()
+    const [triggerType, setTriggerType] = useState<TriggerType | null>(defaultTriggerType ?? null)
     const [triggerCreated, setTriggerCreated] = useState<string | null>(null)
 
     useEffect(() => {
@@ -36,9 +36,6 @@ export default function TriggersAdd(
                     triggerType={triggerType}
                     onTriggerCreated={(uuid) => {
                         setTriggerCreated(uuid)
-                    }}
-                    back={() => {
-                        setTriggerType(null)
                     }}
                 />
             }
