@@ -30,24 +30,24 @@ export function Dashboards() {
         <SectionContainer size={"big"}>
             <PageTitle title={"Dashboards"}/>
 
-            <div className="flex flex-row items-center space-x-3 justify-between pt-4">
-                <div className="flex-grow">
-                    <DropDownSelectFieldBox
-                        value={dashboardIndex.toString()}
-                        options={dashboards.map((dashboard, index) => ({
-                            value: index.toString(),
-                            label: dashboard.name,
-                        }))}
-                        setValue={(value) => {
-                            setDashboardIndex(parseInt(value as string))
-                        }}
-                        label="Dashboard"
-                        name="dashboard"
-                    />
-                </div>
+            <div className="flex flex-row items-center space-x-3 justify-end pt-4">
+                {/*<div className="flex-grow">*/}
+                {/*    <DropDownSelectFieldBox*/}
+                {/*        value={dashboardIndex.toString()}*/}
+                {/*        options={dashboards.map((dashboard, index) => ({*/}
+                {/*            value: index.toString(),*/}
+                {/*            label: dashboard.name,*/}
+                {/*        }))}*/}
+                {/*        setValue={(value) => {*/}
+                {/*            setDashboardIndex(parseInt(value as string))*/}
+                {/*        }}*/}
+                {/*        label="Dashboard"*/}
+                {/*        name="dashboard"*/}
+                {/*    />*/}
+                {/*</div>*/}
 
-                <div className="flex flex-row items-center justify-end space-x-3">
-                    <div className="min-w-[180px]">
+                <div className="flex flex-row flex-grow items-center justify-end space-x-3">
+                    <div className="flex-grow">
                         <InputFieldBox
                             setValue={setDate}
                             label="Date"
@@ -59,7 +59,7 @@ export function Dashboards() {
                     </div>
 
                     <DropDownSelectFieldBox
-                        className="min-w-[180px]"
+                        className="flex-grow"
                         value={period}
                         options={[
                             {
