@@ -30,7 +30,7 @@ export function useServicesState() {
     }, [isFresh])
 
     return {
-        services,
+        services: services.filter(s => s.driver === "telegram"),
         authServices: services.filter(s => s.driver === "google"),
         reloadServices: () => setIsFresh(false),
     }
