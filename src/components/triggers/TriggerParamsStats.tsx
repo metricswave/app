@@ -112,7 +112,7 @@ export function TriggerParamsStats({trigger}: { trigger: Trigger }) {
                                 {[0, 1, 2, 3].map((i) => {
                                     const barPercentage = percentage_of(totalScore, stat.score) - (25 * i)
                                     const p = barPercentage < 1 ? 0 : Math.min(barPercentage, 25)
-                                   
+
                                     return (
                                         <div key={i} className="h-1 rounded bg-blue-500"
                                              style={{width: `${p}%`}}>
