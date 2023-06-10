@@ -109,18 +109,16 @@ export function TriggerParamsStats({trigger}: { trigger: Trigger }) {
                             </div>
 
                             <div className="w-full flex flex-row space-x-2">
-                                <div className="h-1 rounded bg-blue-500"
-                                     style={{width: `${Math.min(percentage_of(totalScore, stat.score), 25)}%`}}>
-                                </div>
-                                <div className="h-1 rounded bg-blue-500"
-                                     style={{width: `${Math.min(percentage_of(totalScore, stat.score) - 25, 25)}%`}}>
-                                </div>
-                                <div className="h-1 rounded bg-blue-500"
-                                     style={{width: `${Math.min(percentage_of(totalScore, stat.score) - 50, 25)}%`}}>
-                                </div>
-                                <div className="h-1 rounded bg-blue-500"
-                                     style={{width: `${Math.min(percentage_of(totalScore, stat.score) - 75, 25)}%`}}>
-                                </div>
+                                {[0, 1, 2, 3].map((i) => {
+                                    const barPercentage = percentage_of(totalScore, stat.score) - (25 * i)
+                                    const p = barPercentage < 1 ? 0 : Math.min(barPercentage, 25)
+                                   
+                                    return (
+                                        <div key={i} className="h-1 rounded bg-blue-500"
+                                             style={{width: `${p}%`}}>
+                                        </div>
+                                    )
+                                })}
                             </div>
                         </div>
                     ))}
