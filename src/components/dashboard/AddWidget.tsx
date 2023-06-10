@@ -1,0 +1,152 @@
+import {useEffect, useState} from "react"
+import {Trigger} from "../../types/Trigger"
+import {useTriggersState} from "../../storage/Triggers"
+import DropDownSelectFieldBox from "../form/DropDownSelectFieldBox"
+import InputFieldBox from "../form/InputFieldBox"
+import PrimaryButton from "../form/PrimaryButton"
+import {DashboardItem, DashboardItemSize, DashboardItemType} from "../../storage/Dasboard"
+
+type Props = {
+    addButtonSize: string
+    addWidgetToDashboard: (item: DashboardItem) => void
+}
+
+type Steps = "idle" | "selecting"
+
+export function AddWidget({addButtonSize, addWidgetToDashboard}: Props) {
+    const {triggers, triggerByUuid} = useTriggersState()
+    const [selectedTrigger, setSelectedTrigger] = useState<Trigger | null>(null)
+
+    const [step, setStep] = useState<Steps>("idle")
+    const [title, setTitle] = useState<string>("")
+    const [event, setEvent] = useState<string>("")
+    const [size, setSize] = useState<DashboardItemSize>("base")
+    const [type, setType] = useState<DashboardItemType>("stats")
+    const [parameter, setParameter] = useState<string>("")
+
+    useEffect(() => {
+        if (event) {
+            setSelectedTrigger(triggerByUuid(event)!)
+        }
+    }, [event])
+
+    if (step === "idle") {
+        return <div
+            className={`float-left ${addButtonSize} p-2.5`}
+            onClick={() => setStep("selecting")}
+        >
+            <div className="bg-white dark:bg-zinc-800 bg-opacity-25 rounded-sm p-14 border-2 border-dashed soft-border flex items-center justify-center smooth hover:cursor-pointer hover:border-blue-300 hover:bg-opacity-70 group">
+                <div className="opacity-40 group-hover:opacity-70">Add Widget</div>
+            </div>
+        </div>
+    }
+
+    return <div className={`float-left ${addButtonSize} p-2.5`}>
+        <div
+            className="bg-white dark:bg-zinc-800 bg-opacity-70 rounded-sm p-14 border-2 border-dashed border-zinc-300 flex items-center justify-center smooth group"
+        >
+            <div className="flex flex-col space-y-4">
+                <div className="font-bold opacity-80 text-center pb-4">
+                    Configure your Widget
+                </div>
+
+                <InputFieldBox
+                    value={title}
+                    setValue={setTitle}
+                    label={"Title"}
+                    placeholder={"Title"}
+                    name={"title"}
+                    focus
+                />
+
+                <DropDownSelectFieldBox
+                    value={event}
+                    options={triggers.map((trigger: Trigger) => ({
+                        value: trigger.uuid,
+                        label: trigger.title,
+                    }))}
+                    setValue={(value) => {
+                        setEvent(value as string)
+                    }}
+                    label={"Event"}
+                    name={"event"}
+                />
+
+                <DropDownSelectFieldBox
+                    value={size}
+                    options={[
+                        {
+                            value: "base",
+                            label: "Base",
+                        },
+                        {
+                            value: "large",
+                            label: "Large",
+                        },
+                    ]}
+                    setValue={(value) => {
+                        setSize(value as DashboardItemSize)
+                    }}
+                    label={"Size"}
+                    name={"size"}
+                />
+
+                <DropDownSelectFieldBox
+                    value={type}
+                    options={[
+                        {
+                            value: "stats",
+                            label: "Stats",
+                        },
+                        ...(
+                            selectedTrigger?.configuration.fields.parameters !== undefined &&
+                            selectedTrigger?.configuration.fields.parameters.length > 0 ?
+                                [{
+                                    value: "parameter",
+                                    label: "Parameter",
+                                }] :
+                                []
+                        ),
+                    ]}
+                    setValue={(value) => {
+                        setType(value as DashboardItemType)
+                    }}
+                    label={"Type"}
+                    name={"type"}
+                />
+
+                {
+                    type === "parameter"
+                    && selectedTrigger?.configuration.fields.parameters !== undefined
+                    && selectedTrigger?.configuration.fields.parameters.length > 0
+                    && <DropDownSelectFieldBox
+                        value={parameter}
+                        options={(selectedTrigger?.configuration.fields.parameters as string[]).map((parameter) => ({
+                            value: parameter,
+                            label: parameter,
+                        }))}
+                        setValue={(value) => {
+                            setParameter(value as string)
+                        }}
+                        label={"Parameter"}
+                        name={"parameter"}
+                    />
+                }
+
+                <PrimaryButton
+                    text={"Add Widget"}
+                    onClick={() => {
+                        setStep("idle")
+                        addWidgetToDashboard({
+                            title,
+                            eventUuid: event,
+                            size,
+                            type,
+                            parameter,
+                        })
+                    }}
+                />
+            </div>
+        </div>
+    </div>
+}

@@ -7,67 +7,11 @@ import {TriggerParamsStats} from "../components/triggers/TriggerParamsStats"
 import InputFieldBox from "../components/form/InputFieldBox"
 import DropDownSelectFieldBox from "../components/form/DropDownSelectFieldBox"
 import {Period} from "../types/Period"
-
-type Dashboard = {
-    id: string
-    name: string
-    items: Array<{
-        eventUuid: string
-        title: string
-        size: "base" | "large"
-    } & (StatItem | ParameterItem)>,
-}
-type StatItem = {
-    type: "stats"
-}
-
-type ParameterItem = {
-    type: "parameter"
-    parameter: string
-}
-
-const dashboards: Dashboard[] = [
-    {
-        id: "1",
-        name: "Default",
-        items: [
-            {
-                eventUuid: "29c31fab-a1c6-491d-92ff-081e69744651",
-                title: "New Leads",
-                size: "large",
-                type: "stats",
-            },
-            {
-                eventUuid: "fbe17995-b16b-45d5-b33e-7a43b9a41313",
-                title: "Landing Visits",
-                size: "base",
-                type: "stats",
-            },
-            {
-                eventUuid: "f41ff0fd-4475-499c-b086-82d6012bbf16",
-                title: "App Visits",
-                size: "base",
-                type: "stats",
-            },
-            {
-                eventUuid: "fbe17995-b16b-45d5-b33e-7a43b9a41313",
-                title: "Landing Visits by Path",
-                size: "base",
-                type: "parameter",
-                parameter: "path",
-            },
-            {
-                eventUuid: "f41ff0fd-4475-499c-b086-82d6012bbf16",
-                title: "App Visits by Path",
-                size: "base",
-                type: "parameter",
-                parameter: "path",
-            },
-        ],
-    },
-]
+import {AddWidget} from "../components/dashboard/AddWidget"
+import {DashboardItem, useDashboardsState} from "../storage/Dasboard"
 
 export function Dashboards() {
+    const {dashboards, addWidgetToDashboard} = useDashboardsState()
     const {triggerByUuid} = useTriggersState()
     const [period, setPeriod] = useState<Period>("daily")
     const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0])
@@ -80,6 +24,7 @@ export function Dashboards() {
         )
         setPeriod(period)
     }
+    const addButtonSize = dashboards[dashboardIndex].items.length % 2 === 0 ? "w-1/2" : "w-full"
 
     return <>
         <SectionContainer size={"big"}>
@@ -161,6 +106,13 @@ export function Dashboards() {
                         </div>
                     )
                 })}
+
+                <AddWidget
+                    addButtonSize={addButtonSize}
+                    addWidgetToDashboard={(item: DashboardItem) => {
+                        addWidgetToDashboard(dashboardIndex, item)
+                    }}
+                />
             </div>
         </SectionContainer>
     </>
