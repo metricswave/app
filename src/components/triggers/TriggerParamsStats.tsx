@@ -44,7 +44,9 @@ export function TriggerParamsStats({trigger, title, defaultDate, defaultPeriod =
     const dateFilter = period === "monthly" ? date + "-01" : date
     const {stats} = useTriggerParamsStatsState(trigger, period, dateFilter)
 
-    const paramStats: ParamStatRow[] = stats !== undefined ? Object.values(stats[parameter]) : []
+    const paramStats: ParamStatRow[] = stats !== undefined && stats[parameter] !== undefined ?
+        Object.values(stats[parameter]) :
+        []
     paramStats.sort((a, b) => b.score - a.score)
     const totalScore = paramStats.reduce((acc, curr) => acc + curr.score, 0)
 

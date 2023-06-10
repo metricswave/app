@@ -14,6 +14,7 @@ export default function Trigger() {
     const {triggerByUuid, refreshTriggers} = useTriggersState()
     const trigger = triggerByUuid(triggerUuid)!
     const hasParams = trigger.configuration.fields["parameters"] !== undefined
+        && trigger.configuration.fields["parameters"].length > 0
 
     return (
         <div className="pb-36">
