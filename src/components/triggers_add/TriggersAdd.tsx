@@ -47,7 +47,7 @@ export default function TriggersAdd(
                 <div className="flex flex-col space-y-4 items-center justify-center pt-12">
                     <h2 className="text-2xl mb-10">Trigger Created</h2>
 
-                    <SecondaryLinkButton href={`/triggers/${triggerCreated}`} text="Go to trigger"/>
+                    <SecondaryLinkButton href={`/events${triggerCreated}`} text="Go to trigger"/>
 
                     <Dialog.Close asChild>
                         <div>

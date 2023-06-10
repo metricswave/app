@@ -128,7 +128,7 @@ export default function TriggerDetails({trigger, onDeleted: deleted}: Props) {
             <div className="flex flex-col sm:flex-row items-start justify-center sm:items-center sm:justify-between">
                 <PageTitle title={`${trigger.emoji} ${trigger.title}`} description={triggerType.name}/>
                 <div className="flex flex-row space-x-3 w-full sm:w-auto mt-4 sm:mt-0">
-                    <SecondaryButton onClick={() => navigate(`/triggers/${trigger.uuid}/edit`)}
+                    <SecondaryButton onClick={() => navigate(`/events/${trigger.uuid}/edit`)}
                                      className="w-full sm:w-auto flex flex-row items-center space-x-3">
                         <Pencil1Icon/> <span className="sm:hidden">Edit</span>
                     </SecondaryButton>

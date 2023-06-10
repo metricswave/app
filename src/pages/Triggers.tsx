@@ -59,7 +59,7 @@ export default function Triggers() {
                         triggerType={getTriggerTypeById(trigger.trigger_type_id)}
                         key={trigger.id}
                         onClick={() => {
-                            navigate(`/triggers/${trigger.uuid}`)
+                            navigate(`/events/${trigger.uuid}`)
                         }}
                     />
                 ))}

@@ -1,10 +1,15 @@
 import React from "react"
 
 export default function SectionContainer({size = "normal", children, ...props}: {
-    size?: "normal" | "big",
+    size?: "normal" | "big" | "extra-big"
     children: React.ReactNode
 }) {
-    const width = size === "normal" ? "max-w-[700px]" : "max-w-[900px]"
+    let width = "max-w-[700px]"
+    if (size === "big") {
+        width = "max-w-[900px]"
+    } else if (size === "extra-big") {
+        width = "max-w-[1200px]"
+    }
 
     return (
         <div className={

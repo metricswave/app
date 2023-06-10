@@ -1,7 +1,6 @@
 import React from "react"
 import App from "../layouts/App"
 import {RouteObject} from "react-router-dom"
-import Notifications from "../pages/Notifications"
 import Services from "../pages/Services"
 import ErrorPage from "../pages/ErrorPage"
 import SignUp from "../pages/SignUp"
@@ -16,6 +15,7 @@ import ProfileSettings from "../pages/Settings/ProfileSettings"
 import ServiceConnection from "../pages/ServiceConnection"
 import Trigger from "../pages/Trigger"
 import TriggerEdit from "../pages/TriggerEdit"
+import {Dashboards} from "../pages/Dashboards"
 
 export const routes: RouteObject[] = [
     {
@@ -25,22 +25,22 @@ export const routes: RouteObject[] = [
         children: [
             {
                 path: "/",
-                element: <Notifications/>,
+                element: <Dashboards/>,
             },
             {
                 path: "/services",
                 element: <Services/>,
             },
             {
-                path: "/triggers/",
+                path: "/events",
                 element: <Triggers/>,
             },
             {
-                path: "/triggers/:triggerUuid",
+                path: "/events/:triggerUuid",
                 element: <Trigger/>,
             },
             {
-                path: "/triggers/:triggerUuid/edit",
+                path: "/events/:triggerUuid/edit",
                 element: <TriggerEdit/>,
             },
             {

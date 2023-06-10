@@ -1,26 +1,26 @@
-import NotificationIcon from "../icons/NotificationIcon"
-import TriggerIcon from "../icons/TriggerIcon"
-import ServicesIcon from "../icons/ServicesIcon"
+import {DashboardIcon, LightningBoltIcon, PaperPlaneIcon} from "@radix-ui/react-icons"
+import React, {ForwardRefExoticComponent, RefAttributes} from "react"
+import {IconProps} from "@radix-ui/react-icons/dist/types"
 
 type NavItem = {
-    icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>,
+    icon: ForwardRefExoticComponent<IconProps & RefAttributes<SVGSVGElement>>,
     label: string,
     path: string,
 }
 
 export const items: Array<NavItem> = [
     {
-        icon: NotificationIcon,
-        label: "Notifications",
+        icon: DashboardIcon,
+        label: "Dashboards",
         path: "/",
     },
     {
-        icon: TriggerIcon,
-        label: "Triggers",
-        path: "/triggers",
+        icon: LightningBoltIcon,
+        label: "Events",
+        path: "/events",
     },
     {
-        icon: ServicesIcon,
+        icon: PaperPlaneIcon,
         label: "Services",
         path: "/services",
     },
