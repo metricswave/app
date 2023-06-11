@@ -17,7 +17,7 @@ function getGraphData(stats: Stats, view: "daily" | "monthly") {
     // Fill missing days in data from today to 30 days ago
     const today = new Date()
     today.setDate(today.getDate() + 1)
-   
+
     if (view === "daily") {
         const thirtyDaysAgo = new Date()
         thirtyDaysAgo.setDate(today.getDate() - 30)

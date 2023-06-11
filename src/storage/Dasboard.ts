@@ -67,6 +67,10 @@ export function useDashboardsState() {
         },
     ])
 
+    const updateDashboard = (id: number) => {
+        console.log("Update dashboards in Backend", {id})
+    }
+
     const addWidgetToDashboard = (dashboardIndex: number, item: DashboardItem) => {
         const dashboard = dashboards[dashboardIndex]
         const newDashboard = {
@@ -76,10 +80,25 @@ export function useDashboardsState() {
         const newDashboards = [...dashboards]
         newDashboards[dashboardIndex] = newDashboard
         setDashboards(newDashboards)
+        updateDashboard(dashboardIndex)
+    }
+
+    const removeWidgetFromDashboard = (dashboardIndex: number, itemIndex: number) => {
+        const dashboard = dashboards[dashboardIndex]
+        const newDashboard = {
+            ...dashboard,
+            items: [...dashboard.items],
+        }
+        newDashboard.items.splice(itemIndex, 1)
+        const newDashboards = [...dashboards]
+        newDashboards[dashboardIndex] = newDashboard
+        setDashboards(newDashboards)
+        updateDashboard(dashboardIndex)
     }
 
     return {
         dashboards,
         addWidgetToDashboard,
+        removeWidgetFromDashboard,
     }
 }

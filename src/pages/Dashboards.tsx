@@ -9,13 +9,15 @@ import DropDownSelectFieldBox from "../components/form/DropDownSelectFieldBox"
 import {Period} from "../types/Period"
 import {AddWidget} from "../components/dashboard/AddWidget"
 import {DashboardItem, useDashboardsState} from "../storage/Dasboard"
+import {CheckIcon, TrashIcon} from "@radix-ui/react-icons"
 
 export function Dashboards() {
-    const {dashboards, addWidgetToDashboard} = useDashboardsState()
+    const {dashboards, addWidgetToDashboard, removeWidgetFromDashboard} = useDashboardsState()
     const {triggerByUuid} = useTriggersState()
     const [period, setPeriod] = useState<Period>("daily")
     const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0])
     const [dashboardIndex, setDashboardIndex] = useState<number>(0)
+    const [removeConfirm, setRemoveConfirm] = useState<string>("")
     const setPeriodAndDate = (period: Period) => {
         setDate(
             period === "daily" ?
@@ -25,6 +27,17 @@ export function Dashboards() {
         setPeriod(period)
     }
     const addButtonSize = dashboards[dashboardIndex].items.length % 2 === 0 ? "w-1/2" : "w-full"
+
+    const removeWidget = (dashboardIndex: number, widgetIndex: number) => {
+        const removeConfirmKey = `${dashboardIndex}-${widgetIndex}`
+        if (removeConfirm !== removeConfirmKey) {
+            setRemoveConfirm(removeConfirmKey)
+            return
+        }
+
+        removeWidgetFromDashboard(dashboardIndex, widgetIndex)
+        setRemoveConfirm("")
+    }
 
     return <>
         <SectionContainer size={"big"}>
@@ -85,14 +98,27 @@ export function Dashboards() {
             <div className="-mx-2.5 pb-64">
                 {dashboards[dashboardIndex].items.map(({eventUuid, title, size, type}, key) => {
                     const trigger = triggerByUuid(eventUuid)!
+                    const confirmed = removeConfirm === `${dashboardIndex}-${key}`
                     return (
                         <div
                             key={key}
                             className={[
-                                "float-left p-2.5",
+                                "relative group float-left p-2.5",
                                 (size === "base" ? "w-1/2" : "w-full"),
                             ].join(" ")}
                         >
+                            <div
+                                title={"Remove widget"}
+                                className={[
+                                    "absolute right-4 top-4 rounded-sm cursor-pointer opacity-0 group-hover:opacity-25 text-lg group-hover:hover:opacity-100 hover:text-red-500 smooth p-3",
+                                    confirmed ? "bg-red-200" : "bg-zinc-100",
+                                ].join(" ")}
+                                onClick={() => removeWidget(dashboardIndex, key)}
+                            >
+                                {confirmed && <CheckIcon className="w-4 h-4"/>}
+                                {!confirmed && <TrashIcon className="w-4 h-4"/>}
+                            </div>
+
                             {type === "stats" &&
                                 <TriggerStats trigger={trigger} title={title} defaultView={period} hideViewSwitcher/>}
                             {type === "parameter" &&
