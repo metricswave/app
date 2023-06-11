@@ -82,12 +82,26 @@ export default function TriggerDetails({trigger, onDeleted: deleted}: Props) {
                 const url = `${app.webhooks}/${trigger.uuid}?${query}`
 
                 return (<div className="flex flex-col space-y-4">
-                    <p>Call or open the next URL and you will receive a notification instantly.</p>
+                    <div>
+                        <InputFieldBox
+                            setValue={() => null}
+                            value={trigger.uuid}
+                            label={"Event UUID"}
+                            name={"event_uuid"}
+                            placeholder={"UUID"}
+                            disabled
+                        />
 
-                    <p className="pb-1">
-                        <LinkButton target="_blank"
-                                    href={`${app.web}/documentation/triggers/webhooks`}
-                                    text="Here you can find more info about webhooks."/>
+                        <CopyButton textToCopy={trigger.uuid} className="w-full mt-2"/>
+                    </div>
+
+                    <p className="font-bold pt-4">Trigger event</p>
+
+                    <p>
+                        To trigger this event you can just call the next URL from your
+                        application. <LinkButton target="_blank"
+                                                 href={`${app.web}/documentation/tracking/events`}
+                                                 text="Here you can find more info about webhooks."/>
                     </p>
 
                     <div>

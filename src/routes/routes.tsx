@@ -16,6 +16,7 @@ import ServiceConnection from "../pages/ServiceConnection"
 import Trigger from "../pages/Trigger"
 import TriggerEdit from "../pages/TriggerEdit"
 import {Dashboards} from "../pages/Dashboards"
+import Notifications from "../pages/Notifications"
 
 export const routes: RouteObject[] = [
     {
@@ -42,6 +43,10 @@ export const routes: RouteObject[] = [
             {
                 path: "/events/:triggerUuid/edit",
                 element: <TriggerEdit/>,
+            },
+            {
+                path: "/history",
+                element: <Notifications/>,
             },
             {
                 path: "/settings",

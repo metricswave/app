@@ -11,6 +11,7 @@ export type DashboardItem = {
     eventUuid: string
     title: string
     size: DashboardItemSize
+    parameter?: string
 } & (StatItem | ParameterItem)
 
 export type DashboardItemType = "stats" | "parameter"
@@ -46,7 +47,6 @@ export function useDashboardsState() {
 
     const updateDashboard = (index: number, newDashboards: Dashboard[]) => {
         const id = newDashboards[index].id
-        console.log(newDashboards[index])
 
         fetchAuthApi(`/dashboards/${id}`, {
             method: "PUT",

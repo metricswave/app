@@ -24,14 +24,24 @@ const calculateDate = (period: Period, defaultDate: string | undefined): string 
 type Props = {
     trigger: Trigger
     title?: string
+    defaultParameter?: string
     defaultPeriod?: Period
     defaultDate?: string
     hideFilters?: boolean
 }
 
-export function TriggerParamsStats({trigger, title, defaultDate, defaultPeriod = "daily", hideFilters = false}: Props) {
+export function TriggerParamsStats(
+    {
+        trigger,
+        title,
+        defaultParameter,
+        defaultDate,
+        defaultPeriod = "daily",
+        hideFilters = false,
+    }: Props,
+) {
     const [params] = useState<string[]>(trigger.configuration.fields["parameters"] as string[])
-    const [parameter, setParameter] = useState<string>(params[0])
+    const [parameter, setParameter] = useState<string>(defaultParameter ?? params[0])
     const [period, setPeriod] = useState<Period>(defaultPeriod)
     const [date, setDate] = useState<string>(calculateDate(period, defaultDate))
 

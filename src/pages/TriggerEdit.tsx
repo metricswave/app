@@ -34,7 +34,7 @@ export default function TriggerEdit() {
             },
             success: () => {
                 refreshTriggers()
-                navigate(`/events${trigger.uuid}`)
+                navigate(`/events/${trigger.uuid}`)
             },
             error: (error) => {
                 setErrors(error.errors!)

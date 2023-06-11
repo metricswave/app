@@ -23,7 +23,7 @@ export default function Trigger() {
                     trigger={trigger}
                     onDeleted={() => {
                         refreshTriggers()
-                        navigate("/triggers")
+                        navigate("/events")
                     }}
                 />
             </SectionContainer>
