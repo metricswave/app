@@ -115,7 +115,7 @@ export function Dashboards() {
                                 title={"Remove widget"}
                                 className={[
                                     "absolute right-4 top-4 rounded-sm cursor-pointer opacity-0 group-hover:opacity-25 text-lg group-hover:hover:opacity-100 hover:text-red-500 smooth p-3",
-                                    confirmed ? "bg-red-200" : "bg-zinc-100",
+                                    confirmed ? "bg-red-200 dark:bg-red-700/30" : "bg-zinc-100 dark:bg-zinc-700",
                                 ].join(" ")}
                                 onClick={() => removeWidget(dashboardIndex, key)}
                             >

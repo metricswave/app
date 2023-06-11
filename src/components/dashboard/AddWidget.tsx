@@ -68,7 +68,7 @@ export function AddWidget({addButtonSize, addWidgetToDashboard, defaultStep}: Pr
             className={`float-left ${addButtonSize} p-2.5`}
             onClick={() => setStep("selecting")}
         >
-            <div className="bg-white dark:bg-zinc-800 bg-opacity-25 rounded-sm p-14 border-2 border-dashed soft-border flex items-center justify-center smooth hover:cursor-pointer hover:border-blue-300 hover:bg-opacity-70 group">
+            <div className="bg-white dark:bg-zinc-900 bg-opacity-25 rounded-sm p-14 border-2 border-dashed soft-border flex items-center justify-center smooth hover:cursor-pointer hover:border-blue-300 dark:hover:border-blue-800 hover:bg-opacity-70 group">
                 <div className="opacity-40 group-hover:opacity-70">Add Widget</div>
             </div>
         </div>
@@ -83,7 +83,7 @@ export function AddWidget({addButtonSize, addWidgetToDashboard, defaultStep}: Pr
         </div>
 
         <div
-            className="bg-white dark:bg-zinc-800 bg-opacity-70 rounded-sm p-14 border-2 border-dashed border-zinc-300 flex items-center justify-center smooth group"
+            className="bg-white dark:bg-zinc-800 bg-opacity-70 rounded-sm p-14 border-2 border-dashed border-zinc-300 dark:border-zinc-600 flex items-center justify-center smooth group"
         >
 
             <div className="flex flex-col space-y-4">
