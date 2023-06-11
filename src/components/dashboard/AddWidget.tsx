@@ -10,18 +10,20 @@ import {Cross1Icon} from "@radix-ui/react-icons"
 type Props = {
     addButtonSize: string
     addWidgetToDashboard: (item: DashboardItem) => void
+    defaultStep?: Steps
 }
 
 type Steps = "idle" | "selecting"
 
-export function AddWidget({addButtonSize, addWidgetToDashboard}: Props) {
+export function AddWidget({addButtonSize, addWidgetToDashboard, defaultStep}: Props) {
     const {triggers, triggerByUuid} = useTriggersState()
     const [selectedTrigger, setSelectedTrigger] = useState<Trigger | null>(null)
 
-    const [step, setStep] = useState<Steps>("idle")
+    const [step, setStep] = useState<Steps>(defaultStep ?? "idle")
     const [title, setTitle] = useState<string>("")
     const [titleError, setTitleError] = useState<string | false>(false)
     const [event, setEvent] = useState<string>("")
+    const [eventError, setEventError] = useState<string | false>(false)
     const [size, setSize] = useState<DashboardItemSize>("base")
     const [type, setType] = useState<DashboardItemType>("stats")
     const [parameter, setParameter] = useState<string>("")
@@ -40,6 +42,13 @@ export function AddWidget({addButtonSize, addWidgetToDashboard}: Props) {
             hasError = true
         } else {
             setTitleError(false)
+        }
+
+        if (event === "") {
+            setEventError("Event is required.")
+            hasError = true
+        } else {
+            setEventError(false)
         }
 
         if (hasError) return
@@ -94,10 +103,17 @@ export function AddWidget({addButtonSize, addWidgetToDashboard}: Props) {
 
                 <DropDownSelectFieldBox
                     value={event}
-                    options={triggers.map((trigger: Trigger) => ({
-                        value: trigger.uuid,
-                        label: trigger.title,
-                    }))}
+                    error={eventError}
+                    options={[
+                        {
+                            value: "",
+                            label: "Select an Event",
+                        },
+                        ...triggers.map((trigger: Trigger) => ({
+                            value: trigger.uuid,
+                            label: trigger.title,
+                        })),
+                    ]}
                     setValue={(value) => {
                         setEvent(value as string)
                     }}

@@ -26,7 +26,11 @@ export function Dashboards() {
         )
         setPeriod(period)
     }
-    const addButtonSize = dashboards[dashboardIndex].items.length % 2 === 0 ? "w-1/2" : "w-full"
+
+    let addButtonSize = "w-full"
+    if (dashboards[dashboardIndex] !== undefined && dashboards[dashboardIndex].items.length > 0) {
+        addButtonSize = dashboards[dashboardIndex].items.length % 2 === 0 ? "w-1/2" : "w-full"
+    }
 
     const removeWidget = (dashboardIndex: number, widgetIndex: number) => {
         const removeConfirmKey = `${dashboardIndex}-${widgetIndex}`
@@ -94,7 +98,7 @@ export function Dashboards() {
             </div>
         </SectionContainer>
 
-        <SectionContainer size={"extra-big"}>
+        {dashboards[dashboardIndex] !== undefined && <SectionContainer size={"extra-big"}>
             <div className="-mx-2.5 pb-64">
                 {dashboards[dashboardIndex].items.map(({eventUuid, title, size, type}, key) => {
                     const trigger = triggerByUuid(eventUuid)!
@@ -134,12 +138,17 @@ export function Dashboards() {
                 })}
 
                 <AddWidget
+                    defaultStep={
+                        dashboards[dashboardIndex] === undefined || dashboards[dashboardIndex].items.length === 0 ?
+                            "selecting" :
+                            "idle"
+                    }
                     addButtonSize={addButtonSize}
                     addWidgetToDashboard={(item: DashboardItem) => {
                         addWidgetToDashboard(dashboardIndex, item)
                     }}
                 />
             </div>
-        </SectionContainer>
+        </SectionContainer>}
     </>
 }

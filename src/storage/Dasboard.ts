@@ -1,4 +1,5 @@
-import {useState} from "react"
+import {useEffect, useState} from "react"
+import {fetchAuthApi} from "../helpers/ApiFetcher"
 
 export type Dashboard = {
     id: string
@@ -25,50 +26,37 @@ type ParameterItem = {
     parameter: string
 }
 
-export function useDashboardsState() {
-    const [dashboards, setDashboards] = useState<Dashboard[]>([
-        {
-            id: "1",
-            name: "Default",
-            items: [
-                {
-                    eventUuid: "29c31fab-a1c6-491d-92ff-081e69744651",
-                    title: "New Leads",
-                    size: "large",
-                    type: "stats",
-                },
-                {
-                    eventUuid: "fbe17995-b16b-45d5-b33e-7a43b9a41313",
-                    title: "Landing Visits",
-                    size: "base",
-                    type: "stats",
-                },
-                {
-                    eventUuid: "f41ff0fd-4475-499c-b086-82d6012bbf16",
-                    title: "App Visits",
-                    size: "base",
-                    type: "stats",
-                },
-                {
-                    eventUuid: "fbe17995-b16b-45d5-b33e-7a43b9a41313",
-                    title: "Landing Visits by Path",
-                    size: "base",
-                    type: "parameter",
-                    parameter: "path",
-                },
-                {
-                    eventUuid: "f41ff0fd-4475-499c-b086-82d6012bbf16",
-                    title: "App Visits by Path",
-                    size: "base",
-                    type: "parameter",
-                    parameter: "path",
-                },
-            ],
-        },
-    ])
+const KEY = "nw:dashboards"
 
-    const updateDashboard = (id: number) => {
-        console.log("Update dashboards in Backend", {id})
+export function useDashboardsState() {
+    const [dashboards, setDashboards] = useState<Dashboard[]>(
+        JSON.parse(localStorage.getItem(KEY) || "[]"),
+    )
+
+    useEffect(() => {
+        fetchAuthApi<Dashboard[]>("/dashboards", {
+            success: (data) => {
+                localStorage.setItem(KEY, JSON.stringify(data.data))
+                setDashboards(data.data)
+            },
+            error: (err: any) => null,
+            catcher: (err: any) => null,
+        })
+    }, [])
+
+    const updateDashboard = (index: number, newDashboards: Dashboard[]) => {
+        const id = newDashboards[index].id
+        console.log(newDashboards[index])
+
+        fetchAuthApi(`/dashboards/${id}`, {
+            method: "PUT",
+            body: newDashboards[index],
+            success: (data) => {
+                localStorage.setItem(KEY, JSON.stringify(newDashboards))
+            },
+            error: (err: any) => null,
+            catcher: (err: any) => null,
+        })
     }
 
     const addWidgetToDashboard = (dashboardIndex: number, item: DashboardItem) => {
@@ -80,7 +68,7 @@ export function useDashboardsState() {
         const newDashboards = [...dashboards]
         newDashboards[dashboardIndex] = newDashboard
         setDashboards(newDashboards)
-        updateDashboard(dashboardIndex)
+        updateDashboard(dashboardIndex, newDashboards)
     }
 
     const removeWidgetFromDashboard = (dashboardIndex: number, itemIndex: number) => {
@@ -93,7 +81,7 @@ export function useDashboardsState() {
         const newDashboards = [...dashboards]
         newDashboards[dashboardIndex] = newDashboard
         setDashboards(newDashboards)
-        updateDashboard(dashboardIndex)
+        updateDashboard(dashboardIndex, newDashboards)
     }
 
     return {
