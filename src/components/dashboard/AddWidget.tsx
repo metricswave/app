@@ -5,6 +5,7 @@ import DropDownSelectFieldBox from "../form/DropDownSelectFieldBox"
 import InputFieldBox from "../form/InputFieldBox"
 import PrimaryButton from "../form/PrimaryButton"
 import {DashboardItem, DashboardItemSize, DashboardItemType} from "../../storage/Dasboard"
+import {Cross1Icon} from "@radix-ui/react-icons"
 
 type Props = {
     addButtonSize: string
@@ -19,6 +20,7 @@ export function AddWidget({addButtonSize, addWidgetToDashboard}: Props) {
 
     const [step, setStep] = useState<Steps>("idle")
     const [title, setTitle] = useState<string>("")
+    const [titleError, setTitleError] = useState<string | false>(false)
     const [event, setEvent] = useState<string>("")
     const [size, setSize] = useState<DashboardItemSize>("base")
     const [type, setType] = useState<DashboardItemType>("stats")
@@ -29,6 +31,28 @@ export function AddWidget({addButtonSize, addWidgetToDashboard}: Props) {
             setSelectedTrigger(triggerByUuid(event)!)
         }
     }, [event])
+
+    const submitWidgetForm = () => {
+        let hasError = false
+
+        if (title.length < 3) {
+            setTitleError("Title must be at least 3 characters long.")
+            hasError = true
+        } else {
+            setTitleError(false)
+        }
+
+        if (hasError) return
+
+        setStep("idle")
+        addWidgetToDashboard({
+            title,
+            eventUuid: event,
+            size,
+            type,
+            parameter,
+        })
+    }
 
     if (step === "idle") {
         return <div
@@ -41,10 +65,18 @@ export function AddWidget({addButtonSize, addWidgetToDashboard}: Props) {
         </div>
     }
 
-    return <div className={`float-left ${addButtonSize} p-2.5`}>
+    return <div className={`relative float-left ${addButtonSize} p-2.5`}>
+        <div
+            className="absolute right-3 top-3 rounded-full cursor-pointer opacity-60 hover:opacity-90 smooth p-4"
+            onClick={() => setStep("idle")}
+        >
+            <Cross1Icon/>
+        </div>
+
         <div
             className="bg-white dark:bg-zinc-800 bg-opacity-70 rounded-sm p-14 border-2 border-dashed border-zinc-300 flex items-center justify-center smooth group"
         >
+
             <div className="flex flex-col space-y-4">
                 <div className="font-bold opacity-80 text-center pb-4">
                     Configure your Widget
@@ -56,6 +88,7 @@ export function AddWidget({addButtonSize, addWidgetToDashboard}: Props) {
                     label={"Title"}
                     placeholder={"Title"}
                     name={"title"}
+                    error={titleError}
                     focus
                 />
 
@@ -135,16 +168,7 @@ export function AddWidget({addButtonSize, addWidgetToDashboard}: Props) {
 
                 <PrimaryButton
                     text={"Add Widget"}
-                    onClick={() => {
-                        setStep("idle")
-                        addWidgetToDashboard({
-                            title,
-                            eventUuid: event,
-                            size,
-                            type,
-                            parameter,
-                        })
-                    }}
+                    onClick={submitWidgetForm}
                 />
             </div>
         </div>
