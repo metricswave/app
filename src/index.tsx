@@ -9,6 +9,14 @@ const router = createBrowserRouter(routes)
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement)
 
+if (
+    document.referrer
+    && document.referrer !== window.location.hostname
+    && localStorage.getItem("nw:referrer") === null
+) {
+    localStorage.setItem("nw:referrer", document.referrer)
+}
+
 root.render(
     // <React.StrictMode>
     <RouterProvider router={router}/>,
