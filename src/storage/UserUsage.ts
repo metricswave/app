@@ -13,7 +13,7 @@ export function useUserUsageState() {
         expirableLocalStorage.get<UserUsage>(KEY, {usage: 0}),
     )
 
-    useEffect(() => {
+    const loadUsage = () => {
         fetchAuthApi<UserUsage>(
             `/users/usage`,
             {
@@ -25,7 +25,12 @@ export function useUserUsageState() {
                 catcher: (err: any) => null,
             },
         )
-    }, [])
+    }
 
-    return {userUsage}
+    useEffect(loadUsage, [])
+
+    return {
+        userUsage,
+        loadUsage,
+    }
 }

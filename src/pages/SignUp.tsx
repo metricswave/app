@@ -85,7 +85,7 @@ export default function SignUp() {
             },
             success: (data) => {
                 localStorage.setItem("nw:auth", JSON.stringify(data.data))
-                window.location.href = "/"
+                window.location.href = "/welcome"
                 setLoading(false)
             },
             error: (data) => {

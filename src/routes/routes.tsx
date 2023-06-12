@@ -17,6 +17,7 @@ import Trigger from "../pages/Trigger"
 import TriggerEdit from "../pages/TriggerEdit"
 import {Dashboards} from "../pages/Dashboards"
 import Notifications from "../pages/Notifications"
+import {Welcome} from "../pages/Welcome"
 
 export const routes: RouteObject[] = [
     {
@@ -67,6 +68,10 @@ export const routes: RouteObject[] = [
     {
         path: "/auth/:driver/callback",
         element: <ServiceConnection/>,
+    },
+    {
+        path: "/welcome",
+        element: <Welcome/>,
     },
     {
         path: "/auth",

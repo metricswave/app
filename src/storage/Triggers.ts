@@ -9,6 +9,7 @@ const TRIGGER_REFRESH_KEY: string = "nw:triggers:refresh:v2"
 const TIME_FIELDS: string[] = ["time", "arrival_time"]
 
 export function useTriggersState() {
+    const [loadedTriggers, setLoadedTriggers] = useState<boolean>(false)
     const [isFresh, setIsFresh] = useState<true | false>(
         expirableLocalStorage.get(TRIGGER_REFRESH_KEY, false),
     )
@@ -18,6 +19,7 @@ export function useTriggersState() {
 
     useEffect(() => {
         if (triggers.length > 0 && isFresh) {
+            setLoadedTriggers(true)
             return
         }
 
@@ -28,6 +30,7 @@ export function useTriggersState() {
                 expirableLocalStorage.set(TRIGGER_KEY, t)
                 setTriggers(t)
                 setIsFresh(true)
+                setLoadedTriggers(true)
             },
             error: (data) => setIsFresh(false),
             catcher: (err) => setIsFresh(false),
@@ -63,10 +66,14 @@ export function useTriggersState() {
 
     return {
         triggers,
+        loadedTriggers,
         refreshTriggers: () => {
             expirableLocalStorage.delete(TRIGGER_REFRESH_KEY)
             setIsFresh(false)
         },
         triggerByUuid: (uuid: string) => triggers.find(t => t.uuid === uuid),
+        createVisitTrigger: () => {
+
+        },
     }
 }
