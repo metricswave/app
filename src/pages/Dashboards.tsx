@@ -29,7 +29,7 @@ export function Dashboards() {
 
     let addButtonSize = "w-full"
     if (dashboards[dashboardIndex] !== undefined && dashboards[dashboardIndex].items.length > 0) {
-        addButtonSize = dashboards[dashboardIndex].items.length % 2 === 0 ? "w-1/2" : "w-full"
+        addButtonSize = dashboards[dashboardIndex].items.length % 2 === 0 ? "w-full md:w-1/2" : "w-full"
     }
 
     const removeWidget = (dashboardIndex: number, widgetIndex: number) => {
@@ -47,7 +47,7 @@ export function Dashboards() {
         <SectionContainer size={"big"}>
             <PageTitle title={"Dashboards"}/>
 
-            <div className="flex flex-row items-center space-x-3 justify-end pt-4">
+            <div className="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-3 justify-end pt-4">
                 {/*<div className="flex-grow">*/}
                 {/*    <DropDownSelectFieldBox*/}
                 {/*        value={dashboardIndex.toString()}*/}
@@ -63,7 +63,7 @@ export function Dashboards() {
                 {/*    />*/}
                 {/*</div>*/}
 
-                <div className="flex flex-row flex-grow items-center justify-end space-x-3">
+                <div className="flex flex-col w-full sm:w-auto sm:flex-row flex-grow sm:items-center sm:justify-end space-y-3 sm:space-y-0 sm:space-x-3">
                     <div className="flex-grow">
                         <InputFieldBox
                             setValue={setDate}
@@ -108,7 +108,7 @@ export function Dashboards() {
                             key={key}
                             className={[
                                 "relative group float-left p-2.5",
-                                (size === "base" ? "w-1/2" : "w-full"),
+                                (size === "base" ? "w-full md:w-1/2" : "w-full"),
                             ].join(" ")}
                         >
                             <div

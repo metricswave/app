@@ -77,52 +77,53 @@ export function TriggerParamsStats(
                 />}
             </div>
 
-            {!hideFilters && <div className="flex flex-row items-center justify-between pt-4 pb-10">
-                <div className="w-1/3">
-                    <InputFieldBox
-                        setValue={setDate}
-                        label="Date"
-                        type={period === "daily" ? "date" : "month"}
-                        name="date"
-                        placeholder={"Date"}
-                        value={date}
-                    />
-                </div>
+            {!hideFilters &&
+                <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0justify-between pt-4 pb-10">
+                    <div className="w-full sm:w-1/3">
+                        <InputFieldBox
+                            setValue={setDate}
+                            label="Date"
+                            type={period === "daily" ? "date" : "month"}
+                            name="date"
+                            placeholder={"Date"}
+                            value={date}
+                        />
+                    </div>
 
-                <div className="flex flex-row flex-grow items-center justify-end space-x-3">
-                    <DropDownSelectFieldBox
-                        value={parameter}
-                        options={params.map((param) => ({value: param, label: param}))}
-                        setValue={(value) => {
-                            setParameter(value as string)
-                        }}
-                        className="w-1/3"
-                        label="Parameter"
-                        name="parameter"
-                    />
+                    <div className="flex flex-col sm:flex-row flex-grow sm:items-center justify-end space-y-3 sm:space-y-0 sm:space-x-3">
+                        <DropDownSelectFieldBox
+                            value={parameter}
+                            options={params.map((param) => ({value: param, label: param}))}
+                            setValue={(value) => {
+                                setParameter(value as string)
+                            }}
+                            className="w-full sm:w-1/3"
+                            label="Parameter"
+                            name="parameter"
+                        />
 
-                    <DropDownSelectFieldBox
-                        className="w-1/3"
-                        value={period}
-                        options={[
-                            {
-                                value: "daily",
-                                label: "Daily",
-                            },
-                            {
-                                value: "monthly",
-                                label: "Monthly",
-                            },
-                        ]}
-                        setValue={(value) => {
-                            setPeriodAndDate(value as Period)
-                        }}
-                        label="Period"
-                        name="period"
-                    />
+                        <DropDownSelectFieldBox
+                            className="w-full sm:w-1/3"
+                            value={period}
+                            options={[
+                                {
+                                    value: "daily",
+                                    label: "Daily",
+                                },
+                                {
+                                    value: "monthly",
+                                    label: "Monthly",
+                                },
+                            ]}
+                            setValue={(value) => {
+                                setPeriodAndDate(value as Period)
+                            }}
+                            label="Period"
+                            name="period"
+                        />
 
-                </div>
-            </div>}
+                    </div>
+                </div>}
 
             {paramStats.length === 0 ? (
                 <div className="w-full flex items-center justify-center text-center h-64">
@@ -143,7 +144,7 @@ export function TriggerParamsStats(
                             className="flex flex-col space-y-2 py-3"
                         >
                             <div className="flex flex-row items-center justify-between space-x-3">
-                                <p className="opacity-75">{stat.param}</p>
+                                <p className="truncate opacity-75">{stat.param}</p>
                                 <p className="opacity-75">{number_formatter(stat.score)}</p>
                             </div>
 
