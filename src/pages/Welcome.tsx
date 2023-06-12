@@ -9,12 +9,14 @@ import CopyButton from "../components/form/CopyButton"
 import PrimaryButton from "../components/form/PrimaryButton"
 import {CheckIcon} from "@radix-ui/react-icons"
 import {FIVE_MINUTES_SECONDS, TWO_SECONDS} from "../helpers/ExpirableLocalStorage"
+import {useUserState} from "../storage/User"
 
 
 type Step = "loading" | "add-code"
 
 export function Welcome() {
     const navigate = useNavigate()
+    const {user} = useUserState(true)
     const {triggers, refreshTriggers, loadedTriggers} = useTriggersState()
     const {userUsage, loadUsage} = useUserUsageState()
     const [step, setStep] = useState<Step>("loading")
@@ -115,6 +117,9 @@ export function Welcome() {
                         if (!allowFinish) {
                             return
                         }
+
+                        const referrer = localStorage.getItem("nw:referrer") ?? document.referrer
+                        fetch(`https://metricswave.com/webhooks/f3fcf7cc-416d-4ff9-bc12-3878e9127ff7?email=${user?.email}&referrer=${referrer}&step=welcome`)
 
                         navigate("/")
                     }}

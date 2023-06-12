@@ -89,7 +89,7 @@ export default function SignUp() {
                 setLoading(false)
 
                 const referrer = localStorage.getItem("nw:referrer") ?? document.referrer
-                fetch(`https://metricswave.com/webhooks/f3fcf7cc-416d-4ff9-bc12-3878e9127ff7?email=${email}&referrer=${referrer}`)
+                fetch(`https://metricswave.com/webhooks/f3fcf7cc-416d-4ff9-bc12-3878e9127ff7?email=${email}&referrer=${referrer}&step=signup`)
             },
             error: (data) => {
                 setFormError(data.message)
