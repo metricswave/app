@@ -2,7 +2,7 @@ import PageTitle from "../sections/PageTitle"
 import {Trigger} from "../../types/Trigger"
 import {Stats, useTriggerStatsState} from "../../storage/TriggerStats"
 import {Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts"
-import {useState} from "react"
+import {useEffect, useState} from "react"
 import {NoLinkButton} from "../buttons/LinkButton"
 import {eachDayOfInterval, eachMonthOfInterval} from "date-fns"
 import {number_formatter} from "../../helpers/NumberFormatter"
@@ -16,7 +16,9 @@ function getGraphData(stats: Stats, view: "daily" | "monthly") {
 
     // Fill missing days in data from today to 30 days ago
     const today = new Date()
+
     if (view === "daily") {
+        today.setDate(today.getDate() + 1)
         const thirtyDaysAgo = new Date()
         thirtyDaysAgo.setDate(today.getDate() - 30)
         const graphData: Date[] = eachDayOfInterval({start: thirtyDaysAgo, end: today})
@@ -50,28 +52,44 @@ function getGraphData(stats: Stats, view: "daily" | "monthly") {
     return data
 }
 
-export function TriggerStats({trigger}: { trigger: Trigger }) {
-    const [view, setView] = useState<"daily" | "monthly">("daily")
+type Props = {
+    trigger: Trigger
+    title?: string
+    hideViewSwitcher?: boolean
+    defaultView?: "daily" | "monthly"
+}
+
+export function TriggerStats({trigger, title, defaultView = "daily", hideViewSwitcher = false}: Props) {
+    const [view, setView] = useState<"daily" | "monthly">(defaultView)
     const {stats} = useTriggerStatsState(trigger)
     const data = getGraphData(stats, view)
     const average = number_formatter(data.reduce((acc, curr) => acc + curr.total, 0) / data.length)
 
+    useEffect(() => {
+        setView(defaultView)
+    }, [defaultView])
+
     return (
         <div className="bg-white dark:bg-zinc-800 rounded-sm p-5 pb-1 shadow">
             <div className="pb-8 flex flex-col sm:flex-row space-y-3 sm:space-y-0 items-start sm:items-center justify-between">
-                {view === "daily" &&
+                {title !== undefined && <PageTitle
+                    title={title}
+                    description={`${average} average hits per day.`}
+                />}
+
+                {title === undefined && view === "daily" &&
                     <PageTitle title="Stats" description={`${average} average hits per day.`}/>}
 
-                {view === "monthly" &&
+                {title === undefined && view === "monthly" &&
                     <PageTitle title="Stats" description={`${average} average hits per month`}/>}
 
-                <div className="text-sm text-right">
+                {!hideViewSwitcher && <div className="text-sm text-right">
                     {view === "daily" ? (
                         <NoLinkButton text={"View monthly stats"} onClick={() => setView("monthly")}/>
                     ) : (
                         <NoLinkButton text={"View daily stats"} onClick={() => setView("daily")}/>
                     )}
-                </div>
+                </div>}
             </div>
 
             <ResponsiveContainer width="100%" height={350}>

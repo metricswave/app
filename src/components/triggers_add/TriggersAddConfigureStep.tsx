@@ -1,20 +1,18 @@
 import {TriggerType} from "../../types/TriggerType"
 import * as Dialog from "@radix-ui/react-dialog"
-import {DialogHeader} from "../dialog/DialogHeader"
 import {fetchAuthApi} from "../../helpers/ApiFetcher"
 import {generateUuid} from "../../helpers/UuidGenerator"
 import TriggerForm, {TriggerFormSubmit} from "../triggers/TriggerForm"
 
 type Props = {
     triggerType: TriggerType
-    back: () => void,
     onTriggerCreated: (uuid: string) => void
 }
 
-export const TriggersAddConfigureStep = ({triggerType, back, onTriggerCreated: triggerCreated}: Props) => {
+export const TriggersAddConfigureStep = ({triggerType, onTriggerCreated: triggerCreated}: Props) => {
     const handleSubmit: TriggerFormSubmit = async (
-            {emoji, title, content, values, via},
-            setErrors,
+        {emoji, title, content, values, via},
+        setErrors,
     ) => {
         const uuid = generateUuid()
 
@@ -44,23 +42,21 @@ export const TriggersAddConfigureStep = ({triggerType, back, onTriggerCreated: t
     }
 
     return (
-            <>
-                <DialogHeader back={back}/>
+        <>
+            <div className="mb-4">
+                <Dialog.Title className="font-bold m-0 text-xl">
+                    Configure your Event
+                </Dialog.Title>
 
-                <div className="mt-8 mb-4">
-                    <Dialog.Title className="font-bold m-0 text-xl">
-                        Configure your notification
-                    </Dialog.Title>
+                <Dialog.Description className="mt-2 mb-6 opacity-70">
+                    Set title, content, emoji, and configure your event parameters.
+                </Dialog.Description>
+            </div>
 
-                    <Dialog.Description className="mt-2 mb-6 opacity-70">
-                        Set title, content, emoji, and configure your trigger parameters to create your notification.
-                    </Dialog.Description>
-                </div>
-
-                <TriggerForm
-                        onSubmit={handleSubmit}
-                        triggerType={triggerType}
-                />
-            </>
+            <TriggerForm
+                onSubmit={handleSubmit}
+                triggerType={triggerType}
+            />
+        </>
     )
 }

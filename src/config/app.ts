@@ -4,7 +4,7 @@ const productionPath = "https://notifywave.com"
 const developmentPath = "http://notifywave.test"
 
 export const app = {
-    name: "NotifyWave",
+    name: "MetricsWave",
     env: process.env.NODE_ENV,
     isProduction,
     web: isProduction ? `${productionPath}` : `${developmentPath}`,

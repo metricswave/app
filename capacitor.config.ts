@@ -1,10 +1,10 @@
-import { CapacitorConfig } from '@capacitor/cli';
+import {CapacitorConfig} from "@capacitor/cli"
 
 const config: CapacitorConfig = {
-  appId: 'com.notifywave.app',
-  appName: 'NotifyWave',
-  webDir: 'build',
-  bundledWebRuntime: false
-};
+    appId: "com.notifywave.app",
+    appName: "MetricsWave",
+    webDir: "build",
+    bundledWebRuntime: false,
+}
 
-export default config;
+export default config

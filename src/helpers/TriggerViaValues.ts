@@ -25,5 +25,5 @@ export const uniqueArrayValues = (array: TriggerVia[]): TriggerVia[] => {
         return array.findIndex(i => i.id === value.id && i.type === value.type) === index
     }
 
-    return array.filter(onlyUnique)
+    return array.filter(onlyUnique).filter((value) => value.id !== 0)
 }

@@ -15,7 +15,7 @@ export default function BillingSettings() {
     const [loadingPurchase, setLoadingPurchase] = useState(false)
     const {availablePrices, loaded, purchase} = useAvailablePricesState()
     const {userUsage} = useUserUsageState()
-    const [usageLimit] = useState(user!.subscription_type === "free" ? 30 : 99999)
+    const [usageLimit] = useState(user!.subscription_type === "free" ? 500 : 99999)
 
     return (
         <div className="flex flex-col space-y-14">
@@ -35,7 +35,7 @@ export default function BillingSettings() {
                 </div>
 
                 <div className="flex flex-col text-sm mt-4 space-y-2 opacity-70">
-                    <span>{number_formatter(userUsage.usage)} / {number_formatter(usageLimit)} notifications sent.</span>
+                    <span>{number_formatter(userUsage.usage)} / {number_formatter(usageLimit)} events sent.</span>
                 </div>
             </div>
 
@@ -47,9 +47,9 @@ export default function BillingSettings() {
                             <div className="flex flex-col space-y-3 bg-blue-100/25 dark:bg-blue-900/10 border border-blue-500/50 dark:border-blue-700 rounded-sm p-4 w-full">
                                 <div className="font-bold text-zinc-800 dark:text-zinc-100">Free Plan</div>
                                 <div className="text-sm opacity-70 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-                                    <span>20 notifications per month</span>
+                                    <span>500 events per month</span>
                                     <span className="hidden sm:inline">/</span>
-                                    <span>Unlimited triggers</span>
+                                    <span>Unlimited event types</span>
                                 </div>
                             </div>
                         </div>
@@ -60,9 +60,9 @@ export default function BillingSettings() {
                             <div className="flex flex-col space-y-3 bg-blue-100/25 dark:bg-blue-900/10 border border-blue-500/50 dark:border-blue-700 rounded-sm p-4 w-full">
                                 <div className="font-bold text-zinc-800 dark:text-zinc-100">Lifetime Licence</div>
                                 <div className="text-sm opacity-70 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-                                    <span>{number_formatter(99999)} notifications per month</span>
+                                    <span>{number_formatter(99999)} events per month</span>
                                     <span className="hidden sm:inline">/</span>
-                                    <span>Unlimited triggers</span>
+                                    <span>Unlimited event types</span>
                                 </div>
                             </div>
                         </div>
@@ -76,9 +76,9 @@ export default function BillingSettings() {
                             <div className="flex flex-col space-y-3 bg-blue-100/25 dark:bg-blue-900/10 border border-blue-500/50 dark:border-blue-700 rounded-sm p-4 w-full">
                                 <div className="font-bold text-zinc-800 dark:text-zinc-100">Monthly Subscription</div>
                                 <div className="text-sm opacity-70 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-                                    <span>{number_formatter(99999)} notifications per month</span>
+                                    <span>{number_formatter(99999)} events per month</span>
                                     <span className="hidden sm:inline">/</span>
-                                    <span>Unlimited triggers</span>
+                                    <span>Unlimited events types</span>
                                 </div>
                                 <NoLinkButton loading={portalLoading}
                                               className="text-blue-500"
@@ -93,8 +93,7 @@ export default function BillingSettings() {
                 <div className="flex flex-col space-y-4">
                     <div>
                         <h3 className="font-bold mb-2">Upgrade Plan</h3>
-                        <p className="opacity-70 text-sm">Upgrade your account to get more notifications and
-                            triggers.</p>
+                        <p className="opacity-70 text-sm">Upgrade your account to get more events per month.</p>
                     </div>
 
                     <div>
@@ -118,7 +117,7 @@ export default function BillingSettings() {
                                     <div className="text-sm opacity-70 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
                                         <span>Paid monthly, cancel at any time.</span>
                                         <span className="hidden sm:inline">/</span>
-                                        <span>{number_formatter(99999)} notifications per month</span>
+                                        <span>{number_formatter(99999)} events per month</span>
                                     </div>
                                 </div>
 
@@ -138,7 +137,7 @@ export default function BillingSettings() {
                                     <div className="text-sm opacity-70 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
                                         <span>One payment only.</span>
                                         <span className="hidden sm:inline">/</span>
-                                        <span>{number_formatter(99999)} notifications per month</span>
+                                        <span>{number_formatter(99999)} events per month</span>
                                     </div>
                                 </div>
 
