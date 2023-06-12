@@ -9,6 +9,7 @@ type UserUsage = {
 }
 
 export function useUserUsageState() {
+    const [loadedUsage, setLoadedUsage] = useState<boolean>(false)
     const [userUsage, setUserUsage] = useState<UserUsage>(
         expirableLocalStorage.get<UserUsage>(KEY, {usage: 0}),
     )
@@ -19,6 +20,7 @@ export function useUserUsageState() {
             {
                 success: (data) => {
                     setUserUsage(data.data)
+                    setLoadedUsage(true)
                     expirableLocalStorage.set(KEY, data.data)
                 },
                 error: (err: any) => null,
@@ -31,6 +33,7 @@ export function useUserUsageState() {
 
     return {
         userUsage,
+        loadedUsage,
         loadUsage,
     }
 }

@@ -18,7 +18,7 @@ export function Welcome() {
     const navigate = useNavigate()
     const {user} = useUserState(true)
     const {triggers, refreshTriggers, loadedTriggers} = useTriggersState()
-    const {userUsage, loadUsage} = useUserUsageState()
+    const {userUsage, loadedUsage, loadUsage} = useUserUsageState()
     const [step, setStep] = useState<Step>("loading")
     const [allowFinish, setAllowFinish] = useState(false)
     const [snippet, setSnippet] = useState("")
@@ -30,7 +30,7 @@ export function Welcome() {
     }, [userUsage])
 
     useEffect(() => {
-        if (!loadedTriggers) {
+        if (!loadedTriggers || !loadedUsage) {
             return
         }
 
@@ -48,7 +48,7 @@ export function Welcome() {
             error: (error) => null,
             catcher: (e) => null,
         })
-    }, [loadedTriggers])
+    }, [loadedTriggers, loadedUsage])
 
     useEffect(() => {
         setSnippet(`<script>fetch('https://metricswave.com/webhooks/${triggers.pop()?.uuid}?path='+window.location.pathname +'&language='+window.navigator.language+'&userAgent='+window.navigator.userAgent+'&platform='+window.navigator.platform+'&referrer='+document.referrer)</script>`)
@@ -125,7 +125,7 @@ export function Welcome() {
                     }}
                     className={[
                         "w-full",
-                        !allowFinish ? "dark:bg-zinc-500/20 dark:text-zinc-600 dark:border-zinc-700 hover:dark:bg-zinc-500/20 hover:dark:text-zinc-600 hover:dark:border-zinc-700 cursor-not-allowed" : "",
+                        !allowFinish ? "bg-zinc-500/20 text-zinc-400 border-zinc-300 hover:bg-zinc-500/20 hover:text-zinc-600 hover:border-zinc-700 dark:bg-zinc-500/20 dark:text-zinc-600 dark:border-zinc-700 hover:dark:bg-zinc-500/20 hover:dark:text-zinc-600 hover:dark:border-zinc-700 cursor-not-allowed" : "",
                     ].join(" ")}
                     text="Done →"
                 />
