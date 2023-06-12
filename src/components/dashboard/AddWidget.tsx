@@ -83,10 +83,10 @@ export function AddWidget({addButtonSize, addWidgetToDashboard, defaultStep}: Pr
         </div>
 
         <div
-            className="bg-white dark:bg-zinc-800 bg-opacity-70 rounded-sm p-14 border-2 border-dashed border-zinc-300 dark:border-zinc-600 flex items-center justify-center smooth group"
+            className="bg-white dark:bg-zinc-800 bg-opacity-70 rounded-sm p-6 sm:p-14 border-2 border-dashed border-zinc-300 dark:border-zinc-600 flex items-center justify-center smooth group"
         >
 
-            <div className="flex flex-col space-y-4">
+            <div className="flex flex-col space-y-4 max-w-full">
                 <div className="font-bold opacity-80 text-center pb-4">
                     Configure your Widget
                 </div>
