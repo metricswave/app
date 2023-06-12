@@ -9,7 +9,7 @@ const router = createBrowserRouter(routes)
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement)
 
-const urlRef = (new URLSearchParams(window.location.search)).get("ref")
+const urlRef = (new URLSearchParams(window.location.search)).get("utm_source")
 if (urlRef !== null) {
     localStorage.setItem("nw:referrer", urlRef)
 } else if (
