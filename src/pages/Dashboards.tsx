@@ -101,8 +101,13 @@ export function Dashboards() {
         {dashboards[dashboardIndex] !== undefined && <SectionContainer size={"extra-big"}>
             <div className="-mx-2.5 pb-64">
                 {dashboards[dashboardIndex].items.map(({eventUuid, title, size, type, parameter}, key) => {
-                    const trigger = triggerByUuid(eventUuid)!
+                    const trigger = triggerByUuid(eventUuid)
                     const confirmed = removeConfirm === `${dashboardIndex}-${key}`
+
+                    if (trigger === undefined) {
+                        return null
+                    }
+
                     return (
                         <div
                             key={key}
