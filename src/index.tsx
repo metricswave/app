@@ -11,13 +11,13 @@ const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement)
 
 const urlRef = (new URLSearchParams(window.location.search)).get("utm_source")
 if (urlRef !== null) {
-    localStorage.setItem("nw:referrer", urlRef)
+    localStorage.setItem("metricswave:referrer", urlRef)
 } else if (
     document.referrer
     && document.referrer !== window.location.hostname
-    && localStorage.getItem("nw:referrer") === null
+    && localStorage.getItem("metricswave:referrer") === null
 ) {
-    localStorage.setItem("nw:referrer", document.referrer)
+    localStorage.setItem("metricswave:referrer", document.referrer)
 }
 
 root.render(

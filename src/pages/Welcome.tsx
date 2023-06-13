@@ -1,6 +1,6 @@
 import {useTriggersState} from "../storage/Triggers"
 import {useEffect, useState} from "react"
-import {useNavigate} from "react-router-dom"
+import {useNavigate, useSearchParams} from "react-router-dom"
 import CircleArrowsIcon from "../components/icons/CircleArrowsIcon"
 import {fetchAuthApi} from "../helpers/ApiFetcher"
 import {useUserUsageState} from "../storage/UserUsage"
@@ -10,12 +10,14 @@ import PrimaryButton from "../components/form/PrimaryButton"
 import {CheckIcon} from "@radix-ui/react-icons"
 import {FIVE_MINUTES_SECONDS, TWO_SECONDS} from "../helpers/ExpirableLocalStorage"
 import {useUserState} from "../storage/User"
+import SecondaryButton from "../components/form/SecondaryButton"
 
 
 type Step = "loading" | "add-code"
 
 export function Welcome() {
     const navigate = useNavigate()
+    const [searchParams] = useSearchParams()
     const {user} = useUserState(true)
     const {triggers, refreshTriggers, loadedTriggers} = useTriggersState()
     const {userUsage, loadedUsage, loadUsage} = useUserUsageState()
@@ -34,7 +36,7 @@ export function Welcome() {
             return
         }
 
-        if (userUsage.usage > 0) {
+        if (userUsage.usage > 0 && searchParams.get("force") !== "true") {
             navigate("/")
             return
         }
@@ -66,6 +68,13 @@ export function Welcome() {
     useEffect(() => {
         setTimeout(() => setAllowFinish(true), FIVE_MINUTES_SECONDS * 1000)
     }, [])
+
+    const handleFinish = () => {
+        const referrer = localStorage.getItem("metricswave:referrer") ?? document.referrer
+        fetch(`https://metricswave.com/webhooks/f3fcf7cc-416d-4ff9-bc12-3878e9127ff7?email=${user?.email}&referrer=${referrer}&step=2`)
+
+        navigate("/")
+    }
 
     if (step === "loading") {
         return (
@@ -118,16 +127,23 @@ export function Welcome() {
                             return
                         }
 
-                        const referrer = localStorage.getItem("nw:referrer") ?? document.referrer
-                        fetch(`https://metricswave.com/webhooks/f3fcf7cc-416d-4ff9-bc12-3878e9127ff7?email=${user?.email}&referrer=${referrer}&step=2`)
-
-                        navigate("/")
+                        handleFinish()
                     }}
                     className={[
                         "w-full",
                         !allowFinish ? "bg-zinc-500/20 text-zinc-400 border-zinc-300 hover:bg-zinc-500/20 hover:text-zinc-600 hover:border-zinc-700 dark:bg-zinc-500/20 dark:text-zinc-600 dark:border-zinc-700 hover:dark:bg-zinc-500/20 hover:dark:text-zinc-600 hover:dark:border-zinc-700 cursor-not-allowed" : "",
                     ].join(" ")}
                     text="Done →"
+                />
+
+                <SecondaryButton
+                    className={[
+                        "w-full mt-4 border-transparent shadow-none",
+                    ].join(" ")}
+                    onClick={() => {
+                        handleFinish()
+                    }}
+                    text={"Skip for now"}
                 />
             </div>
         </div>
