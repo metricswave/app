@@ -51,7 +51,7 @@ export function Welcome() {
     }, [loadedTriggers, loadedUsage])
 
     useEffect(() => {
-        setSnippet(`<script>fetch('https://metricswave.com/webhooks/${triggers.pop()?.uuid}?path='+window.location.pathname +'&language='+window.navigator.language+'&userAgent='+window.navigator.userAgent+'&platform='+window.navigator.platform+'&referrer='+document.referrer)</script>`)
+        setSnippet(`<script defer event-uuid="${triggers.pop()?.uuid}" src="https://metricswave.com/js/visits.js"></script>`)
     }, [triggers])
 
     useEffect(() => {
