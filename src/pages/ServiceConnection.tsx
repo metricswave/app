@@ -24,7 +24,7 @@ export default function ServiceConnection() {
         if (!userCreated || !user) return
 
         const referrer = localStorage.getItem("nw:referrer") ?? document.referrer
-        fetch(`https://metricswave.com/webhooks/f3fcf7cc-416d-4ff9-bc12-3878e9127ff7?email=${user.email}&referrer=${referrer}&step=signup`)
+        fetch(`https://metricswave.com/webhooks/f3fcf7cc-416d-4ff9-bc12-3878e9127ff7?email=${user.email}&referrer=${referrer}&step=1`)
 
         window.location.href = "/welcome"
     }, [userCreated, user, tokens])
