@@ -26,7 +26,7 @@ export const items: Array<NavItem> = [
     },
     {
         icon: PaperPlaneIcon,
-        label: "Services",
+        label: "Channels",
         path: "/services",
     },
 ]
