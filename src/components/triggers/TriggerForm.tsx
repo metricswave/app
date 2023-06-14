@@ -14,6 +14,8 @@ import LocationFieldBox, {LocationValue} from "../form/LocationFieldBox"
 import AddressFieldBox from "../form/AddressFieldBox"
 import SelectFieldBox from "../form/SelectFieldBox"
 import AutocompleteTextareaFieldBox from "../form/AutocompleteTextareaFieldBox"
+import InputLabel from "../form/InputLabel"
+import {LinkButton} from "../buttons/LinkButton"
 
 type Props = {
     onSubmit: TriggerFormSubmit,
@@ -304,24 +306,37 @@ export default function TriggerForm(
                 showRequired
             />
 
-            <CheckboxInputGroup
-                name="via"
-                label="Notification Channels"
-                values={viaValues.map(v => {
-                    return {value: v.id.toString(), ...v} as CheckboxGroupValue
-                })}
-                onCheckedChanged={(values) => {
-                    const viaValues = (values as Array<CheckboxGroupValue & { type: string }>)
-                        .map((v) => {
-                            return {
-                                id: parseInt(v.value), label: v.label, checked: v.checked, type: v.type as string,
-                            } as TriggerVia
-                        })
+            {viaValues.length === 0 ? (<>
+                <div className="flex flex-col border transition-all border-zinc-200/60 hover:border-zinc-200 focus-within:hover:border-zinc-300 focus-within:border-zinc-300 duration-300 dark:border-zinc-700/60 rounded-sm hover:dark:border-zinc-700 group focus-within:dark:border-zinc-600 hover:focus-within:dark:border-zinc-600">
 
-                    setViaValues(viaValues)
-                }}
-                error={viaValues.filter((value) => value.checked).length === 0 ? "This trigger will not be sent to any channel" : false}
-            />
+                    <InputLabel name={"via"} label={"Notification Channels"} required={false} showRequired={false}/>
+
+                    <div className="pt-3 px-4 text-sm opacity-80 pb-4">
+                        To share this event on a channel you need to create it before. You can do it in the <LinkButton
+                        text="channels page"
+                        href="/services"/>.
+                    </div>
+                </div>
+            </>) : (<>
+                <CheckboxInputGroup
+                    name="via"
+                    label="Notification Channels"
+                    values={viaValues.map(v => {
+                        return {value: v.id.toString(), ...v} as CheckboxGroupValue
+                    })}
+                    onCheckedChanged={(values) => {
+                        const viaValues = (values as Array<CheckboxGroupValue & { type: string }>)
+                            .map((v) => {
+                                return {
+                                    id: parseInt(v.value), label: v.label, checked: v.checked, type: v.type as string,
+                                } as TriggerVia
+                            })
+
+                        setViaValues(viaValues)
+                    }}
+                    error={viaValues.filter((value) => value.checked).length === 0 ? "This trigger will not be sent to any channel" : false}
+                />
+            </>)}
 
             {triggerType.configuration.fields.map(renderDynamicField)}
 
