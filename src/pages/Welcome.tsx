@@ -8,7 +8,7 @@ import Logo from "../components/logo/Logo"
 import CopyButton from "../components/form/CopyButton"
 import PrimaryButton from "../components/form/PrimaryButton"
 import {CheckIcon} from "@radix-ui/react-icons"
-import {FIVE_MINUTES_SECONDS, TWO_SECONDS} from "../helpers/ExpirableLocalStorage"
+import {FIVE_MINUTES_SECONDS, FIVE_SECONDS, TWO_SECONDS} from "../helpers/ExpirableLocalStorage"
 import {useUserState} from "../storage/User"
 import SecondaryButton from "../components/form/SecondaryButton"
 import {app} from "../config/app"
@@ -24,6 +24,7 @@ export function Welcome() {
     const {userUsage, loadedUsage, loadUsage} = useUserUsageState()
     const [step, setStep] = useState<Step>("loading")
     const [allowFinish, setAllowFinish] = useState(false)
+    const [allowSkip, setAllowSkip] = useState(false)
     const [snippet, setSnippet] = useState("")
 
     useEffect(() => {
@@ -67,6 +68,7 @@ export function Welcome() {
     }, [])
 
     useEffect(() => {
+        setTimeout(() => setAllowSkip(true), FIVE_SECONDS * 1000)
         setTimeout(() => setAllowFinish(true), FIVE_MINUTES_SECONDS * 1000)
     }, [])
 
@@ -141,7 +143,8 @@ export function Welcome() {
 
                 <SecondaryButton
                     className={[
-                        "w-full mt-4 border-transparent shadow-none",
+                        "w-full mt-4 border-transparent shadow-none transition-all duration-300",
+                        (!allowSkip ? "opacity-0 cursor-default" : ""),
                     ].join(" ")}
                     onClick={() => {
                         handleFinish()
