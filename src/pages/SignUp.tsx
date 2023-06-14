@@ -9,6 +9,7 @@ import eventTracker from "../helpers/EventTracker"
 import SocialAuth from "../components/social/SocialAuth"
 import InputFieldBox from "../components/form/InputFieldBox"
 import FormErrorMessage from "../components/form/FormErrorMessage"
+import {app} from "../config/app"
 
 export default function SignUp() {
     const [withEmail, setWithEmail] = useState(false)
@@ -88,8 +89,10 @@ export default function SignUp() {
                 window.location.href = "/welcome"
                 setLoading(false)
 
-                const referrer = localStorage.getItem("metricswave:referrer") ?? document.referrer
-                fetch(`https://metricswave.com/webhooks/f3fcf7cc-416d-4ff9-bc12-3878e9127ff7?email=${email}&referrer=${referrer}&step=1`)
+                if (app.isProduction) {
+                    const referrer = localStorage.getItem("metricswave:referrer") ?? document.referrer
+                    fetch(`https://metricswave.com/webhooks/f3fcf7cc-416d-4ff9-bc12-3878e9127ff7?email=${email}&referrer=${referrer}&step=1`)
+                }
             },
             error: (data) => {
                 setFormError(data.message)
