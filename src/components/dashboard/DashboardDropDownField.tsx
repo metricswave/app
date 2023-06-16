@@ -64,9 +64,10 @@ export default function DashboardDropDownField(
                 </div>
 
                 <div className="pt-6 px-4">
-                    <DashboardPopOver dashboard={activeDashboard} onUpdate={(title, isPublic) => {
-                        updateDashboard(activeDashboard, title, isPublic)
-                    }}/>
+                    {activeDashboard !== undefined &&
+                        <DashboardPopOver dashboard={activeDashboard} onUpdate={(title, isPublic) => {
+                            updateDashboard(activeDashboard, title, isPublic)
+                        }}/>}
                 </div>
 
             </div>

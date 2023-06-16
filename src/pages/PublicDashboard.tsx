@@ -113,7 +113,6 @@ export function PublicDashboard() {
                         <div className="-mx-2.5 pb-64">
                             {dashboard.items.map(({eventUuid, title, size, type, parameter}, key) => {
                                 const trigger = triggerByUuid(eventUuid)
-                                console.log(trigger)
 
                                 if (trigger === undefined) {
                                     return null

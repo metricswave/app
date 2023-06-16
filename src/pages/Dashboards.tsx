@@ -35,7 +35,6 @@ export function Dashboards() {
     if (dashboards[dashboardIndex] !== undefined && dashboards[dashboardIndex].items.length > 0) {
         addButtonSize = dashboards[dashboardIndex].items.length % 2 === 0 ? "w-full md:w-1/2" : "w-full"
     }
-    const [publicDashboard, setPublicDashboard] = useState<boolean>(dashboards[dashboardIndex].public ?? false)
     const [changedToPublic, setChangedToPublic] = useState<boolean>(false)
 
     const removeWidget = (dashboardIndex: number, widgetIndex: number) => {
