@@ -4,6 +4,8 @@ import {fetchAuthApi} from "../helpers/ApiFetcher"
 export type Dashboard = {
     id: string
     name: string
+    uuid: string
+    public: boolean
     items: DashboardItem[]
 }
 
@@ -84,9 +86,23 @@ export function useDashboardsState() {
         updateDashboard(dashboardIndex, newDashboards)
     }
 
+    const updateDashboardFields = (dashboardIndex: number, fields: Partial<Dashboard>) => {
+        const dashboard = dashboards[dashboardIndex]
+        const newDashboard = {
+            ...dashboard,
+            ...fields,
+        }
+        const newDashboards = [...dashboards]
+        newDashboards[dashboardIndex] = newDashboard
+        setDashboards(newDashboards)
+        updateDashboard(dashboardIndex, newDashboards)
+    }
+
     return {
         dashboards,
         addWidgetToDashboard,
         removeWidgetFromDashboard,
+        updateDashboard: updateDashboardFields,
+        publicDashboardPath: (dashboard: Dashboard) => `https://app.metricswave.com/${dashboard.uuid}/${dashboard.name}`,
     }
 }

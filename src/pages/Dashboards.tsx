@@ -1,6 +1,6 @@
 import SectionContainer from "../components/sections/SectionContainer"
 import PageTitle from "../components/sections/PageTitle"
-import {useState} from "react"
+import React, {useState} from "react"
 import {useTriggersState} from "../storage/Triggers"
 import {TriggerStats} from "../components/triggers/TriggerStats"
 import {TriggerParamsStats} from "../components/triggers/TriggerParamsStats"
@@ -8,11 +8,19 @@ import InputFieldBox from "../components/form/InputFieldBox"
 import DropDownSelectFieldBox from "../components/form/DropDownSelectFieldBox"
 import {calculateDate, Period} from "../types/Period"
 import {AddWidget} from "../components/dashboard/AddWidget"
-import {DashboardItem, useDashboardsState} from "../storage/Dasboard"
+import {Dashboard, DashboardItem, useDashboardsState} from "../storage/Dasboard"
 import {CheckIcon, TrashIcon} from "@radix-ui/react-icons"
+import DashboardDropDownField from "../components/dashboard/DashboardDropDownField"
+import {CopyButtonIcon} from "../components/form/CopyButton"
 
 export function Dashboards() {
-    const {dashboards, addWidgetToDashboard, removeWidgetFromDashboard} = useDashboardsState()
+    const {
+        dashboards,
+        addWidgetToDashboard,
+        removeWidgetFromDashboard,
+        updateDashboard,
+        publicDashboardPath,
+    } = useDashboardsState()
     const {triggerByUuid} = useTriggersState()
     const [period, setPeriod] = useState<Period>("daily")
     const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0])
@@ -27,6 +35,8 @@ export function Dashboards() {
     if (dashboards[dashboardIndex] !== undefined && dashboards[dashboardIndex].items.length > 0) {
         addButtonSize = dashboards[dashboardIndex].items.length % 2 === 0 ? "w-full md:w-1/2" : "w-full"
     }
+    const [publicDashboard, setPublicDashboard] = useState<boolean>(dashboards[dashboardIndex].public ?? false)
+    const [changedToPublic, setChangedToPublic] = useState<boolean>(false)
 
     const removeWidget = (dashboardIndex: number, widgetIndex: number) => {
         const removeConfirmKey = `${dashboardIndex}-${widgetIndex}`
@@ -39,25 +49,39 @@ export function Dashboards() {
         setRemoveConfirm("")
     }
 
+    const handleDashboardUpdate = (dashboardIndex: number, fields: Partial<Dashboard>) => {
+        if (fields.public !== undefined && fields.public && !dashboards[dashboardIndex].public) {
+            setChangedToPublic(true)
+        }
+
+        updateDashboard(dashboardIndex, fields)
+    }
+
     return <>
         <SectionContainer size={"big"}>
-            <PageTitle title={"Dashboards"}/>
+            <div className="flex flex-row space-y-4 justify-between items-center">
+                <PageTitle title={"Dashboards"}/>
+            </div>
 
             <div className="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-3 justify-end pt-4">
-                {/*<div className="flex-grow">*/}
-                {/*    <DropDownSelectFieldBox*/}
-                {/*        value={dashboardIndex.toString()}*/}
-                {/*        options={dashboards.map((dashboard, index) => ({*/}
-                {/*            value: index.toString(),*/}
-                {/*            label: dashboard.name,*/}
-                {/*        }))}*/}
-                {/*        setValue={(value) => {*/}
-                {/*            setDashboardIndex(parseInt(value as string))*/}
-                {/*        }}*/}
-                {/*        label="Dashboard"*/}
-                {/*        name="dashboard"*/}
-                {/*    />*/}
-                {/*</div>*/}
+                <div className="flex-grow w-full">
+                    <DashboardDropDownField
+                        updateDashboard={(dashboard, title, isPublic) => {
+                            handleDashboardUpdate(dashboardIndex, {name: title, public: isPublic})
+                        }}
+                        activeDashboard={dashboards[dashboardIndex]}
+                        value={dashboardIndex.toString()}
+                        options={dashboards.map((dashboard, index) => ({
+                            value: index.toString(),
+                            label: dashboard.name,
+                        }))}
+                        setValue={(value) => {
+                            setDashboardIndex(parseInt(value as string))
+                        }}
+                        label="Dashboard"
+                        name="dashboard"
+                    />
+                </div>
 
                 <div className="flex flex-col w-full sm:w-auto sm:flex-row flex-grow sm:items-center sm:justify-end space-y-3 sm:space-y-0 sm:space-x-3">
                     <div className="flex-grow">
@@ -72,7 +96,7 @@ export function Dashboards() {
                     </div>
 
                     <DropDownSelectFieldBox
-                        className="flex-grow"
+                        className="min-w-[150px] flex-grow"
                         value={period}
                         options={[
                             {
@@ -92,6 +116,21 @@ export function Dashboards() {
                     />
                 </div>
             </div>
+
+            {changedToPublic && <div>
+                <div className="p-4 bg-green-100 border border-green-200">
+                    <div className=" flex flex-row gap-2 items-center justify-between">
+                        <p className="text-mauve12 text-sm leading-[19px] font-bold">Share your dashboard!</p>
+                        <div className="flex flex-row gap-2 items-center">
+                            <div className="max-w-full truncate text-xs select-all">{publicDashboardPath(dashboards[dashboardIndex])}</div>
+                            <div className="cursor-pointer rounded-sm hover:bg-zinc-100 smooth p-1">
+                                <CopyButtonIcon textToCopy={publicDashboardPath(dashboards[dashboardIndex])}/>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>}
         </SectionContainer>
 
         {dashboards[dashboardIndex] !== undefined && <SectionContainer size={"extra-big"}>
