@@ -11,8 +11,10 @@ import {fetchApi} from "../helpers/ApiFetcher"
 import {useParams} from "react-router-dom"
 import {usePublicDashboardTriggersState} from "../storage/PublicDashboardTriggers"
 import Logo from "../components/logo/Logo"
+import {QuestionMarkIcon} from "@radix-ui/react-icons"
 
 export function PublicDashboard() {
+    const [notFound, setNotFound] = useState(false)
     const {dashboardUuid} = useParams<{ dashboardUuid: string }>()
     const [dashboard, setDashboard] = useState<Dashboard | undefined>(undefined)
     const {triggerByUuid} = usePublicDashboardTriggersState(dashboardUuid!)
@@ -29,8 +31,8 @@ export function PublicDashboard() {
             success: (data) => {
                 setDashboard(data.data)
             },
-            error: () => null,
-            catcher: () => null,
+            error: () => setNotFound(true),
+            catcher: () => setNotFound(true),
         })
     }, [])
 
@@ -56,87 +58,98 @@ export function PublicDashboard() {
             </header>
 
             <div id="app-container" className="pt-[65px] pb-[81px] sm:pb-0">
-                <SectionContainer size={"big"}>
-                    <div className="flex flex-row space-y-4 justify-between items-center">
-                        <PageTitle title={`Dashboard: ${dashboard?.name}`}/>
-                    </div>
-
-                    <div className="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-3 justify-end pt-4">
-                        <div className="flex flex-col w-full sm:w-auto sm:flex-row flex-grow sm:items-center sm:justify-end space-y-3 sm:space-y-0 sm:space-x-3">
-                            <div className="flex-grow">
-                                <InputFieldBox
-                                    setValue={setDate}
-                                    label="Date"
-                                    type={dateFieldType}
-                                    name="date"
-                                    placeholder={"Date"}
-                                    value={date}
-                                />
-                            </div>
-
-                            <DropDownSelectFieldBox
-                                className="min-w-[150px] flex-grow"
-                                value={period}
-                                options={[
-                                    {
-                                        value: "daily",
-                                        label: "Daily",
-                                    },
-                                    {
-                                        value: "monthly",
-                                        label: "Monthly",
-                                    },
-                                ]}
-                                setValue={(value) => {
-                                    setPeriodAndDate(value as Period)
-                                }}
-                                label="Period"
-                                name="period"
-                            />
+                {notFound && <SectionContainer>
+                    <div className="pt-14 md:pt-44 text-center flex flex-col items-center justify-center gap-10 animate-pulse">
+                        <QuestionMarkIcon className="h-auto w-10"/>
+                        <div className="text-xl md:text-2xl pb-20">
+                            Dashboard not found<br/>or not longer available.
                         </div>
                     </div>
-                </SectionContainer>
-
-                {dashboard !== undefined && <SectionContainer size={"extra-big"}>
-                    <div className="-mx-2.5 pb-64">
-                        {dashboard.items.map(({eventUuid, title, size, type, parameter}, key) => {
-                            const trigger = triggerByUuid(eventUuid)
-                            console.log(trigger)
-
-                            if (trigger === undefined) {
-                                return null
-                            }
-
-                            return (
-                                <div
-                                    key={key}
-                                    className={[
-                                        "relative group float-left p-2.5",
-                                        (size === "base" ? "w-full md:w-1/2" : "w-full"),
-                                    ].join(" ")}
-                                >
-
-                                    {type === "stats" &&
-                                        <TriggerStats publicDashboard={dashboardUuid}
-                                                      trigger={trigger}
-                                                      title={title}
-                                                      defaultView={period}
-                                                      hideViewSwitcher/>}
-                                    {type === "parameter" &&
-                                        <TriggerParamsStats
-                                            publicDashboard={dashboardUuid}
-                                            trigger={trigger}
-                                            defaultParameter={parameter}
-                                            title={title}
-                                            defaultPeriod={period}
-                                            defaultDate={date}
-                                            hideFilters
-                                        />}
-                                </div>
-                            )
-                        })}
-                    </div>
                 </SectionContainer>}
+
+                {!notFound && <>
+                    <SectionContainer size={"big"}>
+                        <div className="flex flex-row space-y-4 justify-between items-center">
+                            <PageTitle title={`Dashboard: ${dashboard?.name}`}/>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-3 justify-end pt-4">
+                            <div className="flex flex-col w-full sm:w-auto sm:flex-row flex-grow sm:items-center sm:justify-end space-y-3 sm:space-y-0 sm:space-x-3">
+                                <div className="flex-grow">
+                                    <InputFieldBox
+                                        setValue={setDate}
+                                        label="Date"
+                                        type={dateFieldType}
+                                        name="date"
+                                        placeholder={"Date"}
+                                        value={date}
+                                    />
+                                </div>
+
+                                <DropDownSelectFieldBox
+                                    className="min-w-[150px] flex-grow"
+                                    value={period}
+                                    options={[
+                                        {
+                                            value: "daily",
+                                            label: "Daily",
+                                        },
+                                        {
+                                            value: "monthly",
+                                            label: "Monthly",
+                                        },
+                                    ]}
+                                    setValue={(value) => {
+                                        setPeriodAndDate(value as Period)
+                                    }}
+                                    label="Period"
+                                    name="period"
+                                />
+                            </div>
+                        </div>
+                    </SectionContainer>
+
+                    {dashboard !== undefined && <SectionContainer size={"extra-big"}>
+                        <div className="-mx-2.5 pb-64">
+                            {dashboard.items.map(({eventUuid, title, size, type, parameter}, key) => {
+                                const trigger = triggerByUuid(eventUuid)
+                                console.log(trigger)
+
+                                if (trigger === undefined) {
+                                    return null
+                                }
+
+                                return (
+                                    <div
+                                        key={key}
+                                        className={[
+                                            "relative group float-left p-2.5",
+                                            (size === "base" ? "w-full md:w-1/2" : "w-full"),
+                                        ].join(" ")}
+                                    >
+
+                                        {type === "stats" &&
+                                            <TriggerStats publicDashboard={dashboardUuid}
+                                                          trigger={trigger}
+                                                          title={title}
+                                                          defaultView={period}
+                                                          hideViewSwitcher/>}
+                                        {type === "parameter" &&
+                                            <TriggerParamsStats
+                                                publicDashboard={dashboardUuid}
+                                                trigger={trigger}
+                                                defaultParameter={parameter}
+                                                title={title}
+                                                defaultPeriod={period}
+                                                defaultDate={date}
+                                                hideFilters
+                                            />}
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    </SectionContainer>}
+                </>}
             </div>
         </div>
     </>
