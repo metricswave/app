@@ -6,7 +6,7 @@ import {TriggerStats} from "../components/triggers/TriggerStats"
 import {TriggerParamsStats} from "../components/triggers/TriggerParamsStats"
 import InputFieldBox from "../components/form/InputFieldBox"
 import DropDownSelectFieldBox from "../components/form/DropDownSelectFieldBox"
-import {Period} from "../types/Period"
+import {calculateDate, Period} from "../types/Period"
 import {AddWidget} from "../components/dashboard/AddWidget"
 import {DashboardItem, useDashboardsState} from "../storage/Dasboard"
 import {CheckIcon, TrashIcon} from "@radix-ui/react-icons"
@@ -19,14 +19,10 @@ export function Dashboards() {
     const [dashboardIndex, setDashboardIndex] = useState<number>(0)
     const [removeConfirm, setRemoveConfirm] = useState<string>("")
     const setPeriodAndDate = (period: Period) => {
-        setDate(
-            period === "daily" ?
-                new Date().toISOString().split("T")[0] :
-                new Date().toISOString().split("T")[0].slice(0, 7),
-        )
+        setDate(calculateDate(period, undefined))
         setPeriod(period)
     }
-
+    const dateFieldType = period === "monthly" ? "month" : "date"
     let addButtonSize = "w-full"
     if (dashboards[dashboardIndex] !== undefined && dashboards[dashboardIndex].items.length > 0) {
         addButtonSize = dashboards[dashboardIndex].items.length % 2 === 0 ? "w-full md:w-1/2" : "w-full"
@@ -68,7 +64,7 @@ export function Dashboards() {
                         <InputFieldBox
                             setValue={setDate}
                             label="Date"
-                            type={period === "daily" ? "date" : "month"}
+                            type={dateFieldType}
                             name="date"
                             placeholder={"Date"}
                             value={date}

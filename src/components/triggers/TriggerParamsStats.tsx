@@ -5,20 +5,10 @@ import DropDownSelectFieldBox from "../form/DropDownSelectFieldBox"
 import PageTitle from "../sections/PageTitle"
 import {number_formatter} from "../../helpers/NumberFormatter"
 import InputFieldBox from "../form/InputFieldBox"
-import {Period} from "../../types/Period"
+import {calculateDate, Period} from "../../types/Period"
 
 function percentage_of(totalScore: number, score: number): number {
     return Math.min(100, Math.max(Math.round((score / totalScore) * 100), 1))
-}
-
-const calculateDate = (period: Period, defaultDate: string | undefined): string => {
-    if (defaultDate !== undefined) {
-        return defaultDate
-    }
-
-    return period === "daily" ?
-        new Date().toISOString().split("T")[0] :
-        new Date().toISOString().split("T")[0].slice(0, 7)
 }
 
 type Props = {
@@ -44,7 +34,7 @@ export function TriggerParamsStats(
     const [parameter, setParameter] = useState<string>(defaultParameter ?? params[0])
     const [period, setPeriod] = useState<Period>(defaultPeriod)
     const [date, setDate] = useState<string>(calculateDate(period, defaultDate))
-
+    const dateFieldType = period === "monthly" ? "month" : date
     const setPeriodAndDate = (period: Period) => {
         setDate(calculateDate(period, undefined))
         setPeriod(period)
@@ -83,7 +73,7 @@ export function TriggerParamsStats(
                         <InputFieldBox
                             setValue={setDate}
                             label="Date"
-                            type={period === "daily" ? "date" : "month"}
+                            type={dateFieldType}
                             name="date"
                             placeholder={"Date"}
                             value={date}

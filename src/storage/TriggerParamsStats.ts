@@ -1,7 +1,7 @@
 import {Trigger} from "../types/Trigger"
 import {useEffect, useState} from "react"
 import {fetchAuthApi} from "../helpers/ApiFetcher"
-import {Period} from "../types/Period"
+import {apiPeriodFromPeriod, Period} from "../types/Period"
 
 export type ParamsStats = { [key: string]: ParamStatRow[] }
 
@@ -14,7 +14,7 @@ export function useTriggerParamsStatsState(trigger: Trigger, period: Period, dat
     const [stats, setStats] = useState<ParamsStats>()
 
     useEffect(() => {
-        const apiPeriod = period === "daily" ? "day" : "month"
+        const apiPeriod = apiPeriodFromPeriod(period)
         fetchAuthApi<ParamsStats>(
             `/triggers/${trigger.uuid}/parameters-stats?` + new URLSearchParams({
                 period: apiPeriod,

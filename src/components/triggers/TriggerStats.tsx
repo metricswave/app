@@ -6,13 +6,13 @@ import {useEffect, useState} from "react"
 import {NoLinkButton} from "../buttons/LinkButton"
 import {eachDayOfInterval, eachMonthOfInterval} from "date-fns"
 import {number_formatter} from "../../helpers/NumberFormatter"
+import {apiPeriodFromPeriod, Period} from "../../types/Period"
 
-function getGraphData(stats: Stats, view: "daily" | "monthly") {
+function getGraphData(stats: Stats, view: Period) {
     const data = stats[view].map((stat) => ({
         name: stat.date,
         total: stat.score,
     }))
-
 
     // Fill missing days in data from today to 30 days ago
     const today = new Date()
@@ -31,9 +31,7 @@ function getGraphData(stats: Stats, view: "daily" | "monthly") {
                 })
             }
         })
-    }
-
-    if (view === "monthly") {
+    } else if (view === "monthly") {
         const twelveMonthsAgo = new Date()
         twelveMonthsAgo.setMonth(today.getMonth() - 12)
         const graphData: Date[] = eachMonthOfInterval({start: twelveMonthsAgo, end: today})
@@ -56,14 +54,15 @@ type Props = {
     trigger: Trigger
     title?: string
     hideViewSwitcher?: boolean
-    defaultView?: "daily" | "monthly"
+    defaultView?: Period
 }
 
 export function TriggerStats({trigger, title, defaultView = "daily", hideViewSwitcher = false}: Props) {
-    const [view, setView] = useState<"daily" | "monthly">(defaultView)
+    const [view, setView] = useState<Period>(defaultView)
     const {stats} = useTriggerStatsState(trigger)
     const data = getGraphData(stats, view)
     const average = number_formatter(data.reduce((acc, curr) => acc + curr.total, 0) / data.length)
+    const viewText = apiPeriodFromPeriod(view)
 
     useEffect(() => {
         setView(defaultView)
@@ -74,14 +73,11 @@ export function TriggerStats({trigger, title, defaultView = "daily", hideViewSwi
             <div className="pb-8 flex flex-col sm:flex-row space-y-3 sm:space-y-0 items-start sm:items-center justify-between">
                 {title !== undefined && <PageTitle
                     title={title}
-                    description={`${average} average hits per day.`}
+                    description={`${average} average hits per ${viewText}.`}
                 />}
 
-                {title === undefined && view === "daily" &&
-                    <PageTitle title="Stats" description={`${average} average hits per day.`}/>}
-
-                {title === undefined && view === "monthly" &&
-                    <PageTitle title="Stats" description={`${average} average hits per month`}/>}
+                {title === undefined &&
+                    <PageTitle title="Stats" description={`${average} average hits per ${viewText}.`}/>}
 
                 {!hideViewSwitcher && <div className="text-sm text-right">
                     {view === "daily" ? (
@@ -96,15 +92,22 @@ export function TriggerStats({trigger, title, defaultView = "daily", hideViewSwi
                 <BarChart data={data}>
                     <Tooltip
                         cursor={{fill: "#ffffff", opacity: "0.05"}}
-                        content={({active, payload, label}) => {
+                        content={({payload, label}) => {
                             const date = new Date(label)
-                            const formattedDate = view === "daily" ? date.toLocaleDateString(undefined, {
-                                month: "short",
-                                day: "numeric",
-                            }) : date.toLocaleDateString(undefined, {
-                                month: "short",
-                                year: "numeric",
-                            })
+                            let formattedDate
+
+                            if (view === "daily") {
+                                formattedDate = date.toLocaleDateString(undefined, {
+                                    month: "short",
+                                    day: "numeric",
+                                })
+                            } else if (view === "monthly") {
+                                formattedDate = date.toLocaleDateString(undefined, {
+                                    month: "short",
+                                    year: "numeric",
+                                })
+                            }
+
                             const score = payload?.[0]?.value ?? 0
 
                             return (<>

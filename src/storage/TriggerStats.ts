@@ -4,6 +4,7 @@ import {fetchAuthApi} from "../helpers/ApiFetcher"
 
 export type Stats = {
     daily: StatRow[],
+    weekly: StatRow[],
     monthly: StatRow[],
 }
 
@@ -13,15 +14,16 @@ type StatRow = {
 }
 
 export function useTriggerStatsState(trigger: Trigger) {
-    const [stats, setStats] = useState<Stats>({monthly: [], daily: []})
+    const initialState = {monthly: [], weekly: [], daily: []}
+    const [stats, setStats] = useState<Stats>(initialState)
 
     useEffect(() => {
         fetchAuthApi<Stats>(
             `/triggers/${trigger.uuid}/stats`,
             {
                 success: (data) => setStats(data.data),
-                error: () => setStats({monthly: [], daily: []}),
-                catcher: () => setStats({monthly: [], daily: []}),
+                error: () => setStats(initialState),
+                catcher: () => setStats(initialState),
             },
         )
     }, [trigger])
