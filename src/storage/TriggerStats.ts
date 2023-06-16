@@ -1,6 +1,6 @@
 import {Trigger} from "../types/Trigger"
 import {useEffect, useState} from "react"
-import {fetchAuthApi} from "../helpers/ApiFetcher"
+import {fetchApi, fetchAuthApi} from "../helpers/ApiFetcher"
 
 export type Stats = {
     daily: StatRow[],
@@ -13,11 +13,20 @@ type StatRow = {
     score: number,
 }
 
-export function useTriggerStatsState(trigger: Trigger) {
+export function useTriggerStatsState(trigger: Trigger, publicDashboard: string | undefined) {
     const initialState = {monthly: [], weekly: [], daily: []}
     const [stats, setStats] = useState<Stats>(initialState)
 
     useEffect(() => {
+        if (publicDashboard !== undefined) {
+            fetchApi<Stats>(`/dashboards/${publicDashboard}/triggers/${trigger.uuid}/stats`, {
+                success: (data) => setStats(data.data),
+                error: () => setStats(initialState),
+                catcher: () => setStats(initialState),
+            })
+            return
+        }
+
         fetchAuthApi<Stats>(
             `/triggers/${trigger.uuid}/stats`,
             {

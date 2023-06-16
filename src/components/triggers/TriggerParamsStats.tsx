@@ -14,6 +14,7 @@ function percentage_of(totalScore: number, score: number): number {
 type Props = {
     trigger: Trigger
     title?: string
+    publicDashboard?: string | undefined
     defaultParameter?: string
     defaultPeriod?: Period
     defaultDate?: string
@@ -26,6 +27,7 @@ export function TriggerParamsStats(
         title,
         defaultParameter,
         defaultDate,
+        publicDashboard,
         defaultPeriod = "daily",
         hideFilters = false,
     }: Props,
@@ -42,7 +44,7 @@ export function TriggerParamsStats(
 
     // Get stats for the selected period and parameter
     const dateFilter = period === "monthly" ? date + "-01" : date
-    const {stats} = useTriggerParamsStatsState(trigger, period, dateFilter)
+    const {stats} = useTriggerParamsStatsState(trigger, period, dateFilter, publicDashboard)
 
     const paramStats: ParamStatRow[] = stats !== undefined && stats[parameter] !== undefined ?
         Object.values(stats[parameter]) :

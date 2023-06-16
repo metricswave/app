@@ -72,8 +72,5 @@ export function useTriggersState() {
             setIsFresh(false)
         },
         triggerByUuid: (uuid: string) => triggers.find(t => t.uuid === uuid),
-        createVisitTrigger: () => {
-
-        },
     }
 }

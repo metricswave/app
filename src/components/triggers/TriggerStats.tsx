@@ -52,14 +52,21 @@ function getGraphData(stats: Stats, view: Period) {
 
 type Props = {
     trigger: Trigger
+    publicDashboard?: string | undefined
     title?: string
     hideViewSwitcher?: boolean
     defaultView?: Period
 }
 
-export function TriggerStats({trigger, title, defaultView = "daily", hideViewSwitcher = false}: Props) {
+export function TriggerStats({
+                                 trigger,
+                                 publicDashboard,
+                                 title,
+                                 defaultView = "daily",
+                                 hideViewSwitcher = false,
+                             }: Props) {
     const [view, setView] = useState<Period>(defaultView)
-    const {stats} = useTriggerStatsState(trigger)
+    const {stats} = useTriggerStatsState(trigger, publicDashboard)
     const data = getGraphData(stats, view)
     const average = number_formatter(data.reduce((acc, curr) => acc + curr.total, 0) / data.length)
     const viewText = apiPeriodFromPeriod(view)

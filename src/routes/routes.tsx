@@ -18,6 +18,7 @@ import TriggerEdit from "../pages/TriggerEdit"
 import {Dashboards} from "../pages/Dashboards"
 import Notifications from "../pages/Notifications"
 import {Welcome} from "../pages/Welcome"
+import {PublicDashboard} from "../pages/PublicDashboard"
 
 export const routes: RouteObject[] = [
     {
@@ -94,5 +95,9 @@ export const routes: RouteObject[] = [
                 element: <ResetPassword/>,
             },
         ],
+    },
+    {
+        path: "/:dashboardUuid/:dashboardName",
+        element: <PublicDashboard/>,
     },
 ]

@@ -4,10 +4,16 @@ import {app} from "../config/app"
 
 export const TrackVisit = function () {
     const location = useLocation()
+    const searchParams = new URLSearchParams(location.search)
 
     useEffect(() => {
+        const params = {
+            path: location.pathname,
+            referrer: searchParams.get("utm_source") ?? document.referrer,
+        }
+
         if (!app.isProduction) {
-            console.log("VisitTracker", location.pathname)
+            console.log("VisitTracker", params)
             return
         }
 
@@ -19,9 +25,7 @@ export const TrackVisit = function () {
                 "Content-Type": "application/json",
                 "Accept": "application/json",
             },
-            body: JSON.stringify({
-                path: location.pathname,
-            }),
+            body: JSON.stringify(params),
         })
     }, [location])
 }
