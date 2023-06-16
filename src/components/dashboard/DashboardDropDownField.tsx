@@ -114,7 +114,7 @@ const DashboardPopOver = ({dashboard, onUpdate: update}: {
                             Name
                         </label>
                         <input
-                            className="w-full inline-flex items-center justify-center flex-1 rounded-sm px-2.5 text-sm leading-none text-zinc-800 shadow-[0_0_0_1px] shadow-zinc-200 h-[25px] focus:shadow-[0_0_0_2px] focus:shadow-zinc-400 outline-none"
+                            className="w-full inline-flex items-center justify-center flex-1 rounded-sm px-2.5 text-sm leading-none text-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 shadow-[0_0_0_1px] shadow-zinc-200 dark:shadow-zinc-700 h-[25px] focus:shadow-[0_0_0_2px] focus:shadow-zinc-400 outline-none"
                             id="name"
                             onKeyPress={(e) => {
                                 if (e.key === "Enter") {

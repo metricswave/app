@@ -56,7 +56,7 @@ export function TriggerParamsStats(
     useEffect(() => setDate(defaultDate!), [defaultDate])
 
     return (
-        <div className="bg-white dark:bg-zinc-800 rounded-sm p-5 pb-4 shadow">
+        <div className="bg-white dark:bg-zinc-800/40 rounded-sm p-5 pb-4 shadow">
             <div className="pb-4 flex flex-col sm:flex-row space-y-3 sm:space-y-0 items-start sm:items-center justify-between">
                 {title !== undefined && <PageTitle
                     title={title}
