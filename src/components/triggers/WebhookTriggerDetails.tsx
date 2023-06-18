@@ -37,14 +37,14 @@ export function WebhookTriggerDetails({trigger}: { trigger: Trigger }) {
                 className="grow p-5 outline-none flex flex-col gap-4 data-[state=inactive]:hidden"
                 value="tab1"
             >
-                <p>
+                <p className="text-sm md:text-base">
                     To trigger this event you can just call the next URL from your
                     application. <LinkButton target="_blank"
                                              href={`${app.web}/documentation/tracking/events`}
                                              text="Here you can find more info about webhooks."/>
                 </p>
 
-                <div>
+                <div className="text-sm md:text-base">
                     <InputFieldBox
                         value={url}
                         setValue={() => null}
@@ -61,14 +61,14 @@ export function WebhookTriggerDetails({trigger}: { trigger: Trigger }) {
                 className="grow p-5 outline-none flex flex-col gap-4 data-[state=inactive]:hidden"
                 value="tab2"
             >
-                <p>
+                <p className="text-sm md:text-base">
                     If you want to monitor your traffic with this event just add the following script on all your
                     pages. <LinkButton target="_blank"
                                        href={`${app.web}/documentation/tracking/events`}
                                        text="Here you can find more info about webhooks."/>
                 </p>
 
-                <div>
+                <div className="text-sm md:text-base">
                     <TextareaFieldBox
                         value={snippet}
                         setValue={() => null}
