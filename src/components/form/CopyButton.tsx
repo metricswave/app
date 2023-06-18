@@ -37,10 +37,10 @@ export function CopyButtonIcon({textToCopy, className, ...props}: Props) {
     }
 
     if (copied) return (
-        <CheckIcon/>
+        <CheckIcon className="text-green-500 bg-green-50 dark:bg-green-50/10 rounded-sm"/>
     )
 
     return (
-        <ClipboardCopyIcon onClick={copy}/>
+        <ClipboardCopyIcon className="cursor-pointer" onClick={copy}/>
     )
 }

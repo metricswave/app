@@ -1,16 +1,14 @@
 import {Trigger, TriggerTypeId} from "../../types/Trigger"
-import {useTriggerTypesState} from "../../storage/TriggerTypes"
 import {ReactElement} from "react"
 import DeleteButton from "../form/DeleteButton"
-import InputFieldBox from "../form/InputFieldBox"
 import {app} from "../../config/app"
 import {fetchAuthApi} from "../../helpers/ApiFetcher"
 import {LinkButton} from "../buttons/LinkButton"
-import CopyButton from "../form/CopyButton"
+import {CopyButtonIcon} from "../form/CopyButton"
 import {useNavigate} from "react-router-dom"
-import PageTitle from "../sections/PageTitle"
 import {Pencil1Icon} from "@radix-ui/react-icons"
 import SecondaryButton from "../form/SecondaryButton"
+import {WebhookTriggerDetails} from "./WebhookTriggerDetails"
 
 type Props = {
     trigger: Trigger
@@ -19,8 +17,6 @@ type Props = {
 
 export default function TriggerDetails({trigger, onDeleted: deleted}: Props) {
     const navigate = useNavigate()
-    const {getTriggerTypeById} = useTriggerTypesState()
-    const triggerType = getTriggerTypeById(trigger.trigger_type_id)!
 
     const listFormatter = new Intl.ListFormat("en")
 
@@ -76,48 +72,7 @@ export default function TriggerDetails({trigger, onDeleted: deleted}: Props) {
                     </p>
                 </>)
             case TriggerTypeId.Webhook:
-                const query = trigger.configuration.fields.parameters
-                    .map((param) => `${param}={value}`)
-                    .join("&")
-                const url = `${app.webhooks}/${trigger.uuid}?${query}`
-
-                return (<div className="flex flex-col space-y-4">
-                    <div>
-                        <InputFieldBox
-                            setValue={() => null}
-                            value={trigger.uuid}
-                            label={"Event UUID"}
-                            name={"event_uuid"}
-                            placeholder={"UUID"}
-                            disabled
-                        />
-
-                        <CopyButton textToCopy={trigger.uuid} className="w-full mt-2"/>
-                    </div>
-
-                    <p className="font-bold pt-4">Trigger event</p>
-
-                    <p>
-                        To trigger this event you can just call the next URL from your
-                        application. <LinkButton target="_blank"
-                                                 href={`${app.web}/documentation/tracking/events`}
-                                                 text="Here you can find more info about webhooks."/>
-                    </p>
-
-                    <div>
-                        <InputFieldBox
-                            value={url}
-                            setValue={() => null}
-                            label="Webhook Path"
-                            name="webhook_path"
-                            placeholder=""
-                            disabled
-                        />
-
-                        <CopyButton textToCopy={url} className="w-full mt-2"/>
-                    </div>
-
-                </div>)
+                return (<WebhookTriggerDetails trigger={trigger}/>)
             case TriggerTypeId.WeatherSummary:
                 return (<>
                     <p>
@@ -140,7 +95,13 @@ export default function TriggerDetails({trigger, onDeleted: deleted}: Props) {
     return (
         <>
             <div className="flex flex-col sm:flex-row items-start justify-center sm:items-center sm:justify-between">
-                <PageTitle title={`${trigger.emoji} ${trigger.title}`} description={triggerType.name}/>
+                <div className="flex flex-col space-y-2 mb-4k">
+                    <h1 className="text-lg font-bold">{`${trigger.emoji} ${trigger.title}`}</h1>
+                    <div className="text-sm opacity-70 flex flex-row gap-3 items-center">
+                        <div className="pt-[2px]"><strong>UUID:</strong> {trigger.uuid}</div>
+                        <CopyButtonIcon textToCopy={trigger.uuid}/>
+                    </div>
+                </div>
                 <div className="flex flex-row space-x-3 w-full sm:w-auto mt-4 sm:mt-0">
                     <SecondaryButton onClick={() => navigate(`/events/${trigger.uuid}/edit`)}
                                      className="w-full sm:w-auto flex flex-row items-center space-x-3">
