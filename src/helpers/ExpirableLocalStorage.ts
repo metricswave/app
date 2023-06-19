@@ -18,17 +18,17 @@ const setWithExpiry = function (key: string, value: any, seconds: number = ONE_M
     localStorage.setItem(key, JSON.stringify(item))
 }
 
-const getWithExpiry = function <T>(key: string, d: T) {
+const getWithExpiry = function <T>(key: string, defaultValue: T, force: boolean = false) {
     const itemStr = localStorage.getItem(key)
     if (!itemStr) {
-        return d
+        return defaultValue
     }
 
     const item = JSON.parse(itemStr)
     const now = new Date()
-    if (now.getTime() > item.expiry) {
+    if (now.getTime() > item.expiry && !force) {
         localStorage.removeItem(key)
-        return d
+        return defaultValue
     }
 
     return item.value

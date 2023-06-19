@@ -31,24 +31,32 @@ type ParameterItem = {
 }
 
 const KEY = "nw:dashboards"
+let loading = false
 
 export function useDashboardsState() {
     const [dashboards, setDashboards] = useState<Dashboard[]>(
-        expirableLocalStorage.get<Dashboard[]>(KEY, []),
+        expirableLocalStorage.get<Dashboard[]>(KEY, [], true),
     )
 
     useEffect(() => {
+        if (loading) {
+            return
+        }
+
         if (expirableLocalStorage.get(KEY, null) !== null && dashboards !== undefined && dashboards.length > 0) {
             return
         }
 
+        loading = true
+
         fetchAuthApi<Dashboard[]>("/dashboards", {
             success: (data) => {
+                loading = false
                 expirableLocalStorage.set(KEY, data.data, THIRTY_SECONDS)
                 setDashboards(data.data)
             },
-            error: (err: any) => null,
-            catcher: (err: any) => null,
+            error: (err: any) => loading = false,
+            catcher: (err: any) => loading = false,
         })
     }, [])
 
