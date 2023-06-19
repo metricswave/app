@@ -12,6 +12,7 @@ import {Dashboard, DashboardItem, useDashboardsState} from "../storage/Dasboard"
 import {CheckIcon, TrashIcon} from "@radix-ui/react-icons"
 import DashboardDropDownField from "../components/dashboard/DashboardDropDownField"
 import {CopyButtonIcon} from "../components/form/CopyButton"
+import CircleArrowsIcon from "../components/icons/CircleArrowsIcon"
 
 export function Dashboards() {
     const {
@@ -32,7 +33,8 @@ export function Dashboards() {
     }
     const dateFieldType = period === "monthly" ? "month" : "date"
     let addButtonSize = "w-full"
-    if (dashboards[dashboardIndex] !== undefined && dashboards[dashboardIndex].items.length > 0) {
+    const dashboardsHasLoad = dashboards !== undefined && dashboards.length > 0 && dashboards[dashboardIndex] !== undefined && dashboards[dashboardIndex].items.length > 0
+    if (dashboardsHasLoad) {
         addButtonSize = dashboards[dashboardIndex].items.length % 2 === 0 ? "w-full md:w-1/2" : "w-full"
     }
     const [changedToPublic, setChangedToPublic] = useState<boolean>(false)
@@ -54,6 +56,15 @@ export function Dashboards() {
         }
 
         updateDashboard(dashboardIndex, fields)
+    }
+
+    if (!dashboardsHasLoad) {
+        return <>
+            <div className="flex flex-col gap-4 items-center animate-pulse justify-center pt-20 sm:pt-44 md:pt-64">
+                <CircleArrowsIcon className="animate-spin h-6"/>
+                <div>Loading…</div>
+            </div>
+        </>
     }
 
     return <>

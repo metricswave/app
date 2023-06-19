@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react"
 import {fetchAuthApi} from "../helpers/ApiFetcher"
+import {expirableLocalStorage, THIRTY_SECONDS} from "../helpers/ExpirableLocalStorage"
 
 export type Dashboard = {
     id: string
@@ -33,13 +34,17 @@ const KEY = "nw:dashboards"
 
 export function useDashboardsState() {
     const [dashboards, setDashboards] = useState<Dashboard[]>(
-        JSON.parse(localStorage.getItem(KEY) || "[]"),
+        expirableLocalStorage.get<Dashboard[]>(KEY, []),
     )
 
     useEffect(() => {
+        if (expirableLocalStorage.get(KEY, null) !== null && dashboards !== undefined && dashboards.length > 0) {
+            return
+        }
+
         fetchAuthApi<Dashboard[]>("/dashboards", {
             success: (data) => {
-                localStorage.setItem(KEY, JSON.stringify(data.data))
+                expirableLocalStorage.set(KEY, data.data, THIRTY_SECONDS)
                 setDashboards(data.data)
             },
             error: (err: any) => null,
@@ -54,7 +59,7 @@ export function useDashboardsState() {
             method: "PUT",
             body: newDashboards[index],
             success: (data) => {
-                localStorage.setItem(KEY, JSON.stringify(newDashboards))
+                expirableLocalStorage.set(KEY, newDashboards, THIRTY_SECONDS)
             },
             error: (err: any) => null,
             catcher: (err: any) => null,

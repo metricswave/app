@@ -2,6 +2,7 @@ import {Trigger} from "../types/Trigger"
 import {useEffect, useState} from "react"
 import {fetchApi, fetchAuthApi} from "../helpers/ApiFetcher"
 import {apiPeriodFromPeriod, Period} from "../types/Period"
+import {expirableLocalStorage} from "../helpers/ExpirableLocalStorage"
 
 export type ParamsStats = { [key: string]: ParamStatRow[] }
 
@@ -10,8 +11,23 @@ export type ParamStatRow = {
     param: string,
 }
 
-export function useTriggerParamsStatsState(trigger: Trigger, period: Period, date: string | null, publicDashboard: string | undefined) {
-    const [stats, setStats] = useState<ParamsStats>()
+export function useTriggerParamsStatsState(
+    trigger: Trigger,
+    period: Period,
+    date: string | null,
+    publicDashboard: string | undefined,
+) {
+    const key = `trigger-params-stats-${trigger.uuid}-${period}-${date}`
+    const [stats, setStats] = useState<ParamsStats | undefined>(
+        publicDashboard === undefined ?
+            expirableLocalStorage.get(key, undefined) :
+            undefined,
+    )
+
+    const setStatsAndCache = (data: ParamsStats) => {
+        setStats(data)
+        expirableLocalStorage.set(key, data)
+    }
 
     useEffect(() => {
         const apiPeriod = apiPeriodFromPeriod(period)
@@ -31,13 +47,17 @@ export function useTriggerParamsStatsState(trigger: Trigger, period: Period, dat
             return
         }
 
+        if (expirableLocalStorage.get(key, null) !== null) {
+            return
+        }
+
         fetchAuthApi<ParamsStats>(
             `/triggers/${trigger.uuid}/parameters-stats?` + new URLSearchParams({
                 period: apiPeriod,
                 ...(date ? {date} : {}),
             }),
             {
-                success: (data) => setStats(data.data),
+                success: (data) => setStatsAndCache(data.data),
                 error: () => setStats(undefined),
                 catcher: () => setStats(undefined),
             },

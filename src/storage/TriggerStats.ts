@@ -1,6 +1,7 @@
 import {Trigger} from "../types/Trigger"
 import {useEffect, useState} from "react"
 import {fetchApi, fetchAuthApi} from "../helpers/ApiFetcher"
+import {expirableLocalStorage, FIVE_SECONDS} from "../helpers/ExpirableLocalStorage"
 
 export type Stats = {
     daily: StatRow[],
@@ -14,8 +15,16 @@ type StatRow = {
 }
 
 export function useTriggerStatsState(trigger: Trigger, publicDashboard: string | undefined) {
-    const initialState = {monthly: [], weekly: [], daily: []}
+    const key = `trigger-stats-${trigger.uuid}`
+    const initialState = publicDashboard === undefined ?
+        expirableLocalStorage.get(key, {monthly: [], weekly: [], daily: []}) :
+        {monthly: [], weekly: [], daily: []}
     const [stats, setStats] = useState<Stats>(initialState)
+
+    const setStatsAndCache = (data: Stats) => {
+        setStats(data)
+        expirableLocalStorage.set(key, data, FIVE_SECONDS)
+    }
 
     useEffect(() => {
         if (publicDashboard !== undefined) {
@@ -27,10 +36,14 @@ export function useTriggerStatsState(trigger: Trigger, publicDashboard: string |
             return
         }
 
+        if (expirableLocalStorage.get(key, null) !== null) {
+            return
+        }
+
         fetchAuthApi<Stats>(
             `/triggers/${trigger.uuid}/stats`,
             {
-                success: (data) => setStats(data.data),
+                success: (data) => setStatsAndCache(data.data),
                 error: () => setStats(initialState),
                 catcher: () => setStats(initialState),
             },
