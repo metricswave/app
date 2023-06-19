@@ -2,7 +2,7 @@ import {Trigger} from "../types/Trigger"
 import {useEffect, useState} from "react"
 import {fetchApi, fetchAuthApi} from "../helpers/ApiFetcher"
 import {apiPeriodFromPeriod, Period} from "../types/Period"
-import {expirableLocalStorage} from "../helpers/ExpirableLocalStorage"
+import {expirableLocalStorage, FIVE_SECONDS} from "../helpers/ExpirableLocalStorage"
 
 export type ParamsStats = { [key: string]: ParamStatRow[] }
 
@@ -17,7 +17,7 @@ export function useTriggerParamsStatsState(
     date: string | null,
     publicDashboard: string | undefined,
 ) {
-    const key = `trigger-params-stats-${trigger.uuid}-${period}-${date}`
+    const key = `trigger-params-stats-5-${trigger.uuid}-${period}-${date}`
     const [stats, setStats] = useState<ParamsStats | undefined>(
         publicDashboard === undefined ?
             expirableLocalStorage.get(key, undefined) :
@@ -26,7 +26,7 @@ export function useTriggerParamsStatsState(
 
     const setStatsAndCache = (data: ParamsStats) => {
         setStats(data)
-        expirableLocalStorage.set(key, data)
+        expirableLocalStorage.set(key, data, FIVE_SECONDS)
     }
 
     useEffect(() => {
