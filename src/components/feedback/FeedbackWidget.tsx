@@ -51,6 +51,7 @@ export function FeedbackWidget() {
                         eventTracker.track("20ad1003-03d6-49c2-a973-42515e70ddb1", {
                             message,
                             email: user?.email ?? "Unknown user",
+                            path: window.location.pathname,
                         })
                         setOpen(false)
                     }}
