@@ -3,117 +3,131 @@ import {Trigger} from "../../types/Trigger"
 import {Stats, useTriggerStatsState} from "../../storage/TriggerStats"
 import {Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts"
 import {useEffect, useState} from "react"
-import {NoLinkButton} from "../buttons/LinkButton"
-import {eachDayOfInterval, eachMonthOfInterval} from "date-fns"
 import {number_formatter} from "../../helpers/NumberFormatter"
-import {apiPeriodFromPeriod, Period} from "../../types/Period"
+import {calculateDefaultDateForPeriod, fieldTypeForPeriod, Period} from "../../types/Period"
+import CircleArrowsIcon from "../icons/CircleArrowsIcon"
+import InputFieldBox from "../form/InputFieldBox"
 
 function getGraphData(stats: Stats, view: Period) {
-    const data = stats[view].map((stat) => ({
+    const data = stats.plot.map((stat) => ({
         name: stat.date,
         total: stat.score,
     }))
-
-    // Fill missing days in data from today to 30 days ago
-    const today = new Date()
-
-    if (view === "daily") {
-        today.setDate(today.getDate() + 1)
-        const thirtyDaysAgo = new Date()
-        thirtyDaysAgo.setDate(today.getDate() - 30)
-        const graphData: Date[] = eachDayOfInterval({start: thirtyDaysAgo, end: today})
-        graphData.forEach((date) => {
-            const dateStr = date.toISOString().split("T")[0]
-            if (!stats[view].find((stat) => stat.date.split("T")[0] === dateStr)) {
-                data.push({
-                    name: dateStr,
-                    total: 0,
-                })
-            }
-        })
-    } else if (view === "monthly") {
-        const twelveMonthsAgo = new Date()
-        twelveMonthsAgo.setMonth(today.getMonth() - 12)
-        const graphData: Date[] = eachMonthOfInterval({start: twelveMonthsAgo, end: today})
-        graphData.forEach((date) => {
-            const dateStr = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().split("T")[0]
-            if (!stats[view].find((stat) => stat.date.split("T")[0] === dateStr)) {
-                data.push({
-                    name: dateStr,
-                    total: 0,
-                })
-            }
-        })
-    }
 
     data.sort((a, b) => new Date(a.name).getTime() - new Date(b.name).getTime())
     return data
 }
 
 type Props = {
+    title: string
     trigger: Trigger
     publicDashboard?: string | undefined
-    title?: string
+    defaultPeriod: Period
+    defaultDate?: string
     hideViewSwitcher?: boolean
-    defaultView?: Period
 }
 
-export function TriggerStats({
-                                 trigger,
-                                 publicDashboard,
-                                 title,
-                                 defaultView = "daily",
-                                 hideViewSwitcher = false,
-                             }: Props) {
-    const [view, setView] = useState<Period>(defaultView)
-    const {stats} = useTriggerStatsState(trigger, publicDashboard)
-    const data = getGraphData(stats, view)
-    const average = number_formatter(data.reduce((acc, curr) => acc + curr.total, 0) / data.length)
-    const viewText = apiPeriodFromPeriod(view)
+export function TriggerStats(
+    {
+        title,
+        trigger,
+        publicDashboard,
+        defaultPeriod,
+        defaultDate,
+        hideViewSwitcher = false,
+    }: Props,
+) {
+    const [period, setPeriod] = useState<Period>(defaultPeriod)
+    const {stats, loadStats, statsLoading} = useTriggerStatsState()
+    const [data, setData] = useState<{ name: string, total: number }[]>()
+    const [average, setAverage] = useState("")
+    const [date, setDate] = useState<string>(defaultDate ?? calculateDefaultDateForPeriod(period))
+    const [fieldDate, setFieldDate] = useState<string>()
+    const dateFieldType = fieldTypeForPeriod(period)
+    const setPeriodAndDate = (period: Period) => {
+        const date = calculateDefaultDateForPeriod(period)
+        setDate(date)
+        setFieldDate(
+            fieldTypeForPeriod(period) === "month" ? date.slice(0, 7) : date,
+        )
+        setPeriod(period)
+    }
 
     useEffect(() => {
-        setView(defaultView)
-    }, [defaultView])
+        setDate(
+            fieldTypeForPeriod(period) === "month" ? fieldDate + "-01" : fieldDate!,
+        )
+    }, [fieldDate])
+    useEffect(() => setPeriodAndDate(defaultPeriod), [defaultPeriod])
+    useEffect(() => setDate(defaultDate!), [defaultDate])
+    useEffect(() => loadStats(trigger, period, date, publicDashboard), [trigger.id, period, date, publicDashboard])
+    useEffect(() => {
+        const data = getGraphData(stats, period)
+        const average = data.reduce((acc, curr) => acc + curr.total, 0) / data.length
+        setData(data)
+        setAverage(isNaN(average) ? "0" : number_formatter(average))
+    }, [stats, period])
+
+    if (statsLoading) {
+        return (
+            <div className="">
+                <div className="flex flex-col gap-4 items-center animate-pulse py-20 justify-center">
+                    <CircleArrowsIcon className="animate-spin h-6"/>
+                    <div>Loading…</div>
+                </div>
+            </div>
+        )
+    }
 
     return (
-        <div className="bg-white dark:bg-zinc-800/40 rounded-sm p-5 pb-1 shadow">
-            <div className="pb-8 flex flex-col sm:flex-row space-y-3 sm:space-y-0 items-start sm:items-center justify-between">
+        <div className="h-full flex flex-col justify-between">
+            <div className="pb-6 flex flex-col sm:flex-row space-y-3 sm:space-y-0 items-start sm:items-center justify-between">
                 {title !== undefined && <PageTitle
                     title={title}
-                    description={`${average} average hits per ${viewText}.`}
+                    description={`${average} average hits in period.`}
                 />}
-
-                {title === undefined &&
-                    <PageTitle title="Stats" description={`${average} average hits per ${viewText}.`}/>}
-
-                {!hideViewSwitcher && <div className="text-sm text-right">
-                    {view === "daily" ? (
-                        <NoLinkButton text={"View monthly stats"} onClick={() => setView("monthly")}/>
-                    ) : (
-                        <NoLinkButton text={"View daily stats"} onClick={() => setView("daily")}/>
-                    )}
-                </div>}
+                {!hideViewSwitcher &&
+                    <div className="w-full sm:w-1/3">
+                        <InputFieldBox
+                            setValue={setFieldDate}
+                            label="Date"
+                            type={dateFieldType}
+                            name="date"
+                            placeholder={"Date"}
+                            value={fieldDate as string}
+                        />
+                    </div>
+                }
             </div>
 
-            <ResponsiveContainer width="100%" height={350}>
+            {stats.headers !== null &&
+                <div className="flex flex-col sm:flex-row justify-start sm:items-center mb-10">
+                    {Object.values(stats.headers).map((header, index) => (
+                        <div key={index}
+                             className="flex flex-col justify-between items-start gap-0.5 sm:border-r soft-border py-2 sm:py-0 sm:px-14 first:pl-0 last:pr-0 last:border-none">
+                            <div className="text-2xl font-medium">{number_formatter(header)}</div>
+                            <div className="text-sm text-gray-400 dark:text-gray-600">
+                                {{
+                                    "unique": "Unique visits",
+                                    "pageViews": "Page views",
+                                    "visits": "Visits",
+                                }[Object.keys(stats.headers!)[index]]}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            }
+
+            <ResponsiveContainer width="100%" height={400}>
                 <BarChart data={data}>
                     <Tooltip
                         cursor={{fill: "#ffffff", opacity: "0.05"}}
                         content={({payload, label}) => {
                             const date = new Date(label)
-                            let formattedDate
-
-                            if (view === "daily") {
-                                formattedDate = date.toLocaleDateString(undefined, {
-                                    month: "short",
-                                    day: "numeric",
-                                })
-                            } else if (view === "monthly") {
-                                formattedDate = date.toLocaleDateString(undefined, {
-                                    month: "short",
-                                    year: "numeric",
-                                })
-                            }
+                            let formattedDate = date.toLocaleDateString(undefined, {
+                                month: "short",
+                                day: "numeric",
+                            })
 
                             const score = payload?.[0]?.value ?? 0
 
@@ -132,18 +146,10 @@ export function TriggerStats({
                            axisLine={false}
                            tickFormatter={(value) => {
                                const date = new Date(value)
-                               if (view === "daily") {
-                                   return date.toLocaleDateString(undefined, {
-                                       month: "short",
-                                       day: "numeric",
-                                   })
-                               } else {
-                                   date.setMonth(date.getMonth() - 1)
-                                   return date.toLocaleDateString(undefined, {
-                                       month: "short",
-                                       year: "numeric",
-                                   })
-                               }
+                               return date.toLocaleDateString(undefined, {
+                                   month: "short",
+                                   day: "numeric",
+                               })
                            }}/>
                     <YAxis stroke="#888888"
                            fontSize={12}

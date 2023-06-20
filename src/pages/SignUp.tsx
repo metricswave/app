@@ -5,7 +5,6 @@ import {FormEvent, useState} from "react"
 import {DeviceName} from "../storage/DeviceName"
 import {fetchApi} from "../helpers/ApiFetcher"
 import {Tokens} from "../types/Token"
-import eventTracker from "../helpers/EventTracker"
 import SocialAuth from "../components/social/SocialAuth"
 import InputFieldBox from "../components/form/InputFieldBox"
 import FormErrorMessage from "../components/form/FormErrorMessage"
@@ -68,7 +67,6 @@ export default function SignUp() {
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault()
-        eventTracker.track("Sign Up")
 
         if (!isValid()) return
 

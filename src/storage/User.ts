@@ -20,7 +20,6 @@ export function useUserState(isAuth: boolean) {
     const [user, setUser] = useState<User | null>(getUser())
 
     const refreshUser = () => {
-        console.log("refreshUser")
         fetchAuthApi<User>("/users", {
             success: (data) => {
                 expirableLocalStorage.set(USER_REFRESH_KEY, true, DAY_SECONDS)

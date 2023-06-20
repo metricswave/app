@@ -9,6 +9,7 @@ import MobileNavigationItems from "../components/navigation/MobileNavigationItem
 import SettingsIcon from "../components/icons/SettingsIcon"
 import * as amplitude from "@amplitude/analytics-browser"
 import {TrackVisit} from "../storage/VisitTracker"
+import {FeedbackWidget} from "../components/feedback/FeedbackWidget"
 
 export default function App() {
     const {isAuth} = useAuthState()
@@ -67,6 +68,8 @@ export default function App() {
                 <div id="app-container" className="pt-[65px] pb-[81px] sm:pb-0">
                     <Outlet/>
                 </div>
+
+                <FeedbackWidget/>
 
                 <div id="bottom-nav-menu"
                      className="fixed bottom-0 left-0 right-0 p-4 border-t soft-border sm:hidden bg-[var(--background-color)] drop-shadow-2xl z-30">

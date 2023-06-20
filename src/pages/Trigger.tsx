@@ -3,8 +3,8 @@ import {useTriggersState} from "../storage/Triggers"
 import {useNavigate, useParams} from "react-router-dom"
 import TriggerDetails from "../components/triggers/TriggerDetails"
 import {useUserServicesState} from "../storage/UserServices"
-import {TriggerStats} from "../components/triggers/TriggerStats"
 import {useState} from "react"
+import {TriggerStats} from "../components/triggers/TriggerStats"
 import {TriggerParamsStats} from "../components/triggers/TriggerParamsStats"
 
 export default function Trigger() {
@@ -29,12 +29,16 @@ export default function Trigger() {
             </SectionContainer>
 
             <SectionContainer size="big">
-                <TriggerStats trigger={trigger}/>
+                <div className="relative group bg-white dark:bg-zinc-800/40 rounded-sm p-5 pb-4 shadow">
+                    <TriggerStats trigger={trigger} title={"Hits"} defaultPeriod={"month"}/>
+                </div>
             </SectionContainer>
 
             {hasParams && (
                 <SectionContainer size="big">
-                    <TriggerParamsStats trigger={trigger}/>
+                    <div className="relative group bg-white dark:bg-zinc-800/40 rounded-sm p-5 pb-4 shadow">
+                        <TriggerParamsStats trigger={trigger}/>
+                    </div>
                 </SectionContainer>
             )}
         </div>

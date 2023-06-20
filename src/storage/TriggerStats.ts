@@ -1,12 +1,12 @@
 import {Trigger} from "../types/Trigger"
-import {useEffect, useState} from "react"
-import {fetchApi, fetchAuthApi} from "../helpers/ApiFetcher"
+import {useState} from "react"
+import {ApiResponse, fetchApi, fetchAuthApi} from "../helpers/ApiFetcher"
 import {expirableLocalStorage, FIVE_SECONDS} from "../helpers/ExpirableLocalStorage"
+import {Period} from "../types/Period"
 
 export type Stats = {
-    daily: StatRow[],
-    weekly: StatRow[],
-    monthly: StatRow[],
+    headers: null | { unique: number, pageViews: number, visits: number }
+    plot: StatRow[],
 }
 
 type StatRow = {
@@ -14,41 +14,57 @@ type StatRow = {
     score: number,
 }
 
-export function useTriggerStatsState(trigger: Trigger, publicDashboard: string | undefined) {
-    const key = `trigger-stats-${trigger.uuid}`
-    const initialState = publicDashboard === undefined ?
-        expirableLocalStorage.get(key, {monthly: [], weekly: [], daily: []}) :
-        {monthly: [], weekly: [], daily: []}
-    const [stats, setStats] = useState<Stats>(initialState)
+export function useTriggerStatsState() {
+    const defaultState = {headers: null, plot: []}
+    const [stats, setStats] = useState<Stats>(defaultState)
+    const [statsLoading, setStatsLoading] = useState<boolean>(false)
 
-    const setStatsAndCache = (data: Stats) => {
-        setStats(data)
-        expirableLocalStorage.set(key, data, FIVE_SECONDS)
-    }
+    const loadStats = (trigger: Trigger, period: Period, date: string | null, publicDashboard: string | undefined) => {
+        const key = `trigger-graph-stats-${trigger.uuid}-${period}-${date ?? ""}`
 
-    useEffect(() => {
-        if (publicDashboard !== undefined) {
-            fetchApi<Stats>(`/dashboards/${publicDashboard}/triggers/${trigger.uuid}/stats`, {
-                success: (data) => setStats(data.data),
-                error: () => setStats(initialState),
-                catcher: () => setStats(initialState),
-            })
+        if (publicDashboard === undefined) {
+            setStats(expirableLocalStorage.get(key, defaultState))
+        }
+
+        setStatsLoading(true)
+
+        const methods = {
+            success: (data: ApiResponse<Stats>) => {
+                if (publicDashboard === undefined) {
+                    expirableLocalStorage.set(key, data.data, FIVE_SECONDS)
+                }
+                setStats(data.data)
+                setStatsLoading(false)
+            },
+            error: () => {
+                setStats(defaultState)
+                setStatsLoading(false)
+            },
+            catcher: () => {
+                setStats(defaultState)
+                setStatsLoading(false)
+            },
+        }
+
+        if (publicDashboard === undefined && expirableLocalStorage.get(key, null) !== null) {
+            setStatsLoading(false)
             return
         }
 
-        if (expirableLocalStorage.get(key, null) !== null) {
+        const params = new URLSearchParams({period, ...(date ? {date} : {})}).toString()
+        if (publicDashboard !== undefined) {
+            fetchApi<Stats>(
+                `/dashboards/${publicDashboard}/triggers/${trigger.uuid}/graph-stats?` + params,
+                methods,
+            )
             return
         }
 
         fetchAuthApi<Stats>(
-            `/triggers/${trigger.uuid}/stats`,
-            {
-                success: (data) => setStatsAndCache(data.data),
-                error: () => setStats(initialState),
-                catcher: () => setStats(initialState),
-            },
+            `/triggers/${trigger.uuid}/graph-stats?` + params,
+            methods,
         )
-    }, [trigger])
+    }
 
-    return {stats}
+    return {stats, loadStats, statsLoading}
 }

@@ -1,11 +1,12 @@
-import {useEffect, useState} from "react"
+import React, {useEffect, useState} from "react"
 import {Trigger} from "../../types/Trigger"
 import {ParamStatRow, useTriggerParamsStatsState} from "../../storage/TriggerParamsStats"
 import DropDownSelectFieldBox from "../form/DropDownSelectFieldBox"
 import PageTitle from "../sections/PageTitle"
 import {number_formatter} from "../../helpers/NumberFormatter"
 import InputFieldBox from "../form/InputFieldBox"
-import {calculateDate, Period} from "../../types/Period"
+import {calculateDefaultDateForPeriod, fieldTypeForPeriod, Period} from "../../types/Period"
+import CircleArrowsIcon from "../icons/CircleArrowsIcon"
 
 function percentage_of(totalScore: number, score: number): number {
     return Math.min(100, Math.max(Math.round((score / totalScore) * 100), 1))
@@ -28,35 +29,46 @@ export function TriggerParamsStats(
         defaultParameter,
         defaultDate,
         publicDashboard,
-        defaultPeriod = "daily",
+        defaultPeriod = "day",
         hideFilters = false,
     }: Props,
 ) {
     const [params] = useState<string[]>(trigger.configuration.fields["parameters"] as string[])
     const [parameter, setParameter] = useState<string>(defaultParameter ?? params[0])
     const [period, setPeriod] = useState<Period>(defaultPeriod)
-    const [date, setDate] = useState<string>(calculateDate(period, defaultDate))
-    const dateFieldType = period === "monthly" ? "month" : date
+    const [date, setDate] = useState<string>(defaultDate ?? calculateDefaultDateForPeriod(period))
+    const [fieldDate, setFieldDate] = useState<string>()
+    const dateFieldType = fieldTypeForPeriod(period)
     const setPeriodAndDate = (period: Period) => {
-        setDate(calculateDate(period, undefined))
+        const date = calculateDefaultDateForPeriod(period)
+        setDate(date)
+        setFieldDate(
+            fieldTypeForPeriod(period) === "month" ? date.slice(0, 7) : date,
+        )
         setPeriod(period)
     }
+    const {stats, loadStats, statsLoading} = useTriggerParamsStatsState()
 
-    // Get stats for the selected period and parameter
-    const dateFilter = period === "monthly" ? date + "-01" : date
-    const {stats} = useTriggerParamsStatsState(trigger, period, dateFilter, publicDashboard)
 
-    const paramStats: ParamStatRow[] = stats !== undefined && stats[parameter] !== undefined ?
-        Object.values(stats[parameter]) :
+    const paramStats: ParamStatRow[] = stats !== undefined && stats.plot !== undefined ?
+        Object.values(stats.plot[parameter]) :
         []
-    paramStats.sort((a, b) => b.score - a.score)
     const totalScore = paramStats.reduce((acc, curr) => acc + curr.score, 0)
 
+    useEffect(() => {
+        setDate(
+            fieldTypeForPeriod(period) === "month" ? fieldDate + "-01" : fieldDate!,
+        )
+    }, [fieldDate])
     useEffect(() => setPeriodAndDate(defaultPeriod), [defaultPeriod])
     useEffect(() => setDate(defaultDate!), [defaultDate])
 
+    useEffect(() => {
+        loadStats(trigger, period, date, publicDashboard)
+    }, [trigger.id, period, date, publicDashboard])
+
     return (
-        <div className="bg-white dark:bg-zinc-800/40 rounded-sm p-5 pb-4 shadow">
+        <div className="">
             <div className="pb-4 flex flex-col sm:flex-row space-y-3 sm:space-y-0 items-start sm:items-center justify-between">
                 {title !== undefined && <PageTitle
                     title={title}
@@ -73,12 +85,12 @@ export function TriggerParamsStats(
                 <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0justify-between pt-4 pb-10">
                     <div className="w-full sm:w-1/3">
                         <InputFieldBox
-                            setValue={setDate}
+                            setValue={setFieldDate}
                             label="Date"
                             type={dateFieldType}
                             name="date"
                             placeholder={"Date"}
-                            value={date}
+                            value={fieldDate as string}
                         />
                     </div>
 
@@ -99,11 +111,11 @@ export function TriggerParamsStats(
                             value={period}
                             options={[
                                 {
-                                    value: "daily",
+                                    value: "day",
                                     label: "Daily",
                                 },
                                 {
-                                    value: "monthly",
+                                    value: "month",
                                     label: "Monthly",
                                 },
                             ]}
@@ -117,45 +129,56 @@ export function TriggerParamsStats(
                     </div>
                 </div>}
 
-            {paramStats.length === 0 ? (
-                <div className="w-full flex items-center justify-center text-center h-64">
-                    <div className="opacity-50">No stats for this period.</div>
-                </div>
-            ) : (
-                <div>
-                    <div className="flex flex-col space-y-2 py-3">
-                        <div className="flex font-bold flex-row items-center justify-between space-x-3">
-                            <p>Parameter</p>
-                            <p>Hits</p>
-                        </div>
+            {statsLoading && (
+                <div className="">
+                    <div className="flex flex-col gap-4 items-center animate-pulse py-20 justify-center">
+                        <CircleArrowsIcon className="animate-spin h-6"/>
+                        <div>Loading…</div>
                     </div>
-
-                    {paramStats.map((stat) => (
-                        <div
-                            key={stat.param}
-                            className="flex flex-col space-y-2 py-3"
-                        >
-                            <div className="flex flex-row items-center justify-between space-x-3">
-                                <p className="truncate opacity-75">{stat.param}</p>
-                                <p className="opacity-75">{number_formatter(stat.score)}</p>
-                            </div>
-
-                            <div className="w-full flex flex-row space-x-2">
-                                {[0, 1, 2, 3].map((i) => {
-                                    const barPercentage = percentage_of(totalScore, stat.score) - (25 * i)
-                                    const p = barPercentage < 1 ? 0 : Math.min(barPercentage, 25)
-
-                                    return (
-                                        <div key={i} className="h-1 rounded bg-blue-500"
-                                             style={{width: `${p}%`}}>
-                                        </div>
-                                    )
-                                })}
-                            </div>
-                        </div>
-                    ))}
                 </div>
             )}
+
+            {!statsLoading && (<>
+                {paramStats.length === 0 ? (
+                    <div className="w-full flex items-center justify-center text-center h-64">
+                        <div className="opacity-50">No stats for this period.</div>
+                    </div>
+                ) : (
+                    <div>
+                        <div className="flex flex-col space-y-2 py-3">
+                            <div className="flex font-bold flex-row items-center justify-between space-x-3">
+                                <p>Parameter</p>
+                                <p>Hits</p>
+                            </div>
+                        </div>
+
+                        {paramStats.slice(0, 8).map((stat) => (
+                            <div
+                                key={stat.param}
+                                className="flex flex-col space-y-2 py-3"
+                            >
+                                <div className="flex flex-row items-center justify-between space-x-3">
+                                    <p className="truncate opacity-75">{stat.param}</p>
+                                    <p className="opacity-75">{number_formatter(stat.score)}</p>
+                                </div>
+
+                                <div className="w-full flex flex-row space-x-2">
+                                    {[0, 1, 2, 3].map((i) => {
+                                        const barPercentage = percentage_of(totalScore, stat.score) - (25 * i)
+                                        const p = barPercentage < 1 ? 0 : Math.min(barPercentage, 25)
+
+                                        return (
+                                            <div key={i} className="h-1 rounded bg-blue-500"
+                                                 style={{width: `${p}%`}}>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </>)}
         </div>
     )
 }

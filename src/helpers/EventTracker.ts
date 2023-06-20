@@ -1,13 +1,19 @@
-import * as amplitude from "@amplitude/analytics-browser"
 import {app} from "../config/app"
 
 export default {
-    track: (event: string) => {
+    track: (eventUuid: string, params: Object = {}) => {
         if (!app.isProduction) {
-            console.log(`[EventTracker] ${event}`)
+            console.log(`[EventTracker] ${eventUuid}`, params)
             return
         }
 
-        amplitude.track(event)
+        fetch(`https://notifywave.com/webhooks/${eventUuid}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            body: JSON.stringify(params),
+        })
     },
 }

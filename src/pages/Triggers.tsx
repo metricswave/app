@@ -23,14 +23,17 @@ export default function Triggers() {
             {/* Add triggers dialog */}
             <DialogComponent onOpenChange={status => {
                 if (status) {
-                    eventTracker.track("Add Trigger")
+                    eventTracker.track("0555d93b-350a-41b4-800c-8741b9566bb0", {step: 1})
                 }
             }} button={
                 <div className="border soft-border rounded-sm p-4 flex flex-col space-y-4 items-center hover:bg-[var(--background-50-color)] smooth cursor-pointer">
                     <NoLinkButton text="Add trigger"/>
                 </div>
             }>
-                <TriggersAdd onLastStep={refreshTriggers}/>
+                <TriggersAdd onLastStep={() => {
+                    refreshTriggers()
+                    eventTracker.track("0555d93b-350a-41b4-800c-8741b9566bb0", {step: 2})
+                }}/>
             </DialogComponent>
         </TriggersPageEmptyState>
     }
@@ -42,14 +45,17 @@ export default function Triggers() {
             {/* Add triggers dialog */}
             <DialogComponent onOpenChange={status => {
                 if (status) {
-                    eventTracker.track("Add Trigger")
+                    eventTracker.track("0555d93b-350a-41b4-800c-8741b9566bb0", {step: 1})
                 }
             }} button={
                 <div className="border soft-border rounded-sm p-4 flex flex-col space-y-4 items-center hover:bg-[var(--background-50-color)] smooth cursor-pointer">
                     <NoLinkButton text="Add Event"/>
                 </div>
             }>
-                <TriggersAdd onLastStep={refreshTriggers}/>
+                <TriggersAdd onLastStep={() => {
+                    eventTracker.track("0555d93b-350a-41b4-800c-8741b9566bb0", {step: 2})
+                    refreshTriggers()
+                }}/>
             </DialogComponent>
 
             <div className="flex flex-col space-y-6">

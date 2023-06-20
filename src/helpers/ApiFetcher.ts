@@ -1,7 +1,7 @@
 import {app} from "../config/app"
 import {getTokens} from "../storage/AuthToken"
 
-type ApiResponse<T> = {
+export type ApiResponse<T> = {
     data: T
 }
 

@@ -2,17 +2,16 @@ import SectionContainer from "../components/sections/SectionContainer"
 import PageTitle from "../components/sections/PageTitle"
 import React, {useState} from "react"
 import {useTriggersState} from "../storage/Triggers"
-import {TriggerStats} from "../components/triggers/TriggerStats"
-import {TriggerParamsStats} from "../components/triggers/TriggerParamsStats"
-import InputFieldBox from "../components/form/InputFieldBox"
 import DropDownSelectFieldBox from "../components/form/DropDownSelectFieldBox"
-import {calculateDate, Period} from "../types/Period"
+import {calculateDefaultDateForPeriod, DEFAULT_PERIOD, Period, periods} from "../types/Period"
 import {AddWidget} from "../components/dashboard/AddWidget"
 import {Dashboard, DashboardItem, useDashboardsState} from "../storage/Dasboard"
 import {CheckIcon, TrashIcon} from "@radix-ui/react-icons"
 import DashboardDropDownField from "../components/dashboard/DashboardDropDownField"
 import {CopyButtonIcon} from "../components/form/CopyButton"
 import CircleArrowsIcon from "../components/icons/CircleArrowsIcon"
+import {TriggerParamsStats} from "../components/triggers/TriggerParamsStats"
+import {TriggerStats} from "../components/triggers/TriggerStats"
 
 export function Dashboards() {
     const {
@@ -23,19 +22,19 @@ export function Dashboards() {
         publicDashboardPath,
     } = useDashboardsState()
     const {triggerByUuid} = useTriggersState()
-    const [period, setPeriod] = useState<Period>("daily")
+    const [period, setPeriod] = useState<Period>(DEFAULT_PERIOD)
+    const periodConfiguration = periods.find(p => p.value === period)!
     const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0])
     const [dashboardIndex, setDashboardIndex] = useState<number>(0)
     const [removeConfirm, setRemoveConfirm] = useState<string>("")
     const setPeriodAndDate = (period: Period) => {
-        setDate(calculateDate(period, undefined))
+        setDate(calculateDefaultDateForPeriod(period))
         setPeriod(period)
     }
-    const dateFieldType = period === "monthly" ? "month" : "date"
     let addButtonSize = "w-full"
     const dashboardsHasLoad = dashboards !== undefined && dashboards.length > 0 && dashboards[dashboardIndex] !== undefined && dashboards[dashboardIndex].items.length > 0
     if (dashboardsHasLoad) {
-        addButtonSize = dashboards[dashboardIndex].items.length % 2 === 0 ? "w-full md:w-1/2" : "w-full"
+        addButtonSize = dashboards[dashboardIndex].items.length % 2 === 0 ? "" : "md:col-span-2"
     }
     const [changedToPublic, setChangedToPublic] = useState<boolean>(false)
 
@@ -74,7 +73,7 @@ export function Dashboards() {
             </div>
 
             <div className="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-3 justify-end pt-4">
-                <div className="flex-grow w-full">
+                <div className="w-full">
                     <DashboardDropDownField
                         updateDashboard={(dashboard, title, isPublic) => {
                             handleDashboardUpdate(dashboardIndex, {name: title, public: isPublic})
@@ -94,30 +93,21 @@ export function Dashboards() {
                 </div>
 
                 <div className="flex flex-col w-full sm:w-auto sm:flex-row flex-grow sm:items-center sm:justify-end space-y-3 sm:space-y-0 sm:space-x-3">
-                    <div className="flex-grow">
-                        <InputFieldBox
-                            setValue={setDate}
-                            label="Date"
-                            type={dateFieldType}
-                            name="date"
-                            placeholder={"Date"}
-                            value={date}
-                        />
-                    </div>
+                    {/*<div className="flex-grow">*/}
+                    {/*    <InputFieldBox*/}
+                    {/*        setValue={setDate}*/}
+                    {/*        label="Date"*/}
+                    {/*        type={dateFieldType}*/}
+                    {/*        name="date"*/}
+                    {/*        placeholder={"Date"}*/}
+                    {/*        value={date}*/}
+                    {/*    />*/}
+                    {/*</div>*/}
 
                     <DropDownSelectFieldBox
-                        className="min-w-[150px] flex-grow"
+                        className="min-w-[250px]"
                         value={period}
-                        options={[
-                            {
-                                value: "daily",
-                                label: "Daily",
-                            },
-                            {
-                                value: "monthly",
-                                label: "Monthly",
-                            },
-                        ]}
+                        options={periods}
                         setValue={(value) => {
                             setPeriodAndDate(value as Period)
                         }}
@@ -143,8 +133,8 @@ export function Dashboards() {
             </div>}
         </SectionContainer>
 
-        {dashboards[dashboardIndex] !== undefined && <SectionContainer size={"extra-big"}>
-            <div className="-mx-2.5 pb-64">
+        {dashboardsHasLoad && <SectionContainer size={"extra-big"}>
+            <div className="-mx-2.5 pb-64 grid gap-4 grid-cols-1 md:grid-cols-2 ">
                 {dashboards[dashboardIndex].items.map(({eventUuid, title, size, type, parameter}, key) => {
                     const trigger = triggerByUuid(eventUuid)
                     const confirmed = removeConfirm === `${dashboardIndex}-${key}`
@@ -157,8 +147,8 @@ export function Dashboards() {
                         <div
                             key={key}
                             className={[
-                                "relative group float-left p-2.5",
-                                (size === "base" ? "w-full md:w-1/2" : "w-full"),
+                                "relative group bg-white dark:bg-zinc-800/40 rounded-sm p-5 pb-4 shadow",
+                                (size === "base" ? "" : "md:col-span-2"),
                             ].join(" ")}
                         >
                             <div
@@ -174,16 +164,24 @@ export function Dashboards() {
                             </div>
 
                             {type === "stats" &&
-                                <TriggerStats trigger={trigger} title={title} defaultView={period} hideViewSwitcher/>}
+                                <TriggerStats
+                                    trigger={trigger}
+                                    title={title}
+                                    defaultPeriod={periodConfiguration.period}
+                                    defaultDate={date}
+                                    hideViewSwitcher/>
+                            }
+
                             {type === "parameter" &&
                                 <TriggerParamsStats
                                     trigger={trigger}
                                     defaultParameter={parameter}
                                     title={title}
-                                    defaultPeriod={period}
+                                    defaultPeriod={periodConfiguration.period}
                                     defaultDate={date}
                                     hideFilters
-                                />}
+                                />
+                            }
                         </div>
                     )
                 })}

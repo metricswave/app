@@ -1,30 +1,29 @@
 import SectionContainer from "../components/sections/SectionContainer"
 import PageTitle from "../components/sections/PageTitle"
 import React, {useEffect, useState} from "react"
-import {TriggerStats} from "../components/triggers/TriggerStats"
 import {TriggerParamsStats} from "../components/triggers/TriggerParamsStats"
-import InputFieldBox from "../components/form/InputFieldBox"
 import DropDownSelectFieldBox from "../components/form/DropDownSelectFieldBox"
-import {calculateDate, Period} from "../types/Period"
+import {calculateDefaultDateForPeriod, DEFAULT_PERIOD, fieldTypeForPeriod, Period, periods} from "../types/Period"
 import {Dashboard} from "../storage/Dasboard"
 import {fetchApi} from "../helpers/ApiFetcher"
 import {useParams} from "react-router-dom"
 import {usePublicDashboardTriggersState} from "../storage/PublicDashboardTriggers"
 import Logo from "../components/logo/Logo"
 import {QuestionMarkIcon} from "@radix-ui/react-icons"
+import {TriggerStats} from "../components/triggers/TriggerStats"
 
 export function PublicDashboard() {
     const [notFound, setNotFound] = useState(false)
     const {dashboardUuid} = useParams<{ dashboardUuid: string }>()
     const [dashboard, setDashboard] = useState<Dashboard | undefined>(undefined)
     const {triggerByUuid} = usePublicDashboardTriggersState(dashboardUuid!)
-    const [period, setPeriod] = useState<Period>("daily")
+    const [period, setPeriod] = useState<Period>(DEFAULT_PERIOD)
     const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0])
     const setPeriodAndDate = (period: Period) => {
-        setDate(calculateDate(period, undefined))
+        setDate(calculateDefaultDateForPeriod(period))
         setPeriod(period)
     }
-    const dateFieldType = period === "monthly" ? "month" : "date"
+    const dateFieldType = fieldTypeForPeriod(period)
 
     useEffect(() => {
         fetchApi<Dashboard>(`/dashboards/${dashboardUuid}`, {
@@ -34,7 +33,7 @@ export function PublicDashboard() {
             error: () => setNotFound(true),
             catcher: () => setNotFound(true),
         })
-    }, [])
+    }, [dashboardUuid])
 
     return <>
         <div className="">
@@ -75,30 +74,10 @@ export function PublicDashboard() {
 
                         <div className="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-3 justify-end pt-4">
                             <div className="flex flex-col w-full sm:w-auto sm:flex-row flex-grow sm:items-center sm:justify-end space-y-3 sm:space-y-0 sm:space-x-3">
-                                <div className="flex-grow">
-                                    <InputFieldBox
-                                        setValue={setDate}
-                                        label="Date"
-                                        type={dateFieldType}
-                                        name="date"
-                                        placeholder={"Date"}
-                                        value={date}
-                                    />
-                                </div>
-
                                 <DropDownSelectFieldBox
-                                    className="min-w-[150px] flex-grow"
+                                    className="w-full min-w-[250px]"
                                     value={period}
-                                    options={[
-                                        {
-                                            value: "daily",
-                                            label: "Daily",
-                                        },
-                                        {
-                                            value: "monthly",
-                                            label: "Monthly",
-                                        },
-                                    ]}
+                                    options={periods}
                                     setValue={(value) => {
                                         setPeriodAndDate(value as Period)
                                     }}
@@ -110,7 +89,7 @@ export function PublicDashboard() {
                     </SectionContainer>
 
                     {dashboard !== undefined && <SectionContainer size={"extra-big"}>
-                        <div className="-mx-2.5 pb-64">
+                        <div className="-mx-2.5 pb-64 grid gap-4 grid-cols-1 md:grid-cols-2 ">
                             {dashboard.items.map(({eventUuid, title, size, type, parameter}, key) => {
                                 const trigger = triggerByUuid(eventUuid)
 
@@ -122,8 +101,8 @@ export function PublicDashboard() {
                                     <div
                                         key={key}
                                         className={[
-                                            "relative group float-left p-2.5",
-                                            (size === "base" ? "w-full md:w-1/2" : "w-full"),
+                                            "relative group bg-white dark:bg-zinc-800/40 rounded-sm p-5 pb-4 shadow",
+                                            (size === "base" ? "" : "md:col-span-2"),
                                         ].join(" ")}
                                     >
 
@@ -131,8 +110,9 @@ export function PublicDashboard() {
                                             <TriggerStats publicDashboard={dashboardUuid}
                                                           trigger={trigger}
                                                           title={title}
-                                                          defaultView={period}
-                                                          hideViewSwitcher/>}
+                                                          defaultPeriod={period}
+                                                          hideViewSwitcher/>
+                                        }
                                         {type === "parameter" &&
                                             <TriggerParamsStats
                                                 publicDashboard={dashboardUuid}
