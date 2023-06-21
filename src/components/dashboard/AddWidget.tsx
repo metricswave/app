@@ -4,7 +4,7 @@ import {useTriggersState} from "../../storage/Triggers"
 import DropDownSelectFieldBox from "../form/DropDownSelectFieldBox"
 import InputFieldBox from "../form/InputFieldBox"
 import PrimaryButton from "../form/PrimaryButton"
-import {DashboardItem, DashboardItemSize, DashboardItemType} from "../../storage/Dasboard"
+import {DashboardItem, DashboardItemSize, DashboardItemType} from "../../storage/Dashboard"
 import {Cross1Icon} from "@radix-ui/react-icons"
 
 type Props = {

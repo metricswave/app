@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react"
 import {fetchAuthApi} from "../helpers/ApiFetcher"
 import {expirableLocalStorage, THIRTY_SECONDS} from "../helpers/ExpirableLocalStorage"
+import {useAuthState} from "./AuthToken"
 
 export type Dashboard = {
     id: string
@@ -34,6 +35,7 @@ const KEY = "nw:dashboards"
 let loading = false
 
 export function useDashboardsState() {
+    const {logout} = useAuthState()
     const [dashboards, setDashboards] = useState<Dashboard[]>(
         expirableLocalStorage.get<Dashboard[]>(KEY, [], true),
     )
@@ -55,7 +57,11 @@ export function useDashboardsState() {
                 expirableLocalStorage.set(KEY, data.data, THIRTY_SECONDS)
                 setDashboards(data.data)
             },
-            error: (err: any) => loading = false,
+            error: (err) => {
+                if (err.message === "Unauthenticated.") {
+                    logout()
+                }
+            },
             catcher: (err: any) => loading = false,
         })
     }, [])
