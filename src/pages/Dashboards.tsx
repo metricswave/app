@@ -32,7 +32,7 @@ export function Dashboards() {
         setPeriod(period)
     }
     let addButtonSize = "w-full"
-    const dashboardsHasLoad = dashboards !== undefined && dashboards.length > 0 && dashboards[dashboardIndex] !== undefined && dashboards[dashboardIndex].items.length > 0
+    const dashboardsHasLoad = dashboards !== undefined && dashboards.length > 0 && dashboards[dashboardIndex] !== undefined
     if (dashboardsHasLoad) {
         addButtonSize = dashboards[dashboardIndex].items.length % 2 === 0 ? "" : "md:col-span-2"
     }
