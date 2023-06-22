@@ -54,6 +54,7 @@ export function TriggerParamsStats(
         Object.values(stats.plot[parameter]) :
         []
     const totalScore = paramStats.reduce((acc, curr) => acc + curr.score, 0)
+    const totalScoreString = number_formatter(totalScore)
 
     useEffect(() => {
         setDate(
@@ -72,12 +73,12 @@ export function TriggerParamsStats(
             <div className="pb-4 flex flex-col sm:flex-row space-y-3 sm:space-y-0 items-start sm:items-center justify-between">
                 {title !== undefined && <PageTitle
                     title={title}
-                    description={`${totalScore} hits in period.`}
+                    description={`${totalScoreString} hits in period.`}
                 />}
 
                 {title === undefined && <PageTitle
                     title="Stats by Parameter"
-                    description={`${totalScore} hits in period.`}
+                    description={`${totalScoreString} hits in period.`}
                 />}
             </div>
 
