@@ -153,7 +153,7 @@ export function TriggerStats(
                            }}/>
                     <YAxis stroke="#888888"
                            fontSize={12}
-                           width={24}
+                           width={30}
                            tickLine={false}
                            axisLine={false}
                            tickFormatter={(value) => `${value}`}/>
