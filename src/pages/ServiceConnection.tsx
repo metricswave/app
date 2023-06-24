@@ -6,7 +6,7 @@ import CircleArrowsIcon from "../components/icons/CircleArrowsIcon"
 import {useAuthState} from "../storage/AuthToken"
 import {Tokens} from "../types/Token"
 import {useUserState} from "../storage/User"
-import {app} from "../config/app"
+import EventTracker from "../helpers/EventTracker"
 
 export default function ServiceConnection() {
     const {isAuth} = useAuthState()
@@ -22,11 +22,11 @@ export default function ServiceConnection() {
         localStorage.setItem("nw:auth", JSON.stringify(tokens))
         refreshUser()
 
-        if (!userCreated || !user) return
+        if (!user) return
 
-        if (app.isProduction) {
+        if (userCreated) {
             const referrer = localStorage.getItem("metricswave:referrer") ?? document.referrer
-            fetch(`https://metricswave.com/webhooks/f3fcf7cc-416d-4ff9-bc12-3878e9127ff7?email=${user.email}&referrer=${referrer}&step=1`)
+            EventTracker.track("f3fcf7cc-416d-4ff9-bc12-3878e9127ff7", {email: user?.email, referrer, step: 1})
         }
 
         window.location.href = "/welcome"
@@ -34,10 +34,10 @@ export default function ServiceConnection() {
 
     useEffect(() => {
         fetchApi<Tokens>(`/auth/${driver}/callback?${searchParams.toString()}&deviceName=${DeviceName.name()}`, {
-            success: (data) => {
+            success: (data, status) => {
                 if (!isAuth) {
                     setTokens(data.data)
-                    setUserCreated(true)
+                    setUserCreated(status === 201)
                     return
                 }
 

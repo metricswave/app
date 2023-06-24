@@ -11,7 +11,7 @@ import {CheckIcon} from "@radix-ui/react-icons"
 import {FIVE_MINUTES_SECONDS, FIVE_SECONDS, TWO_SECONDS} from "../helpers/ExpirableLocalStorage"
 import {useUserState} from "../storage/User"
 import SecondaryButton from "../components/form/SecondaryButton"
-import {app} from "../config/app"
+import EventTracker from "../helpers/EventTracker"
 
 
 type Step = "loading" | "add-code"
@@ -73,10 +73,8 @@ export function Welcome() {
     }, [])
 
     const handleFinish = () => {
-        if (app.isProduction) {
-            const referrer = localStorage.getItem("metricswave:referrer") ?? document.referrer
-            fetch(`https://metricswave.com/webhooks/f3fcf7cc-416d-4ff9-bc12-3878e9127ff7?email=${user?.email}&referrer=${referrer}&step=2`)
-        }
+        const referrer = localStorage.getItem("metricswave:referrer") ?? document.referrer
+        EventTracker.track("f3fcf7cc-416d-4ff9-bc12-3878e9127ff7", {email: user?.email, referrer, step: 2})
 
         navigate("/")
     }

@@ -14,7 +14,7 @@ type ApiFetcherParams<T> = {
     method?: "GET" | "POST" | "PUT" | "DELETE"
     body?: object
     refreshToken?: boolean
-    success: (data: ApiResponse<T>) => void
+    success: (data: ApiResponse<T>, status: number) => void
     error: (data: ApiErrorResponse) => void
     catcher: (err: Error) => void
 }
@@ -48,7 +48,7 @@ export function fetchAuthApi<T>(path: string, {
         .then(async res => {
             if (res.status >= 200 && res.status < 300) {
                 const data = res.status === 204 ? null : await res.json()
-                await params.success(data)
+                await params.success(data, res.status)
                 return
             }
 
@@ -69,7 +69,7 @@ export function fetchApi<T>(path: string, {method = "GET", ...params}: ApiFetche
         .then(async res => {
             if (res.status >= 200 && res.status < 300) {
                 const data = await res.json()
-                params.success(data)
+                params.success(data, res.status)
                 return
             }
 
