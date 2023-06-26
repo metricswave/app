@@ -1,8 +1,10 @@
 import {Trigger} from "../types/Trigger"
 import {useState} from "react"
-import {ApiResponse, fetchApi, fetchAuthApi} from "../helpers/ApiFetcher"
-import {expirableLocalStorage, FIVE_SECONDS} from "../helpers/ExpirableLocalStorage"
 import {Period} from "../types/Period"
+import {expirableLocalStorage, FIVE_SECONDS} from "../helpers/ExpirableLocalStorage"
+import {ApiResponse, fetchApi, fetchAuthApi} from "../helpers/ApiFetcher"
+import {subDays, subMonths, subYears} from "date-fns"
+import format from "date-fns/format"
 
 export type Stats = {
     headers: null | { unique: number, pageViews: number, visits: number }
@@ -17,37 +19,41 @@ type StatRow = {
 export function useTriggerStatsState() {
     const defaultState = {headers: null, plot: []}
     const [stats, setStats] = useState<Stats>(defaultState)
+    const [previousPeriodStats, setPreviousPeriodStats] = useState<Stats>(defaultState)
     const [statsLoading, setStatsLoading] = useState<boolean>(false)
+    const [previousStatsLoading, setPreviousStatsLoading] = useState<boolean>(false)
 
-    const loadStats = (trigger: Trigger, period: Period, date: string | null, publicDashboard: string | undefined) => {
+    const loadStatsFor = (current: boolean, trigger: Trigger, period: Period, date: string | null, publicDashboard: string | undefined) => {
         const key = `trigger-graph-stats-${trigger.uuid}-${period}-${date ?? ""}`
 
         if (publicDashboard === undefined) {
-            setStats(expirableLocalStorage.get(key, defaultState))
+            current ?
+                setStats(expirableLocalStorage.get(key, defaultState)) :
+                setPreviousPeriodStats(expirableLocalStorage.get(key, defaultState))
         }
 
-        setStatsLoading(true)
+        current ? setStatsLoading(true) : setPreviousStatsLoading(true)
 
         const methods = {
             success: (data: ApiResponse<Stats>) => {
                 if (publicDashboard === undefined) {
                     expirableLocalStorage.set(key, data.data, FIVE_SECONDS)
                 }
-                setStats(data.data)
-                setStatsLoading(false)
+                current ? setStats(data.data) : setPreviousPeriodStats(data.data)
+                current ? setStatsLoading(false) : setPreviousStatsLoading(false)
             },
             error: () => {
-                setStats(defaultState)
-                setStatsLoading(false)
+                current ? setStats(defaultState) : setPreviousPeriodStats(defaultState)
+                current ? setStatsLoading(false) : setPreviousStatsLoading(false)
             },
             catcher: () => {
-                setStats(defaultState)
-                setStatsLoading(false)
+                current ? setStats(defaultState) : setPreviousPeriodStats(defaultState)
+                current ? setStatsLoading(false) : setPreviousStatsLoading(false)
             },
         }
 
         if (publicDashboard === undefined && expirableLocalStorage.get(key, null) !== null) {
-            setStatsLoading(false)
+            current ? setStatsLoading(false) : setPreviousStatsLoading(false)
             return
         }
 
@@ -66,5 +72,37 @@ export function useTriggerStatsState() {
         )
     }
 
-    return {stats, loadStats, statsLoading}
+    const loadStats = (trigger: Trigger, period: Period, date: string | null, publicDashboard: string | undefined) => {
+        loadStatsFor(true, trigger, period, date, publicDashboard)
+    }
+
+    const loadPreviousPeriodStats = (trigger: Trigger, period: Period, date: string | null, publicDashboard: string | undefined) => {
+        let previousDate = date ? new Date(date) : new Date()
+        switch (period) {
+            case "day":
+                previousDate = subDays(previousDate, 1)
+                break
+            case "7d":
+                previousDate = subDays(previousDate, 7)
+                break
+            case "30d":
+                previousDate = subDays(previousDate, 30)
+                break
+            case "month":
+                previousDate = subMonths(previousDate, 1)
+                break
+            case "year":
+                previousDate = subYears(previousDate, 1)
+                break
+            case "12m":
+                previousDate = subMonths(previousDate, 12)
+                break
+        }
+
+        const previousDateString = format(previousDate, "yyyy-MM-dd")
+
+
+        loadStatsFor(false, trigger, period, previousDateString, publicDashboard)
+    }
+    return {stats, previousPeriodStats, loadStats, loadPreviousPeriodStats, statsLoading}
 }

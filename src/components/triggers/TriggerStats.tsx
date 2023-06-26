@@ -1,17 +1,20 @@
 import PageTitle from "../sections/PageTitle"
 import {Trigger} from "../../types/Trigger"
 import {Stats, useTriggerStatsState} from "../../storage/TriggerStats"
-import {Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts"
+import {Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts"
 import {useEffect, useState} from "react"
 import {number_formatter} from "../../helpers/NumberFormatter"
 import {calculateDefaultDateForPeriod, fieldTypeForPeriod, Period} from "../../types/Period"
 import CircleArrowsIcon from "../icons/CircleArrowsIcon"
 import InputFieldBox from "../form/InputFieldBox"
+import {ArrowDownIcon, ArrowUpIcon} from "@radix-ui/react-icons"
 
-function getGraphData(stats: Stats, view: Period) {
-    const data = stats.plot.map((stat) => ({
+function getGraphData(stats: Stats, previousPeriodStats: Stats, view: Period) {
+    const data = stats.plot.map((stat, index) => ({
         name: stat.date,
         total: stat.score,
+        previous: previousPeriodStats?.plot[index]?.score ?? 0,
+        previousName: previousPeriodStats?.plot[index]?.date ?? "",
     }))
 
     data.sort((a, b) => new Date(a.name).getTime() - new Date(b.name).getTime())
@@ -25,6 +28,7 @@ type Props = {
     defaultPeriod: Period
     defaultDate?: string
     hideViewSwitcher?: boolean
+    compareWithPrevious?: boolean
 }
 
 export function TriggerStats(
@@ -35,10 +39,11 @@ export function TriggerStats(
         defaultPeriod,
         defaultDate,
         hideViewSwitcher = false,
+        compareWithPrevious = false,
     }: Props,
 ) {
     const [period, setPeriod] = useState<Period>(defaultPeriod)
-    const {stats, loadStats, statsLoading} = useTriggerStatsState()
+    const {stats, previousPeriodStats, loadStats, loadPreviousPeriodStats, statsLoading} = useTriggerStatsState()
     const [data, setData] = useState<{ name: string, total: number }[]>()
     const [average, setAverage] = useState("")
     const [date, setDate] = useState<string>(defaultDate ?? calculateDefaultDateForPeriod(period))
@@ -61,12 +66,16 @@ export function TriggerStats(
     useEffect(() => setPeriodAndDate(defaultPeriod), [defaultPeriod])
     useEffect(() => setDate(defaultDate!), [defaultDate])
     useEffect(() => loadStats(trigger, period, date, publicDashboard), [trigger.id, period, date, publicDashboard])
+    useEffect(
+        () => compareWithPrevious ? loadPreviousPeriodStats(trigger, period, date, publicDashboard) : undefined,
+        [trigger.id, period, date, publicDashboard],
+    )
     useEffect(() => {
-        const data = getGraphData(stats, period)
+        const data = getGraphData(stats, previousPeriodStats, period)
         const average = data.reduce((acc, curr) => acc + curr.total, 0) / data.length
         setData(data)
         setAverage(isNaN(average) ? "0" : number_formatter(average, {maximumFractionDigits: 0}))
-    }, [stats, period])
+    }, [stats, previousPeriodStats, period])
 
     if (statsLoading) {
         return (
@@ -119,21 +128,56 @@ export function TriggerStats(
             }
 
             <ResponsiveContainer width="100%" height={400}>
-                <BarChart data={data}>
+                <AreaChart data={data}>
                     <Tooltip
                         cursor={{fill: "#ffffff", opacity: "0.05"}}
                         content={({payload, label}) => {
-                            const date = new Date(label)
-                            let formattedDate = date.toLocaleDateString(undefined, {
+                            console.log(payload)
+                            const date = new Date((payload?.[0]?.payload?.name ?? "") as string)
+                            const formattedDate = date.toLocaleDateString(undefined, {
                                 month: "short",
                                 day: "numeric",
                             })
 
-                            const score = payload?.[0]?.value ?? 0
+                            const score = (payload?.[0]?.value ?? 0) as number
+                            const scoreString = number_formatter(score, {maximumFractionDigits: 0})
+
+                            if (compareWithPrevious) {
+                                const previousDate = new Date((payload?.[1]?.payload?.previousName ?? "") as string)
+                                const formattedPreciousDate = previousDate.toLocaleDateString(undefined, {
+                                    month: "short",
+                                    day: "numeric",
+                                })
+
+                                const previousScore = (payload?.[1]?.value ?? 0) as number
+                                const previousScoreString = number_formatter(previousScore, {maximumFractionDigits: 0})
+
+                                const diffPercentage = (score - previousScore) / previousScore * 100
+
+                                return (<>
+                                    <div className="bg-white dark:bg-zinc-800 p-2 shadow rounded-sm text-sm">
+                                        <p className="flex flex-row gap-2">
+                                            <span className="min-w-[60px] text-right">{scoreString}</span>
+                                            <span className="opacity-75">{formattedDate}</span>
+                                        </p>
+                                        <p className="flex flex-row gap-2">
+                                            <span className="min-w-[60px] text-right">{previousScoreString}</span>
+                                            <span className="opacity-75">{formattedPreciousDate}</span>
+                                        </p>
+                                        <p className="flex flex-row gap-2">
+                                            <span className="min-w-[60px] text-right">{number_formatter(diffPercentage, {maximumFractionDigits: 0})}%</span>
+                                            {diffPercentage >= 0 && <ArrowUpIcon className="text-green-500"/>}
+                                            {diffPercentage < 0 && <ArrowDownIcon className="text-red-500"/>}
+                                        </p>
+                                    </div>
+                                </>)
+                            }
 
                             return (<>
                                 <div className="bg-white dark:bg-zinc-800 p-2 shadow rounded-sm text-sm">
-                                    <p>{formattedDate}: <span>{score}</span></p>
+                                    <p>
+                                        <span className="opacity-75">{formattedDate}:</span> <span>{scoreString}</span>
+                                    </p>
                                 </div>
                             </>)
                         }}
@@ -159,7 +203,7 @@ export function TriggerStats(
                            tickFormatter={(value) => `${value}`}/>
                     <defs>
                         <linearGradient
-                            id="colorUv"
+                            id="colorCurrent"
                             x1="0"
                             y1="0"
                             x2="0"
@@ -170,35 +214,33 @@ export function TriggerStats(
                             <stop offset="0" stopColor="#3b82f6" stopOpacity={.99}/>
                             <stop offset=".7" stopColor="#3b82f6" stopOpacity={0}/>
                         </linearGradient>
+                        <linearGradient
+                            id="colorPrevious"
+                            x1="0"
+                            y1="0"
+                            x2="0"
+                            y2="100%"
+                            color={"transparent"}
+                            gradientUnits="userSpaceOnUse"
+                        >
+                            <stop offset="0" stopColor="#78716c" stopOpacity={.99}/>
+                            <stop offset=".7" stopColor="#78716c" stopOpacity={0}/>
+                        </linearGradient>
                     </defs>
-                    <Bar dataKey="total"
-                         stackId="total"
-                         radius={[2, 2, 0, 0]}
-                         fill="url(#colorUv)"
-                         shape={BarWithBorder(1, "#3b82f6")}
+                    <Area
+                        type={"monotone"}
+                        dataKey="total"
+                        stroke="#3b82f6"
+                        fill="url(#colorCurrent)"
                     />
-                </BarChart>
+                    {compareWithPrevious && <Area
+                        type={"monotone"}
+                        dataKey="previous"
+                        stroke="#78716c"
+                        fill="url(#colorPrevious)"
+                    />}
+                </AreaChart>
             </ResponsiveContainer>
         </div>
     )
-}
-
-const BarWithBorder = (borderHeight: number, borderColor: string) => {
-    return (props: any) => {
-        const {fill, x, y, width, height} = props
-        return (
-            <g>
-                <rect opacity={.7} x={x} y={y + 1} width={width} height={height} stroke="none" fill={fill}/>
-                <rect opacity={.7} x={x} y={y} width={width} height={borderHeight} stroke="none" fill={borderColor}/>
-                <rect opacity={.7} x={x} y={y} width={borderHeight} height={height} stroke="none" fill={borderColor}/>
-                <rect opacity={.7}
-                      x={x + width}
-                      y={y}
-                      width={borderHeight}
-                      height={height}
-                      stroke="none"
-                      fill={borderColor}/>
-            </g>
-        )
-    }
 }
