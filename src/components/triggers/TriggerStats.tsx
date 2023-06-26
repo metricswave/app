@@ -111,19 +111,55 @@ export function TriggerStats(
 
             {stats.headers !== null &&
                 <div className="flex flex-col sm:flex-row justify-start sm:items-center mb-10">
-                    {Object.values(stats.headers).map((header, index) => (
-                        <div key={index}
-                             className="flex flex-col justify-between items-start gap-0.5 sm:border-r soft-border py-2 sm:py-0 sm:px-14 first:pl-0 last:pr-0 last:border-none">
-                            <div className="text-2xl font-medium">{number_formatter(header)}</div>
-                            <div className="text-sm text-gray-400 dark:text-gray-600">
-                                {{
-                                    "unique": "Unique visits",
-                                    "pageViews": "Page views",
-                                    "visits": "Visits",
-                                }[Object.keys(stats.headers!)[index]]}
+                    {Object.values(stats.headers).map((header, index) => {
+                        const key = Object.keys(stats.headers!)[index] as "unique" | "pageViews" | "visits"
+                        const previousStatsHeaders = previousPeriodStats?.headers ?
+                            (previousPeriodStats?.headers[key]) :
+                            0
+                        const percentageDifference = previousStatsHeaders !== 0 ?
+                            number_formatter((previousStatsHeaders * 100 / header) - 100, {
+                                maximumFractionDigits: 0,
+                            }) :
+                            0
+
+                        return (
+                            <div
+                                key={key}
+                                className="flex flex-col text-right justify-between items-start gap-1 sm:border-r soft-border py-2 sm:py-0 sm:px-14 first:pl-0 last:pr-0 last:border-none"
+                            >
+
+                                <div className="flex items-start justify-center gap-3">
+                                    <div className="text-sm text-gray-400 dark:text-gray-600">
+                                        {{
+                                            "unique": "Unique visits",
+                                            "pageViews": "Page views",
+                                            "visits": "Visits",
+                                        }[Object.keys(stats.headers!)[index]]}
+                                    </div>
+
+                                </div>
+
+                                <div className="text-2xl font-medium">{number_formatter(header)}</div>
+
+                                {compareWithPrevious &&
+                                    <div className="flex flex-row justify-start gap-2 items-baseline">
+                                        <div className="text-2xl font-medium opacity-50">
+                                            {number_formatter(previousStatsHeaders)}
+                                        </div>
+                                        {compareWithPrevious && <div className="flex items-start gap-0.5">
+                                            {percentageDifference > 0 ?
+                                                <ArrowUpIcon className="h-4 text-green-500"/> :
+                                                <ArrowDownIcon className="h-4 text-red-500"/>
+                                            }
+                                            <div className="text-sm text-gray-400 dark:text-gray-600">
+                                                {percentageDifference}%
+                                            </div>
+                                        </div>}
+                                    </div>}
+
                             </div>
-                        </div>
-                    ))}
+                        )
+                    })}
                 </div>
             }
 
