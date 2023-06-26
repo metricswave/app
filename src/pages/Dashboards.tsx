@@ -1,6 +1,6 @@
 import SectionContainer from "../components/sections/SectionContainer"
 import PageTitle from "../components/sections/PageTitle"
-import React, {useState} from "react"
+import React, {useEffect, useState} from "react"
 import {useTriggersState} from "../storage/Triggers"
 import DropDownSelectFieldBox from "../components/form/DropDownSelectFieldBox"
 import {calculateDefaultDateForPeriod, DEFAULT_PERIOD, Period, periods} from "../types/Period"
@@ -12,6 +12,7 @@ import {CopyButtonIcon} from "../components/form/CopyButton"
 import CircleArrowsIcon from "../components/icons/CircleArrowsIcon"
 import {TriggerParamsStats} from "../components/triggers/TriggerParamsStats"
 import {TriggerStats} from "../components/triggers/TriggerStats"
+import {useSearchParams} from "react-router-dom"
 
 export function Dashboards() {
     const {
@@ -21,8 +22,9 @@ export function Dashboards() {
         updateDashboard,
         publicDashboardPath,
     } = useDashboardsState()
+    const [searchParams, setSearchParams] = useSearchParams()
     const {triggerByUuid} = useTriggersState()
-    const [period, setPeriod] = useState<Period>(DEFAULT_PERIOD)
+    const [period, setPeriod] = useState<Period>(searchParams.get("period") as Period ?? DEFAULT_PERIOD)
     const periodConfiguration = periods.find(p => p.value === period)!
     const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0])
     const [dashboardIndex, setDashboardIndex] = useState<number>(0)
@@ -37,6 +39,10 @@ export function Dashboards() {
         addButtonSize = dashboards[dashboardIndex].items.length % 2 === 0 && dashboards[dashboardIndex].items.length !== 0 ? "" : "md:col-span-2"
     }
     const [changedToPublic, setChangedToPublic] = useState<boolean>(false)
+
+    useEffect(() => {
+        setSearchParams({period})
+    }, [period])
 
     const removeWidget = (dashboardIndex: number, widgetIndex: number) => {
         const removeConfirmKey = `${dashboardIndex}-${widgetIndex}`

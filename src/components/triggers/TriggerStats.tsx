@@ -132,7 +132,6 @@ export function TriggerStats(
                     <Tooltip
                         cursor={{fill: "#ffffff", opacity: "0.05"}}
                         content={({payload, label}) => {
-                            console.log(payload)
                             const date = new Date((payload?.[0]?.payload?.name ?? "") as string)
                             const formattedDate = date.toLocaleDateString(undefined, {
                                 month: "short",
