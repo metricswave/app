@@ -16,6 +16,32 @@ type StatRow = {
     score: number,
 }
 
+export const getPreviousPeriodDate = (period: Period, date: string | null): string => {
+    let previousDate = date ? new Date(date) : new Date()
+    switch (period) {
+        case "day":
+            previousDate = subDays(previousDate, 1)
+            break
+        case "7d":
+            previousDate = subDays(previousDate, 7)
+            break
+        case "30d":
+            previousDate = subDays(previousDate, 30)
+            break
+        case "month":
+            previousDate = subMonths(previousDate, 1)
+            break
+        case "year":
+            previousDate = subYears(previousDate, 1)
+            break
+        case "12m":
+            previousDate = subMonths(previousDate, 12)
+            break
+    }
+
+    return format(previousDate, "yyyy-MM-dd")
+}
+
 export function useTriggerStatsState() {
     const defaultState = {headers: null, plot: []}
     const [stats, setStats] = useState<Stats>(defaultState)
@@ -77,32 +103,7 @@ export function useTriggerStatsState() {
     }
 
     const loadPreviousPeriodStats = (trigger: Trigger, period: Period, date: string | null, publicDashboard: string | undefined) => {
-        let previousDate = date ? new Date(date) : new Date()
-        switch (period) {
-            case "day":
-                previousDate = subDays(previousDate, 1)
-                break
-            case "7d":
-                previousDate = subDays(previousDate, 7)
-                break
-            case "30d":
-                previousDate = subDays(previousDate, 30)
-                break
-            case "month":
-                previousDate = subMonths(previousDate, 1)
-                break
-            case "year":
-                previousDate = subYears(previousDate, 1)
-                break
-            case "12m":
-                previousDate = subMonths(previousDate, 12)
-                break
-        }
-
-        const previousDateString = format(previousDate, "yyyy-MM-dd")
-
-
-        loadStatsFor(false, trigger, period, previousDateString, publicDashboard)
+        loadStatsFor(false, trigger, period, getPreviousPeriodDate(period, date), publicDashboard)
     }
     return {stats, previousPeriodStats, loadStats, loadPreviousPeriodStats, statsLoading}
 }

@@ -7,6 +7,7 @@ import {number_formatter} from "../../helpers/NumberFormatter"
 import InputFieldBox from "../form/InputFieldBox"
 import {calculateDefaultDateForPeriod, fieldTypeForPeriod, Period} from "../../types/Period"
 import CircleArrowsIcon from "../icons/CircleArrowsIcon"
+import {ArrowDownIcon, ArrowUpIcon} from "@radix-ui/react-icons"
 
 function percentage_of(totalScore: number, score: number): number {
     return Math.min(100, Math.max(Math.round((score / totalScore) * 100), 1))
@@ -20,6 +21,7 @@ type Props = {
     defaultPeriod?: Period
     defaultDate?: string
     hideFilters?: boolean
+    compareWithPrevious?: boolean
 }
 
 export function TriggerParamsStats(
@@ -31,6 +33,7 @@ export function TriggerParamsStats(
         publicDashboard,
         defaultPeriod = "day",
         hideFilters = false,
+        compareWithPrevious = false,
     }: Props,
 ) {
     const [params] = useState<string[]>(trigger.configuration.fields["parameters"] as string[])
@@ -47,8 +50,7 @@ export function TriggerParamsStats(
         )
         setPeriod(period)
     }
-    const {stats, loadStats, statsLoading} = useTriggerParamsStatsState()
-
+    const {stats, previousStats, loadStats, loadPreviousStats, statsLoading} = useTriggerParamsStatsState()
 
     const paramStats: ParamStatRow[] = stats !== undefined && stats.plot !== undefined ?
         Object.values(stats.plot[parameter]) :
@@ -66,20 +68,18 @@ export function TriggerParamsStats(
 
     useEffect(() => {
         loadStats(trigger, period, date, publicDashboard)
+        if (compareWithPrevious) {
+            loadPreviousStats(trigger, period, date, publicDashboard)
+        }
     }, [trigger.id, period, date, publicDashboard])
 
     return (
         <div className="">
             <div className="pb-4 flex flex-col sm:flex-row space-y-3 sm:space-y-0 items-start sm:items-center justify-between">
-                {title !== undefined && <PageTitle
-                    title={title}
+                <PageTitle
+                    title={title ?? "Stats by Parameter"}
                     description={`${totalScoreString} hits in period.`}
-                />}
-
-                {title === undefined && <PageTitle
-                    title="Stats by Parameter"
-                    description={`${totalScoreString} hits in period.`}
-                />}
+                />
             </div>
 
             {!hideFilters &&
@@ -153,30 +153,74 @@ export function TriggerParamsStats(
                             </div>
                         </div>
 
-                        {paramStats.slice(0, 8).map((stat) => (
-                            <div
-                                key={stat.param}
-                                className="flex flex-col space-y-2 py-3"
-                            >
-                                <div className="flex flex-row items-center justify-between space-x-3">
-                                    <p className="truncate opacity-75">{stat.param}</p>
-                                    <p className="opacity-75">{number_formatter(stat.score)}</p>
-                                </div>
+                        {paramStats.slice(0, 8).map((stat, index) => {
+                            const previousStatScore = previousStats !== undefined && previousStats.plot !== undefined ?
+                                previousStats.plot[parameter].find((s) => s.param === stat.param)?.score ?? 0 :
+                                0
+                            const percentageDifference = number_formatter(
+                                (stat.score * 100 / previousStatScore) - 100, {
+                                    maximumFractionDigits: 0,
+                                })
 
-                                <div className="w-full flex flex-row space-x-2">
-                                    {[0, 1, 2, 3].map((i) => {
-                                        const barPercentage = percentage_of(totalScore, stat.score) - (25 * i)
-                                        const p = barPercentage < 1 ? 0 : Math.min(barPercentage, 25)
+                            return (
+                                <div
+                                    key={stat.param}
+                                    className="flex flex-col space-y-2 py-3"
+                                >
+                                    <div className="flex flex-row items-start justify-between space-x-3">
+                                        <p className="truncate opacity-75">{stat.param}</p>
+                                        <p className="opacity-75">
+                                            {number_formatter(stat.score)}
+                                        </p>
+                                    </div>
 
-                                        return (
-                                            <div key={i} className="h-1 rounded bg-blue-500"
-                                                 style={{width: `${p}%`}}>
+                                    <div className="flex flex-row items-start justify-start">
+                                        <div className="flex-grow flex flex-col gap-2">
+                                            <div className="w-full flex flex-row space-x-2">
+                                                {[0, 1, 2, 3].map((i) => {
+                                                    const barPercentage = percentage_of(totalScore, stat.score) - (25 * i)
+                                                    const p = barPercentage < 1 ? 0 : Math.min(barPercentage, 25)
+
+                                                    return (
+                                                        <div key={i} className="h-1 rounded bg-blue-500"
+                                                             style={{width: `${p}%`}}>
+                                                        </div>
+                                                    )
+                                                })}
                                             </div>
-                                        )
-                                    })}
+
+                                            {compareWithPrevious && (
+                                                <div className="w-full flex flex-row space-x-2">
+                                                    {[0, 1, 2, 3].map((i) => {
+                                                        const barPercentage = percentage_of(totalScore, previousStatScore) - (25 * i)
+                                                        const p = barPercentage < 1 ? 0 : Math.min(barPercentage, 25)
+
+                                                        return (
+                                                            <div key={i} className="h-1 rounded bg-slate-500"
+                                                                 style={{width: `${p}%`}}>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {compareWithPrevious &&
+                                            <div className="flex flex-row gap-0.5 leading-4 items-center text-sm">
+                                                {stat.score >= previousStatScore ? (
+                                                    <ArrowUpIcon className="h-3 text-green-500"/>
+                                                ) : (
+                                                    <ArrowDownIcon className="h-3 text-red-500"/>
+                                                )}
+                                                <span
+                                                    className={stat.score >= previousStatScore ? "text-green-500" : "text-red-500"}
+                                                >{percentageDifference}</span>
+                                            </div>
+                                        }
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            )
+                        })}
                     </div>
                 )}
             </>)}

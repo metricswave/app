@@ -3,6 +3,7 @@ import {useState} from "react"
 import {ApiResponse, fetchApi, fetchAuthApi} from "../helpers/ApiFetcher"
 import {Period} from "../types/Period"
 import {expirableLocalStorage, FIVE_SECONDS} from "../helpers/ExpirableLocalStorage"
+import {getPreviousPeriodDate} from "./TriggerStats"
 
 export type ParamsStats = { plot: { [key: string]: ParamStatRow[] } }
 
@@ -14,8 +15,27 @@ export type ParamStatRow = {
 export function useTriggerParamsStatsState() {
     const [statsLoading, setStatsLoading] = useState<boolean>(false)
     const [stats, setStats] = useState<ParamsStats | undefined>()
+    const [previousStats, setPreviousStats] = useState<ParamsStats | undefined>()
+    const [previousStatsLoading, setPreviousStatsLoading] = useState<boolean>(false)
 
-    const loadStats = (
+    const setStatsFor = (stats: ParamsStats | undefined, current: boolean) => {
+        if (current) {
+            setStats(stats)
+        } else {
+            setPreviousStats(stats)
+        }
+    }
+
+    const setLoadingFor = (loading: boolean, current: boolean) => {
+        if (current) {
+            setStatsLoading(loading)
+        } else {
+            setPreviousStatsLoading(loading)
+        }
+    }
+
+    const loadStatsFor = (
+        current: boolean,
         trigger: Trigger,
         period: Period,
         date: string | null,
@@ -24,10 +44,10 @@ export function useTriggerParamsStatsState() {
         const key = `trigger-params-stats-5-${trigger.uuid}-${period}-${date ?? ""}`
 
         if (publicDashboard === undefined) {
-            setStats(expirableLocalStorage.get(key, undefined))
+            setStatsFor(expirableLocalStorage.get(key, undefined), current)
         }
 
-        setStatsLoading(true)
+        setLoadingFor(true, current)
 
         const query = new URLSearchParams({period, ...(date ? {date} : {})})
 
@@ -36,21 +56,21 @@ export function useTriggerParamsStatsState() {
                 if (publicDashboard === undefined) {
                     expirableLocalStorage.set(key, data, FIVE_SECONDS)
                 }
-                setStats(data.data)
-                setStatsLoading(false)
+                setStatsFor(data.data, current)
+                setLoadingFor(false, current)
             },
             error: () => {
-                setStats(undefined)
-                setStatsLoading(false)
+                setStatsFor(undefined, current)
+                setLoadingFor(false, current)
             },
             catcher: () => {
-                setStats(undefined)
-                setStatsLoading(false)
+                setStatsFor(undefined, current)
+                setLoadingFor(false, current)
             },
         }
 
         if (publicDashboard === undefined && expirableLocalStorage.get(key, null) !== null) {
-            setStatsLoading(false)
+            setLoadingFor(false, current)
             return
         }
 
@@ -67,5 +87,23 @@ export function useTriggerParamsStatsState() {
         }
     }
 
-    return {stats, loadStats, statsLoading}
+    const loadStats = (
+        trigger: Trigger,
+        period: Period,
+        date: string | null,
+        publicDashboard: string | undefined,
+    ) => {
+        loadStatsFor(true, trigger, period, date, publicDashboard)
+    }
+
+    const loadPreviousStats = (
+        trigger: Trigger,
+        period: Period,
+        date: string | null,
+        publicDashboard: string | undefined,
+    ) => {
+        loadStatsFor(false, trigger, period, getPreviousPeriodDate(period, date), publicDashboard)
+    }
+
+    return {stats, previousStats, loadStats, loadPreviousStats, statsLoading: statsLoading || previousStatsLoading}
 }
