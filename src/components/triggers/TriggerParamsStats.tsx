@@ -55,6 +55,9 @@ export function TriggerParamsStats(
     const paramStats: ParamStatRow[] = stats !== undefined && stats.plot !== undefined ?
         Object.values(stats.plot[parameter]) :
         []
+    const previeousParamStats: ParamStatRow[] | undefined = previousStats !== undefined && previousStats.plot !== undefined ?
+        Object.values(previousStats.plot[parameter]) :
+        undefined
     const totalScore = paramStats.reduce((acc, curr) => acc + curr.score, 0)
     const totalScoreString = number_formatter(totalScore)
 
@@ -154,8 +157,8 @@ export function TriggerParamsStats(
                         </div>
 
                         {paramStats.slice(0, 8).map((stat, index) => {
-                            const previousStatScore = previousStats !== undefined && previousStats.plot !== undefined ?
-                                previousStats.plot[parameter].find((s) => s.param === stat.param)?.score ?? 0 :
+                            const previousStatScore = previeousParamStats !== undefined ?
+                                previeousParamStats.find((s) => s.param === stat.param)?.score ?? 0 :
                                 0
                             const percentageDifference = number_formatter(
                                 (stat.score * 100 / previousStatScore) - 100, {
@@ -164,7 +167,7 @@ export function TriggerParamsStats(
 
                             return (
                                 <div
-                                    key={stat.param}
+                                    key={index}
                                     className="flex flex-col space-y-2 py-3"
                                 >
                                     <div className="flex flex-row items-start justify-between space-x-3">

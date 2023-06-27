@@ -13,6 +13,7 @@ import {TriggerParamsStats} from "../components/triggers/TriggerParamsStats"
 import {TriggerStats} from "../components/triggers/TriggerStats"
 import {useSearchParams} from "react-router-dom"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
+import {NewDashboardDialog} from "../components/dashboard/NewDashboardDialog"
 
 export function Dashboards() {
     const {
@@ -20,6 +21,7 @@ export function Dashboards() {
         addWidgetToDashboard,
         removeWidgetFromDashboard,
         updateDashboard,
+        reloadDashboards,
         publicDashboardPath,
     } = useDashboardsState()
     const [searchParams, setSearchParams] = useSearchParams()
@@ -29,11 +31,14 @@ export function Dashboards() {
     const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0])
     const [dashboardIndex, setDashboardIndex] = useState<number>(0)
     const [removeConfirm, setRemoveConfirm] = useState<string>("")
-    const [compareWithPervious, setCompareWithPervious] = useState<boolean>(false)
+    const [compareWithPrevious, setCompareWithPrevious] = useState<boolean>(false)
+    const [dashboardJustCreated, setDashboardJustCreated] = useState<boolean>(false)
     const setPeriodAndDate = (period: Period) => {
         setDate(calculateDefaultDateForPeriod(period))
         setPeriod(period)
     }
+    const [newDashboardDialogOpen, setNewDashboardDialogOpen] = useState<boolean>(false)
+
     let addButtonSize = "w-full"
     const dashboardsHasLoad = dashboards !== undefined && dashboards.length > 0 && dashboards[dashboardIndex] !== undefined
     if (dashboardsHasLoad) {
@@ -62,6 +67,19 @@ export function Dashboards() {
         updateDashboard(dashboardIndex, fields)
     }
 
+    const handleDashboardCreated = () => {
+        setNewDashboardDialogOpen(false)
+        setDashboardJustCreated(true)
+        reloadDashboards()
+    }
+
+    useEffect(() => {
+        if (dashboardJustCreated) {
+            setDashboardIndex(dashboards.length - 1)
+            setDashboardJustCreated(false)
+        }
+    }, [dashboards])
+
     if (!dashboardsHasLoad) {
         return <>
             <div className="flex flex-col gap-4 items-center animate-pulse justify-center pt-20 sm:pt-44 md:pt-64">
@@ -72,6 +90,10 @@ export function Dashboards() {
     }
 
     return <>
+        <NewDashboardDialog created={handleDashboardCreated}
+                            open={newDashboardDialogOpen}
+                            setOpen={setNewDashboardDialogOpen}/>
+
         <SectionContainer size={"big"}>
             <div className="flex flex-row space-y-4 justify-between items-center">
                 <PageTitle title={"Dashboards"}/>
@@ -80,6 +102,7 @@ export function Dashboards() {
             <div className="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-3 justify-end pt-4">
                 <div className="w-full">
                     <DashboardDropDownField
+                        initCreateNewDashboard={() => setNewDashboardDialogOpen(true)}
                         updateDashboard={(dashboard, title, isPublic) => {
                             handleDashboardUpdate(dashboardIndex, {name: title, public: isPublic})
                         }}
@@ -92,8 +115,6 @@ export function Dashboards() {
                         setValue={(value) => {
                             setDashboardIndex(parseInt(value as string))
                         }}
-                        label="Dashboard"
-                        name="dashboard"
                     />
                 </div>
 
@@ -121,9 +142,7 @@ export function Dashboards() {
                                             <DropdownMenu.Item
                                                 key={index}
                                                 className="group text-[13px] leading-none rounded-[3px] flex items-center h-[25px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:opacity-30 data-[disabled]:pointer-events-none data-[highlighted]:bg-blue-50 data-[highlighted]:text-blue-500"
-                                                onSelect={() => {
-                                                    setPeriod(p.period)
-                                                }}
+                                                onSelect={() => setPeriodAndDate(p.period)}
                                             >
                                                 {p.value === period &&
                                                     <CheckIcon className="text-green-500 h-auto inline-block w-4 absolute left-0.5"/>
@@ -147,9 +166,9 @@ export function Dashboards() {
 
                                 <DropdownMenu.Item
                                     className="group text-[13px] leading-none rounded-[3px] flex items-center h-[25px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:opacity-30 data-[disabled]:pointer-events-none data-[highlighted]:bg-blue-50 data-[highlighted]:text-blue-500"
-                                    onSelect={() => setCompareWithPervious(!compareWithPervious)}
+                                    onSelect={() => setCompareWithPrevious(!compareWithPrevious)}
                                 >
-                                    {compareWithPervious &&
+                                    {compareWithPrevious &&
                                         <CheckIcon className="text-green-500 h-auto inline-block w-4 absolute left-0.5"/>
                                     }
                                     Compare with previous
@@ -214,7 +233,7 @@ export function Dashboards() {
                                     defaultPeriod={periodConfiguration.period}
                                     defaultDate={date}
                                     hideViewSwitcher
-                                    compareWithPrevious={compareWithPervious}
+                                    compareWithPrevious={compareWithPrevious}
                                 />
                             }
 
@@ -225,7 +244,7 @@ export function Dashboards() {
                                     title={title}
                                     defaultPeriod={periodConfiguration.period}
                                     defaultDate={date}
-                                    compareWithPrevious={compareWithPervious}
+                                    compareWithPrevious={compareWithPrevious}
                                     hideFilters
                                 />
                             }

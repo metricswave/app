@@ -40,12 +40,17 @@ export function useDashboardsState() {
         expirableLocalStorage.get<Dashboard[]>(KEY, [], true),
     )
 
-    useEffect(() => {
+    const reloadDashboards = (force: boolean = false) => {
         if (loading) {
             return
         }
 
-        if (expirableLocalStorage.get(KEY, null) !== null && dashboards !== undefined && dashboards.length > 0) {
+        if (
+            expirableLocalStorage.get(KEY, null) !== null
+            && dashboards !== undefined
+            && dashboards.length > 0
+            && !force
+        ) {
             return
         }
 
@@ -64,7 +69,9 @@ export function useDashboardsState() {
             },
             catcher: (err: any) => loading = false,
         })
-    }, [])
+    }
+
+    useEffect(reloadDashboards, [])
 
     const updateDashboard = (index: number, newDashboards: Dashboard[]) => {
         const id = newDashboards[index].id
@@ -122,6 +129,7 @@ export function useDashboardsState() {
         addWidgetToDashboard,
         removeWidgetFromDashboard,
         updateDashboard: updateDashboardFields,
+        reloadDashboards,
         publicDashboardPath: (dashboard: Dashboard) => `https://app.metricswave.com/${dashboard.uuid}/${dashboard.name}`,
     }
 }

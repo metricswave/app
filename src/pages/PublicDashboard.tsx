@@ -9,7 +9,6 @@ import {fetchApi} from "../helpers/ApiFetcher"
 import {useParams} from "react-router-dom"
 import {usePublicDashboardTriggersState} from "../storage/PublicDashboardTriggers"
 import Logo from "../components/logo/Logo"
-import {QuestionMarkIcon} from "@radix-ui/react-icons"
 import {TriggerStats} from "../components/triggers/TriggerStats"
 
 export function PublicDashboard() {
@@ -59,8 +58,7 @@ export function PublicDashboard() {
             <div id="app-container" className="pt-[65px] pb-[81px] sm:pb-0">
                 {notFound && <SectionContainer>
                     <div className="pt-14 md:pt-44 text-center flex flex-col items-center justify-center gap-10 animate-pulse">
-                        <QuestionMarkIcon className="h-auto w-10"/>
-                        <div className="text-xl md:text-2xl pb-20">
+                        <div className="text-lg pb-20">
                             Dashboard not found<br/>or not longer available.
                         </div>
                     </div>

@@ -6,36 +6,32 @@ import PrimaryButton from "../form/PrimaryButton"
 import Switch from "../switch/Switch"
 import {CopyButtonIcon} from "../form/CopyButton"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
+import {useNavigate} from "react-router-dom"
 
 type Props = {
     value: string | string[],
     options: { label: string, value: string }[],
     setValue: (value: string | string[]) => void,
-    label: string,
-    name: string,
-    multiple?: boolean,
-    required?: boolean,
-    showRequired?: boolean,
     className?: string,
     activeDashboard: Dashboard,
     updateDashboard: (dashboard: Dashboard, title: string, isPublic: boolean) => void,
+    initCreateNewDashboard: () => void,
 }
 
 
 export default function DashboardDropDownField(
     {
         value,
-        name,
         options,
         setValue,
-        label,
         activeDashboard,
         updateDashboard,
-        required = false,
-        showRequired = false,
         className = "",
+        initCreateNewDashboard,
     }: Props,
 ) {
+    const navigate = useNavigate()
+
     return (
         <>
 
@@ -64,7 +60,11 @@ export default function DashboardDropDownField(
                             {options.map((option, index) => (
                                 <DropdownMenu.Item
                                     key={index}
-                                    className="group text-[13px] leading-none rounded-[3px] flex items-center h-[25px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:opacity-30 data-[disabled]:pointer-events-none data-[highlighted]:bg-blue-50 data-[highlighted]:text-blue-500">
+                                    className="group text-[13px] leading-none rounded-[3px] flex items-center h-[25px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:opacity-30 data-[disabled]:pointer-events-none data-[highlighted]:bg-blue-50 data-[highlighted]:text-blue-500"
+                                    onSelect={(e) => {
+                                        setTimeout(() => setValue(option.value), 100)
+                                    }}
+                                >
                                     {option.value === value &&
                                         <CheckIcon className="text-green-500 h-auto inline-block w-4 absolute left-0.5"/>
                                     }
@@ -76,8 +76,8 @@ export default function DashboardDropDownField(
 
                             <DropdownMenu.Item
                                 className="group text-[13px] leading-none rounded-[3px] flex items-center h-[25px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:opacity-30 data-[disabled]:pointer-events-none data-[highlighted]:bg-blue-50 data-[highlighted]:text-blue-500"
-                                onSelect={() => {
-                                    console.log("Creating dashboard")
+                                onSelect={(e) => {
+                                    setTimeout(initCreateNewDashboard, 100)
                                 }}
                             >
                                 New Dashboard
