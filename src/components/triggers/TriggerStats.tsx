@@ -263,13 +263,13 @@ export function TriggerStats(
                         </linearGradient>
                     </defs>
                     <Area
-                        type={"monotone"}
+                        type={"linear"}
                         dataKey="total"
                         stroke="#3b82f6"
                         fill="url(#colorCurrent)"
                     />
                     {compareWithPrevious && <Area
-                        type={"monotone"}
+                        type={"linear"}
                         dataKey="previous"
                         stroke="#78716c"
                         fill="url(#colorPrevious)"
