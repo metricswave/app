@@ -110,12 +110,12 @@ const DashboardPopOver = ({dashboard, onUpdate: update}: {
             >
                 <div className="flex flex-col gap-2.5">
                     <p className="text-mauve12 text-sm leading-[19px] font-bold mb-2.5">Configuration</p>
-                    <fieldset className="flex gap-5 items-center">
+                    <fieldset className="flex gap-1 flex-col items-start">
                         <label className="text-sm text-violet11 w-[75px]" htmlFor="width">
                             Name
                         </label>
                         <input
-                            className="w-full inline-flex items-center justify-center flex-1 rounded-sm px-2.5 text-sm leading-none text-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 shadow-[0_0_0_1px] shadow-zinc-200 dark:shadow-zinc-700 h-[25px] focus:shadow-[0_0_0_2px] focus:shadow-zinc-400 outline-none"
+                            className="w-full inline-flex items-center justify-center flex-1 rounded-sm py-2 px-2 text-sm leading-none text-zinc-800 dark:bg-zinc-900 dark:text-zinc-200 shadow-[0_0_0_1px] shadow-zinc-200 dark:shadow-zinc-700 h-[25px] focus:shadow-[0_0_0_2px] focus:shadow-zinc-400 outline-none"
                             id="name"
                             onKeyPress={(e) => {
                                 if (e.key === "Enter") {
@@ -126,7 +126,7 @@ const DashboardPopOver = ({dashboard, onUpdate: update}: {
                             onChange={(e) => setName(e.target.value)}
                         />
                     </fieldset>
-                    <fieldset className="flex gap-5 justify-between items-center">
+                    <fieldset className="flex gap-5 py-1 justify-between items-center">
                         <label className="text-sm text-violet11 w-[75px]" htmlFor="maxHeight">
                             Public
                         </label>
