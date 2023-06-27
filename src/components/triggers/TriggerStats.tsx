@@ -68,7 +68,7 @@ export function TriggerStats(
     useEffect(() => loadStats(trigger, period, date, publicDashboard), [trigger.id, period, date, publicDashboard])
     useEffect(
         () => compareWithPrevious ? loadPreviousPeriodStats(trigger, period, date, publicDashboard) : undefined,
-        [trigger.id, period, date, publicDashboard],
+        [trigger.id, compareWithPrevious, period, date, publicDashboard],
     )
     useEffect(() => {
         const data = getGraphData(stats, previousPeriodStats, period)

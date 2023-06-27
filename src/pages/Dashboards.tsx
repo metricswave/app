@@ -2,17 +2,17 @@ import SectionContainer from "../components/sections/SectionContainer"
 import PageTitle from "../components/sections/PageTitle"
 import React, {useEffect, useState} from "react"
 import {useTriggersState} from "../storage/Triggers"
-import DropDownSelectFieldBox from "../components/form/DropDownSelectFieldBox"
-import {calculateDefaultDateForPeriod, DEFAULT_PERIOD, Period, periods} from "../types/Period"
+import {calculateDefaultDateForPeriod, DEFAULT_PERIOD, Period, periods, periodsWithSeparators} from "../types/Period"
 import {AddWidget} from "../components/dashboard/AddWidget"
 import {Dashboard, DashboardItem, useDashboardsState} from "../storage/Dashboard"
-import {CheckIcon, TrashIcon} from "@radix-ui/react-icons"
+import {CheckIcon, ChevronDownIcon, TrashIcon} from "@radix-ui/react-icons"
 import DashboardDropDownField from "../components/dashboard/DashboardDropDownField"
 import {CopyButtonIcon} from "../components/form/CopyButton"
 import CircleArrowsIcon from "../components/icons/CircleArrowsIcon"
 import {TriggerParamsStats} from "../components/triggers/TriggerParamsStats"
 import {TriggerStats} from "../components/triggers/TriggerStats"
 import {useSearchParams} from "react-router-dom"
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 
 export function Dashboards() {
     const {
@@ -29,6 +29,7 @@ export function Dashboards() {
     const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0])
     const [dashboardIndex, setDashboardIndex] = useState<number>(0)
     const [removeConfirm, setRemoveConfirm] = useState<string>("")
+    const [compareWithPervious, setCompareWithPervious] = useState<boolean>(false)
     const setPeriodAndDate = (period: Period) => {
         setDate(calculateDefaultDateForPeriod(period))
         setPeriod(period)
@@ -40,9 +41,7 @@ export function Dashboards() {
     }
     const [changedToPublic, setChangedToPublic] = useState<boolean>(false)
 
-    useEffect(() => {
-        setSearchParams({period})
-    }, [period])
+    useEffect(() => setSearchParams({period}), [period])
 
     const removeWidget = (dashboardIndex: number, widgetIndex: number) => {
         const removeConfirmKey = `${dashboardIndex}-${widgetIndex}`
@@ -98,28 +97,67 @@ export function Dashboards() {
                     />
                 </div>
 
-                <div className="flex flex-col w-full sm:w-auto sm:flex-row flex-grow sm:items-center sm:justify-end space-y-3 sm:space-y-0 sm:space-x-3">
-                    {/*<div className="flex-grow">*/}
-                    {/*    <InputFieldBox*/}
-                    {/*        setValue={setDate}*/}
-                    {/*        label="Date"*/}
-                    {/*        type={dateFieldType}*/}
-                    {/*        name="date"*/}
-                    {/*        placeholder={"Date"}*/}
-                    {/*        value={date}*/}
-                    {/*    />*/}
-                    {/*</div>*/}
+                <div className="flex flex-col w-full sm:w-auto sm:flex-row flex-grow sm:items-center sm:justify-end space-y-3 sm:space-y-0 sm:space-x-3 min-w-[200px] border soft-border p-2">
+                    <DropdownMenu.Root>
+                        <DropdownMenu.Trigger asChild>
+                            <div className="p-2 w-full flex-grow flex flex-row items-center justify-center rounded-sm cursor-pointer hover:bg-zinc-100/90">
+                                <div className="w-full whitespace-nowrap pr-4">
+                                    {periods.find(p => p.value === period)?.label}
+                                </div>
 
-                    <DropDownSelectFieldBox
-                        className="min-w-[250px]"
-                        value={period}
-                        options={periods}
-                        setValue={(value) => {
-                            setPeriodAndDate(value as Period)
-                        }}
-                        label="Period"
-                        name="period"
-                    />
+                                <ChevronDownIcon/>
+                            </div>
+                        </DropdownMenu.Trigger>
+                        <DropdownMenu.Portal>
+                            <DropdownMenu.Content
+                                className="min-w-[220px] bg-white rounded-md p-[5px] shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),_0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)] will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade"
+                                sideOffset={5}
+                                align={"end"}
+                            >
+
+                                {periodsWithSeparators.map((p, index) => {
+                                    if ("period" in p) {
+                                        return (
+                                            <DropdownMenu.Item
+                                                key={index}
+                                                className="group text-[13px] leading-none rounded-[3px] flex items-center h-[25px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:opacity-30 data-[disabled]:pointer-events-none data-[highlighted]:bg-blue-50 data-[highlighted]:text-blue-500"
+                                                onSelect={() => {
+                                                    setPeriod(p.period)
+                                                }}
+                                            >
+                                                {p.value === period &&
+                                                    <CheckIcon className="text-green-500 h-auto inline-block w-4 absolute left-0.5"/>
+                                                }
+                                                {p.label}
+                                            </DropdownMenu.Item>
+                                        )
+                                    } else if ("separator" in p && p.separator) {
+                                        return (
+                                            <DropdownMenu.Separator
+                                                key={index}
+                                                className="h-[1px] bg-zinc-400/20 dark:bg-zinc-800 m-[5px]"
+                                            />
+                                        )
+                                    }
+                                })}
+
+                                <DropdownMenu.Separator
+                                    className="h-[1px] bg-zinc-400/20 dark:bg-zinc-800 m-[5px]"
+                                />
+
+                                <DropdownMenu.Item
+                                    className="group text-[13px] leading-none rounded-[3px] flex items-center h-[25px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:opacity-30 data-[disabled]:pointer-events-none data-[highlighted]:bg-blue-50 data-[highlighted]:text-blue-500"
+                                    onSelect={() => setCompareWithPervious(!compareWithPervious)}
+                                >
+                                    {compareWithPervious &&
+                                        <CheckIcon className="text-green-500 h-auto inline-block w-4 absolute left-0.5"/>
+                                    }
+                                    Compare with previous
+                                </DropdownMenu.Item>
+
+                            </DropdownMenu.Content>
+                        </DropdownMenu.Portal>
+                    </DropdownMenu.Root>
                 </div>
             </div>
 
@@ -175,7 +213,9 @@ export function Dashboards() {
                                     title={title}
                                     defaultPeriod={periodConfiguration.period}
                                     defaultDate={date}
-                                    hideViewSwitcher/>
+                                    hideViewSwitcher
+                                    compareWithPrevious={compareWithPervious}
+                                />
                             }
 
                             {type === "parameter" &&
@@ -185,6 +225,7 @@ export function Dashboards() {
                                     title={title}
                                     defaultPeriod={periodConfiguration.period}
                                     defaultDate={date}
+                                    compareWithPrevious={compareWithPervious}
                                     hideFilters
                                 />
                             }

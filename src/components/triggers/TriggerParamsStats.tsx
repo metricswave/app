@@ -71,7 +71,7 @@ export function TriggerParamsStats(
         if (compareWithPrevious) {
             loadPreviousStats(trigger, period, date, publicDashboard)
         }
-    }, [trigger.id, period, date, publicDashboard])
+    }, [trigger.id, compareWithPrevious, period, date, publicDashboard])
 
     return (
         <div className="">

@@ -5,7 +5,7 @@ export type Period = "day" | "7d" | "month" | "30d" | "year" | "12m"
 
 export const DEFAULT_PERIOD: Period = "30d"
 
-type PeriodConfiguration = { value: string, label: string, period: Period, date: string | null }
+export type PeriodConfiguration = { value: string, label: string, period: Period, date: string | null }
 
 export const periods: (PeriodConfiguration)[] = [
     {value: "7d", label: "7 days", period: "7d", date: null},
@@ -18,6 +18,28 @@ export const periods: (PeriodConfiguration)[] = [
         period: "month",
         date: null,
     },
+    {value: "year", label: "Year to date", period: "year", date: null},
+    {
+        value: "previous-year",
+        label: "Previous year",
+        period: "year",
+        date: null,
+    },
+]
+
+export const periodsWithSeparators: ({ separator: true } | PeriodConfiguration)[] = [
+    {value: "7d", label: "7 days", period: "7d", date: null},
+    {value: "30d", label: "30 days", period: "30d", date: null},
+    {value: "12m", label: "12 months", period: "12m", date: null},
+    {separator: true},
+    {value: "month", label: "Month to date", period: "month", date: null},
+    {
+        value: "previous-month",
+        label: "Previous month",
+        period: "month",
+        date: null,
+    },
+    {separator: true},
     {value: "year", label: "Year to date", period: "year", date: null},
     {
         value: "previous-year",

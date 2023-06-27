@@ -105,5 +105,11 @@ export function useTriggerStatsState() {
     const loadPreviousPeriodStats = (trigger: Trigger, period: Period, date: string | null, publicDashboard: string | undefined) => {
         loadStatsFor(false, trigger, period, getPreviousPeriodDate(period, date), publicDashboard)
     }
-    return {stats, previousPeriodStats, loadStats, loadPreviousPeriodStats, statsLoading}
+    return {
+        stats,
+        previousPeriodStats,
+        loadStats,
+        loadPreviousPeriodStats,
+        statsLoading: statsLoading || previousStatsLoading,
+    }
 }

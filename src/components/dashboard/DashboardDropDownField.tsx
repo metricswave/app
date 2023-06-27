@@ -1,12 +1,11 @@
 import React, {useEffect, useState} from "react"
-import InputLabel from "../form/InputLabel"
 import * as Popover from "@radix-ui/react-popover"
-import {Cross2Icon, MixerHorizontalIcon} from "@radix-ui/react-icons"
+import {CheckIcon, ChevronDownIcon, Cross2Icon, MixerHorizontalIcon} from "@radix-ui/react-icons"
 import {Dashboard, useDashboardsState} from "../../storage/Dashboard"
 import PrimaryButton from "../form/PrimaryButton"
 import Switch from "../switch/Switch"
 import {CopyButtonIcon} from "../form/CopyButton"
-
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 
 type Props = {
     value: string | string[],
@@ -39,35 +38,59 @@ export default function DashboardDropDownField(
 ) {
     return (
         <>
+
             <div className={[
-                "flex flex-row items-center border transition-all border-zinc-200/60 hover:border-zinc-200 focus-within:hover:border-zinc-300 focus-within:border-zinc-300 duration-300 dark:border-zinc-700/60 rounded-sm hover:dark:border-zinc-700 group focus-within:dark:border-zinc-600 hover:focus-within:dark:border-zinc-600",
+                "flex flex-row gap-4 p-2 items-center border transition-all border-zinc-200/60 hover:border-zinc-200 focus-within:hover:border-zinc-300 focus-within:border-zinc-300 duration-300 dark:border-zinc-700/60 rounded-sm hover:dark:border-zinc-700 group focus-within:dark:border-zinc-600 hover:focus-within:dark:border-zinc-600",
                 className,
             ].join(" ")}>
 
-                <div className="py-2 flex-grow">
-                    <InputLabel name={name} label={label} required={required} showRequired={showRequired}/>
+                <DropdownMenu.Root>
+                    <DropdownMenu.Trigger asChild>
+                        <div className="p-2 w-full flex-grow flex flex-row items-center justify-center rounded-sm cursor-pointer hover:bg-zinc-100/90">
+                            <div className="w-full">
+                                {activeDashboard.name}
+                            </div>
 
-                    <div className="flex flex-col space-y-2">
-                        <select
-                            className="bg-transparent py-3 mx-3"
-                            value={value}
-                            onChange={(e) => setValue(e.target.value)}
-                            name={name}
+                            <ChevronDownIcon/>
+                        </div>
+                    </DropdownMenu.Trigger>
+
+                    <DropdownMenu.Portal>
+                        <DropdownMenu.Content
+                            className="min-w-[220px] bg-white rounded-md p-[5px] shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),_0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)] will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade"
+                            sideOffset={5}
+                            align={"start"}
                         >
-                            {options.map((option) => (
-                                <option key={option.value} value={option.value}>
+                            {options.map((option, index) => (
+                                <DropdownMenu.Item
+                                    key={index}
+                                    className="group text-[13px] leading-none rounded-[3px] flex items-center h-[25px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:opacity-30 data-[disabled]:pointer-events-none data-[highlighted]:bg-blue-50 data-[highlighted]:text-blue-500">
+                                    {option.value === value &&
+                                        <CheckIcon className="text-green-500 h-auto inline-block w-4 absolute left-0.5"/>
+                                    }
                                     {option.label}
-                                </option>
+                                </DropdownMenu.Item>
                             ))}
-                        </select>
-                    </div>
-                </div>
 
-                <div className="pt-6 px-4">
-                    {activeDashboard !== undefined &&
-                        <DashboardPopOver dashboard={activeDashboard} onUpdate={(title, isPublic) => {
-                            updateDashboard(activeDashboard, title, isPublic)
-                        }}/>}
+                            <DropdownMenu.Separator className="h-[1px] bg-zinc-400/20 dark:bg-zinc-800 m-[5px]"/>
+
+                            <DropdownMenu.Item
+                                className="group text-[13px] leading-none rounded-[3px] flex items-center h-[25px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:opacity-30 data-[disabled]:pointer-events-none data-[highlighted]:bg-blue-50 data-[highlighted]:text-blue-500"
+                                onSelect={() => {
+                                    console.log("Creating dashboard")
+                                }}
+                            >
+                                New Dashboard
+                            </DropdownMenu.Item>
+
+                        </DropdownMenu.Content>
+                    </DropdownMenu.Portal>
+                </DropdownMenu.Root>
+
+                <div className="">
+                    {<DashboardPopOver dashboard={activeDashboard} onUpdate={(title, isPublic) => {
+                        updateDashboard(activeDashboard, title, isPublic)
+                    }}/>}
                 </div>
 
             </div>
