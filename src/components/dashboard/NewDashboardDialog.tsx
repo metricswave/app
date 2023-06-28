@@ -57,8 +57,8 @@ export const NewDashboardDialog = ({open, setOpen, created}: {
                     <InputFieldBox
                         setValue={setName}
                         value={name}
-                        label={"Name"}
-                        placeholder={"Name"}
+                        label={"Domain"}
+                        placeholder={"your-domain.com/any-path"}
                         name={"name"}
                         error={nameError}
                         onKeyPress={e => e.key === "Enter" && handleCreation()}
