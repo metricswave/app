@@ -69,12 +69,14 @@ export function TriggerParamsStats(
     useEffect(() => setPeriodAndDate(defaultPeriod), [defaultPeriod])
     useEffect(() => setDate(defaultDate!), [defaultDate])
 
-    useEffect(() => {
-        loadStats(trigger, period, date, publicDashboard)
-        if (compareWithPrevious) {
-            loadPreviousStats(trigger, period, date, publicDashboard)
-        }
-    }, [trigger.id, compareWithPrevious, period, date, publicDashboard])
+    useEffect(
+        () => loadStats(trigger, period, date, publicDashboard),
+        [trigger.id, period, date, publicDashboard],
+    )
+    useEffect(
+        () => compareWithPrevious === true ? loadPreviousStats(trigger, period, date, publicDashboard) : undefined,
+        [trigger.id, compareWithPrevious, period, date, publicDashboard],
+    )
 
     return (
         <div className="">
