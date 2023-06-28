@@ -2,18 +2,19 @@ import SectionContainer from "../components/sections/SectionContainer"
 import PageTitle from "../components/sections/PageTitle"
 import React, {useEffect, useState} from "react"
 import {useTriggersState} from "../storage/Triggers"
-import {calculateDefaultDateForPeriod, DEFAULT_PERIOD, Period, periods, periodsWithSeparators} from "../types/Period"
+import {calculateDefaultDateForPeriod, DEFAULT_PERIOD, Period, periods} from "../types/Period"
 import {AddWidget} from "../components/dashboard/AddWidget"
 import {Dashboard, DashboardItem, useDashboardsState} from "../storage/Dashboard"
-import {CheckIcon, ChevronDownIcon, TrashIcon} from "@radix-ui/react-icons"
+import {CheckIcon, TrashIcon} from "@radix-ui/react-icons"
 import DashboardDropDownField from "../components/dashboard/DashboardDropDownField"
 import {CopyButtonIcon} from "../components/form/CopyButton"
 import CircleArrowsIcon from "../components/icons/CircleArrowsIcon"
 import {TriggerParamsStats} from "../components/triggers/TriggerParamsStats"
 import {TriggerStats} from "../components/triggers/TriggerStats"
 import {useSearchParams} from "react-router-dom"
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import {NewDashboardDialog} from "../components/dashboard/NewDashboardDialog"
+import {fetchAuthApi} from "../helpers/ApiFetcher"
+import {PeriodChooser} from "../components/dashboard/PeriodChooser"
 
 export function Dashboards() {
     const {
@@ -29,7 +30,9 @@ export function Dashboards() {
     const [period, setPeriod] = useState<Period>(searchParams.get("period") as Period ?? DEFAULT_PERIOD)
     const periodConfiguration = periods.find(p => p.value === period)!
     const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0])
-    const [dashboardIndex, setDashboardIndex] = useState<number>(0)
+    const [dashboardIndex, setDashboardIndex] = useState<number>(
+        searchParams.get("dashboard") !== null ? parseInt(searchParams.get("dashboard")!) : 0,
+    )
     const [removeConfirm, setRemoveConfirm] = useState<string>("")
     const [compareWithPrevious, setCompareWithPrevious] = useState<boolean>(false)
     const [dashboardJustCreated, setDashboardJustCreated] = useState<boolean>(false)
@@ -46,7 +49,7 @@ export function Dashboards() {
     }
     const [changedToPublic, setChangedToPublic] = useState<boolean>(false)
 
-    useEffect(() => setSearchParams({period}), [period])
+    useEffect(() => setSearchParams({period, dashboard: dashboardIndex.toString()}), [period, dashboardIndex])
 
     const removeWidget = (dashboardIndex: number, widgetIndex: number) => {
         const removeConfirmKey = `${dashboardIndex}-${widgetIndex}`
@@ -67,10 +70,22 @@ export function Dashboards() {
         updateDashboard(dashboardIndex, fields)
     }
 
+    const handleDashboardDeleted = (dashboardIndex: number) => {
+        fetchAuthApi(`/dashboards/${dashboards[dashboardIndex].id}`, {
+            method: "DELETE",
+            success: () => {
+                setDashboardIndex(0)
+                reloadDashboards(true)
+            },
+            error: () => null,
+            catcher: () => null,
+        })
+    }
+
     const handleDashboardCreated = () => {
         setNewDashboardDialogOpen(false)
         setDashboardJustCreated(true)
-        reloadDashboards()
+        reloadDashboards(true)
     }
 
     useEffect(() => {
@@ -106,6 +121,9 @@ export function Dashboards() {
                         updateDashboard={(dashboard, title, isPublic) => {
                             handleDashboardUpdate(dashboardIndex, {name: title, public: isPublic})
                         }}
+                        deleteDashboard={(dashboard) => {
+                            handleDashboardDeleted(dashboardIndex)
+                        }}
                         activeDashboard={dashboards[dashboardIndex]}
                         value={dashboardIndex.toString()}
                         options={dashboards.map((dashboard, index) => ({
@@ -118,66 +136,13 @@ export function Dashboards() {
                     />
                 </div>
 
-                <div className="flex flex-col w-full sm:w-auto sm:flex-row flex-grow sm:items-center sm:justify-end space-y-3 sm:space-y-0 sm:space-x-3 min-w-[200px] border soft-border p-2">
-                    <DropdownMenu.Root>
-                        <DropdownMenu.Trigger asChild>
-                            <div className="p-2 w-full flex-grow flex flex-row items-center justify-center rounded-sm cursor-pointer hover:bg-zinc-100/90">
-                                <div className="w-full whitespace-nowrap pr-4">
-                                    {periods.find(p => p.value === period)?.label}
-                                </div>
+                <PeriodChooser
+                    activePeriodValue={period}
+                    setPeriodAndDate={setPeriodAndDate}
+                    compareWithPrevious={compareWithPrevious}
+                    setCompareWithPrevious={setCompareWithPrevious}
+                />
 
-                                <ChevronDownIcon/>
-                            </div>
-                        </DropdownMenu.Trigger>
-                        <DropdownMenu.Portal>
-                            <DropdownMenu.Content
-                                className="min-w-[220px] bg-white rounded-md p-[5px] shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),_0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)] will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade"
-                                sideOffset={5}
-                                align={"end"}
-                            >
-
-                                {periodsWithSeparators.map((p, index) => {
-                                    if ("period" in p) {
-                                        return (
-                                            <DropdownMenu.Item
-                                                key={index}
-                                                className="group text-[13px] leading-none rounded-[3px] flex items-center h-[25px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:opacity-30 data-[disabled]:pointer-events-none data-[highlighted]:bg-blue-50 data-[highlighted]:text-blue-500"
-                                                onSelect={() => setPeriodAndDate(p.period)}
-                                            >
-                                                {p.value === period &&
-                                                    <CheckIcon className="text-green-500 h-auto inline-block w-4 absolute left-0.5"/>
-                                                }
-                                                {p.label}
-                                            </DropdownMenu.Item>
-                                        )
-                                    } else if ("separator" in p && p.separator) {
-                                        return (
-                                            <DropdownMenu.Separator
-                                                key={index}
-                                                className="h-[1px] bg-zinc-400/20 dark:bg-zinc-800 m-[5px]"
-                                            />
-                                        )
-                                    }
-                                })}
-
-                                <DropdownMenu.Separator
-                                    className="h-[1px] bg-zinc-400/20 dark:bg-zinc-800 m-[5px]"
-                                />
-
-                                <DropdownMenu.Item
-                                    className="group text-[13px] leading-none rounded-[3px] flex items-center h-[25px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:opacity-30 data-[disabled]:pointer-events-none data-[highlighted]:bg-blue-50 data-[highlighted]:text-blue-500"
-                                    onSelect={() => setCompareWithPrevious(!compareWithPrevious)}
-                                >
-                                    {compareWithPrevious &&
-                                        <CheckIcon className="text-green-500 h-auto inline-block w-4 absolute left-0.5"/>
-                                    }
-                                    Compare with previous
-                                </DropdownMenu.Item>
-
-                            </DropdownMenu.Content>
-                        </DropdownMenu.Portal>
-                    </DropdownMenu.Root>
-                </div>
             </div>
 
             {changedToPublic && <div>

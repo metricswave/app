@@ -52,10 +52,10 @@ export function TriggerParamsStats(
     }
     const {stats, previousStats, loadStats, loadPreviousStats, statsLoading} = useTriggerParamsStatsState()
 
-    const paramStats: ParamStatRow[] = stats !== undefined && stats.plot !== undefined ?
+    const paramStats: ParamStatRow[] = stats !== undefined && stats.plot !== undefined && stats.plot[parameter] !== undefined ?
         Object.values(stats.plot[parameter]) :
         []
-    const previeousParamStats: ParamStatRow[] | undefined = previousStats !== undefined && previousStats.plot !== undefined ?
+    const previeousParamStats: ParamStatRow[] | undefined = previousStats !== undefined && previousStats.plot !== undefined && previousStats.plot[parameter] !== undefined ?
         Object.values(previousStats.plot[parameter]) :
         undefined
     const totalScore = paramStats.reduce((acc, curr) => acc + curr.score, 0)

@@ -2,14 +2,14 @@ import SectionContainer from "../components/sections/SectionContainer"
 import PageTitle from "../components/sections/PageTitle"
 import React, {useEffect, useState} from "react"
 import {TriggerParamsStats} from "../components/triggers/TriggerParamsStats"
-import DropDownSelectFieldBox from "../components/form/DropDownSelectFieldBox"
-import {calculateDefaultDateForPeriod, DEFAULT_PERIOD, fieldTypeForPeriod, Period, periods} from "../types/Period"
+import {calculateDefaultDateForPeriod, DEFAULT_PERIOD, Period} from "../types/Period"
 import {Dashboard} from "../storage/Dashboard"
 import {fetchApi} from "../helpers/ApiFetcher"
 import {useParams} from "react-router-dom"
 import {usePublicDashboardTriggersState} from "../storage/PublicDashboardTriggers"
 import Logo from "../components/logo/Logo"
 import {TriggerStats} from "../components/triggers/TriggerStats"
+import {PeriodChooser} from "../components/dashboard/PeriodChooser"
 
 export function PublicDashboard() {
     const [notFound, setNotFound] = useState(false)
@@ -22,7 +22,7 @@ export function PublicDashboard() {
         setDate(calculateDefaultDateForPeriod(period))
         setPeriod(period)
     }
-    const dateFieldType = fieldTypeForPeriod(period)
+    const [compareWithPrevious, setCompareWithPrevious] = useState<boolean>(false)
 
     useEffect(() => {
         fetchApi<Dashboard>(`/dashboards/${dashboardUuid}`, {
@@ -71,18 +71,12 @@ export function PublicDashboard() {
                         </div>
 
                         <div className="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-3 justify-end pt-4">
-                            <div className="flex flex-col w-full sm:w-auto sm:flex-row flex-grow sm:items-center sm:justify-end space-y-3 sm:space-y-0 sm:space-x-3">
-                                <DropDownSelectFieldBox
-                                    className="w-full min-w-[250px]"
-                                    value={period}
-                                    options={periods}
-                                    setValue={(value) => {
-                                        setPeriodAndDate(value as Period)
-                                    }}
-                                    label="Period"
-                                    name="period"
-                                />
-                            </div>
+                            <PeriodChooser
+                                activePeriodValue={period}
+                                setPeriodAndDate={setPeriodAndDate}
+                                compareWithPrevious={compareWithPrevious}
+                                setCompareWithPrevious={setCompareWithPrevious}
+                            />
                         </div>
                     </SectionContainer>
 
@@ -109,6 +103,7 @@ export function PublicDashboard() {
                                                           trigger={trigger}
                                                           title={title}
                                                           defaultPeriod={period}
+                                                          compareWithPrevious={compareWithPrevious}
                                                           hideViewSwitcher/>
                                         }
                                         {type === "parameter" &&
@@ -118,6 +113,7 @@ export function PublicDashboard() {
                                                 defaultParameter={parameter}
                                                 title={title}
                                                 defaultPeriod={period}
+                                                compareWithPrevious={compareWithPrevious}
                                                 defaultDate={date}
                                                 hideFilters
                                             />}
