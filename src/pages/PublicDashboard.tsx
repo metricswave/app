@@ -5,24 +5,30 @@ import {TriggerParamsStats} from "../components/triggers/TriggerParamsStats"
 import {calculateDefaultDateForPeriod, DEFAULT_PERIOD, Period} from "../types/Period"
 import {Dashboard} from "../storage/Dashboard"
 import {fetchApi} from "../helpers/ApiFetcher"
-import {useParams} from "react-router-dom"
+import {useParams, useSearchParams} from "react-router-dom"
 import {usePublicDashboardTriggersState} from "../storage/PublicDashboardTriggers"
 import Logo from "../components/logo/Logo"
 import {TriggerStats} from "../components/triggers/TriggerStats"
 import {PeriodChooser} from "../components/dashboard/PeriodChooser"
 
 export function PublicDashboard() {
+    const [searchParams, setSearchParams] = useSearchParams()
     const [notFound, setNotFound] = useState(false)
     const {dashboardUuid} = useParams<{ dashboardUuid: string }>()
     const [dashboard, setDashboard] = useState<Dashboard | undefined>(undefined)
     const {triggerByUuid} = usePublicDashboardTriggersState(dashboardUuid!)
-    const [period, setPeriod] = useState<Period>(DEFAULT_PERIOD)
+    const [period, setPeriod] = useState<Period>(searchParams.get("period") as Period ?? DEFAULT_PERIOD)
     const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0])
     const setPeriodAndDate = (period: Period) => {
         setDate(calculateDefaultDateForPeriod(period))
         setPeriod(period)
     }
-    const [compareWithPrevious, setCompareWithPrevious] = useState<boolean>(false)
+    const [compareWithPrevious, setCompareWithPrevious] = useState<boolean>(searchParams.get("compare") === "1")
+
+    useEffect(
+        () => setSearchParams({compare: compareWithPrevious ? "1" : "0", period}),
+        [period, compareWithPrevious],
+    )
 
     useEffect(() => {
         fetchApi<Dashboard>(`/dashboards/${dashboardUuid}`, {

@@ -12,9 +12,9 @@ import CircleArrowsIcon from "../components/icons/CircleArrowsIcon"
 import {TriggerParamsStats} from "../components/triggers/TriggerParamsStats"
 import {TriggerStats} from "../components/triggers/TriggerStats"
 import {useSearchParams} from "react-router-dom"
-import {NewDashboardDialog} from "../components/dashboard/NewDashboardDialog"
 import {fetchAuthApi} from "../helpers/ApiFetcher"
 import {PeriodChooser} from "../components/dashboard/PeriodChooser"
+import {NewDashboardDialog} from "../components/dashboard/NewDashboardDialog"
 
 export function Dashboards() {
     const {
@@ -34,7 +34,7 @@ export function Dashboards() {
         searchParams.get("dashboard") !== null ? parseInt(searchParams.get("dashboard")!) : 0,
     )
     const [removeConfirm, setRemoveConfirm] = useState<string>("")
-    const [compareWithPrevious, setCompareWithPrevious] = useState<boolean>(false)
+    const [compareWithPrevious, setCompareWithPrevious] = useState<boolean>(searchParams.get("compare") === "1")
     const [dashboardJustCreated, setDashboardJustCreated] = useState<boolean>(false)
     const setPeriodAndDate = (period: Period) => {
         setDate(calculateDefaultDateForPeriod(period))
@@ -49,7 +49,10 @@ export function Dashboards() {
     }
     const [changedToPublic, setChangedToPublic] = useState<boolean>(false)
 
-    useEffect(() => setSearchParams({period, dashboard: dashboardIndex.toString()}), [period, dashboardIndex])
+    useEffect(
+        () => setSearchParams({compare: compareWithPrevious ? "1" : "0", period, dashboard: dashboardIndex.toString()}),
+        [period, dashboardIndex, compareWithPrevious],
+    )
 
     const removeWidget = (dashboardIndex: number, widgetIndex: number) => {
         const removeConfirmKey = `${dashboardIndex}-${widgetIndex}`
