@@ -1,9 +1,10 @@
-import React, {lazy} from "react"
+import React, {lazy, Suspense} from "react"
 import App from "../layouts/App"
 import {RouteObject} from "react-router-dom"
 import {Dashboards} from "../pages/Dashboards"
 import {Welcome} from "../pages/Welcome"
 import {PublicDashboard} from "../pages/PublicDashboard"
+import LoadingPage from "../pages/LoadingPage"
 
 const Services = lazy(() => import("../pages/Services"))
 const ErrorPage = lazy(() => import("../pages/ErrorPage"))
@@ -41,11 +42,11 @@ export const routes: RouteObject[] = [
             },
             {
                 path: "/events/:triggerUuid",
-                element: <Trigger/>,
+                element: <Suspense fallback={<LoadingPage/>}><Trigger/></Suspense>,
             },
             {
                 path: "/events/:triggerUuid/edit",
-                element: <TriggerEdit/>,
+                element: <Suspense fallback={<LoadingPage/>}><TriggerEdit/></Suspense>,
             },
             {
                 path: "/history",

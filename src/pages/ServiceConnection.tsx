@@ -2,11 +2,11 @@ import {useNavigate, useParams, useSearchParams} from "react-router-dom"
 import {useEffect, useState} from "react"
 import {fetchApi} from "../helpers/ApiFetcher"
 import {DeviceName} from "../storage/DeviceName"
-import CircleArrowsIcon from "../components/icons/CircleArrowsIcon"
 import {useAuthState} from "../storage/AuthToken"
 import {Tokens} from "../types/Token"
 import {useUserState} from "../storage/User"
 import EventTracker from "../helpers/EventTracker"
+import LoadingPage from "./LoadingPage"
 
 export default function ServiceConnection() {
     const {isAuth} = useAuthState()
@@ -53,8 +53,6 @@ export default function ServiceConnection() {
     }, [])
 
     return (
-        <div className="h-screen w-full flex flex-col items-center justify-center space-y-6 animate-pulse">
-            <CircleArrowsIcon className="w-12 h-12 animate-spin"/>
-        </div>
+        <LoadingPage/>
     )
 }
