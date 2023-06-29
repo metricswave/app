@@ -108,13 +108,13 @@ export function Welcome() {
                                 className="w-full bg-transparent text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-800/25 mt-3"/>
 
                     <div className="text-sm mt-3">
-                        {(false && userUsage.usage > 0) && (
+                        {(userUsage.usage > 0) && (
                             <div className="text-green-500 flex flex-row items-center justify-center space-x-4 border border-green-500/10 rounded-sm py-3">
                                 <CheckIcon className="h-4 w-4"/>
                                 <div>Event received</div>
                             </div>)}
 
-                        {(userUsage.usage === 0 || true) && (<>
+                        {(userUsage.usage === 0) && (<>
                             <div className="animate-pulse flex flex-col gap-2 items-center py-4 border rounded-sm soft-border">
                                 <div className="flex flex-row items-center justify-center gap-4">
                                     <CircleArrowsIcon className="animate-spin h-4 w-4"/>
