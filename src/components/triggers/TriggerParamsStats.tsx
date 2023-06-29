@@ -163,7 +163,7 @@ export function TriggerParamsStats(
                                 previeousParamStats.find((s) => s.param === stat.param)?.score ?? 0 :
                                 0
                             const percentageDifference = number_formatter(
-                                (stat.score * 100 / previousStatScore) - 100, {
+                                ((stat.score - previousStatScore) / previousStatScore * 100), {
                                     maximumFractionDigits: 0,
                                 })
 
@@ -179,9 +179,9 @@ export function TriggerParamsStats(
                                         </p>
                                     </div>
 
-                                    <div className="flex flex-row items-start justify-start">
+                                    <div className="flex flex-row gap-4 items-center justify-start">
                                         <div className="flex-grow flex flex-col gap-2">
-                                            <div className="w-full flex flex-row space-x-2">
+                                            <div className="w-full flex flex-row gap-2">
                                                 {[0, 1, 2, 3].map((i) => {
                                                     const barPercentage = percentage_of(totalScore, stat.score) - (25 * i)
                                                     const p = barPercentage < 1 ? 0 : Math.min(barPercentage, 25)
@@ -195,7 +195,7 @@ export function TriggerParamsStats(
                                             </div>
 
                                             {compareWithPrevious && (
-                                                <div className="w-full flex flex-row space-x-2">
+                                                <div className="w-full flex flex-row gap-2">
                                                     {[0, 1, 2, 3].map((i) => {
                                                         const barPercentage = percentage_of(totalScore, previousStatScore) - (25 * i)
                                                         const p = barPercentage < 1 ? 0 : Math.min(barPercentage, 25)
@@ -218,8 +218,12 @@ export function TriggerParamsStats(
                                                     <ArrowDownIcon className="h-3 text-red-500"/>
                                                 )}
                                                 <span
-                                                    className={stat.score >= previousStatScore ? "text-green-500" : "text-red-500"}
-                                                >{percentageDifference}</span>
+                                                    className={[
+                                                        stat.score >= previousStatScore ? "text-green-500" : "text-red-500",
+                                                    ].join(" ")}
+                                                >
+                                                    {percentageDifference}%
+                                                </span>
                                             </div>
                                         }
                                     </div>
