@@ -64,6 +64,10 @@ select:-webkit-autofill:focus {
     @apply transition-colors duration-300;
 }
 
+.smooth-all {
+    @apply transition-all duration-300;
+}
+
 .soft-border {
     @apply border-zinc-400/20 dark:border-zinc-800;
 }

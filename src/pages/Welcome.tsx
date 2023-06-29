@@ -88,7 +88,7 @@ export function Welcome() {
     }
 
     return (
-        <div className="max-w-[var(--landing-max-width)] px-4 py-12 mx-auto flex flex-col space-y-14">
+        <div className="max-w-[600px] px-4 py-12 mx-auto flex flex-col space-y-14">
             <Logo/>
 
             <div className="flex flex-col space-y-4">
@@ -96,34 +96,48 @@ export function Welcome() {
                     Welcome 👋!
                 </h2>
 
-                <p className="text-lg sm:text-xl pt-3">
+                <p className="sm:text-lg pt-3">
                     You are now ready to start using the app, but first you need to add the javascript snippet.
                 </p>
 
                 <p className="sm:text-lg">Copy and paste the next code in the <code>head</code> tag of your site:</p>
 
                 <div>
-                    <pre className="bg-white dark:bg-zinc-800 soft-border border shadow p-5 rounded whitespace-pre-wrap break-words block max-w-full select-all">{snippet}</pre>
+                    <pre className="bg-white dark:bg-zinc-800/25 soft-border border shadow p-5 rounded whitespace-pre-wrap break-words block max-w-full select-all text-sm">{snippet}</pre>
                     <CopyButton textToCopy={snippet}
                                 className="w-full bg-transparent text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-800/25 mt-3"/>
+
+                    <div className="text-sm mt-3">
+                        {(false && userUsage.usage > 0) && (
+                            <div className="text-green-500 flex flex-row items-center justify-center space-x-4 border border-green-500/10 rounded-sm py-3">
+                                <CheckIcon className="h-4 w-4"/>
+                                <div>Event received</div>
+                            </div>)}
+
+                        {(userUsage.usage === 0 || true) && (<>
+                            <div className="animate-pulse flex flex-col gap-2 items-center py-4 border rounded-sm soft-border">
+                                <div className="flex flex-row items-center justify-center gap-4">
+                                    <CircleArrowsIcon className="animate-spin h-4 w-4"/>
+                                    <div>Waiting first event</div>
+                                </div>
+
+                                <div className="w-full text-center text-xs pb-1">
+                                    <a
+                                        href="https://metricswave.com/documentation/analytics#are-you-in-localhost-or-test-environment"
+                                        target="_blank"
+                                        title="Are you in localhost?"
+                                        className="border-b border-dotted opacity-50 hover:opacity-80 hover:text-blue-500 hover:border-blue-500 smooth-all"
+                                    >
+                                        Are you in localhost?
+                                    </a>
+                                </div>
+                            </div>
+                        </>)}
+                    </div>
                 </div>
             </div>
 
             <div>
-                <div className="pb-10">
-                    {userUsage.usage > 0 && (
-                        <div className="text-green-500 flex flex-row items-center justify-center space-x-4">
-                            <CheckIcon className="h-4 w-4"/>
-                            <div>Event received</div>
-                        </div>)}
-
-                    {userUsage.usage === 0 && (
-                        <div className="animate-pulse flex flex-row items-center justify-center space-x-4">
-                            <CircleArrowsIcon className="animate-spin h-4 w-4"/>
-                            <div>Waiting first event</div>
-                        </div>)}
-                </div>
-
                 <PrimaryButton
                     onClick={() => {
                         if (!allowFinish) {
@@ -141,7 +155,7 @@ export function Welcome() {
 
                 <SecondaryButton
                     className={[
-                        "w-full mt-4 border-transparent shadow-none transition-all duration-300",
+                        "w-full mt-4 border-transparent shadow-none transition-all duration-300 text-sm",
                         (!allowSkip ? "opacity-0 cursor-default" : ""),
                     ].join(" ")}
                     onClick={() => {
