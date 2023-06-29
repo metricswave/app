@@ -117,9 +117,7 @@ export function TriggerStats(
                             (previousPeriodStats?.headers[key]) :
                             0
                         const percentageDifference = previousStatsHeaders !== 0 ?
-                            number_formatter((previousStatsHeaders * 100 / header) - 100, {
-                                maximumFractionDigits: 0,
-                            }) :
+                            number_formatter((header - previousStatsHeaders) / previousStatsHeaders * 100) :
                             0
 
                         return (
