@@ -1,24 +1,25 @@
-import React from "react"
+import React, {lazy} from "react"
 import App from "../layouts/App"
 import {RouteObject} from "react-router-dom"
-import Services from "../pages/Services"
-import ErrorPage from "../pages/ErrorPage"
-import SignUp from "../pages/SignUp"
-import Login from "../pages/Login"
-import Authentication from "../layouts/Authentication"
-import ForgotPassword from "../pages/ForgotPassword"
-import ResetPassword from "../pages/ResetPassword"
-import Triggers from "../pages/Triggers"
-import Settings from "../pages/Settings/Settings"
-import BillingSettings from "../pages/Settings/BillingSettings"
-import ProfileSettings from "../pages/Settings/ProfileSettings"
-import ServiceConnection from "../pages/ServiceConnection"
-import Trigger from "../pages/Trigger"
-import TriggerEdit from "../pages/TriggerEdit"
 import {Dashboards} from "../pages/Dashboards"
-import Notifications from "../pages/Notifications"
 import {Welcome} from "../pages/Welcome"
 import {PublicDashboard} from "../pages/PublicDashboard"
+
+const Services = lazy(() => import("../pages/Services"))
+const ErrorPage = lazy(() => import("../pages/ErrorPage"))
+const Triggers = lazy(() => import("../pages/Triggers"))
+const Settings = lazy(() => import("../pages/Settings/Settings"))
+const BillingSettings = lazy(() => import("../pages/Settings/BillingSettings"))
+const ProfileSettings = lazy(() => import("../pages/Settings/ProfileSettings"))
+const ServiceConnection = lazy(() => import("../pages/ServiceConnection"))
+const Trigger = lazy(() => import("../pages/Trigger"))
+const TriggerEdit = lazy(() => import("../pages/TriggerEdit"))
+const Notifications = lazy(() => import("../pages/Notifications"))
+const Authentication = lazy(() => import("../layouts/Authentication"))
+const SignUp = lazy(() => import("../pages/SignUp"))
+const Login = lazy(() => import("../pages/Login"))
+const ForgotPassword = lazy(() => import("../pages/ForgotPassword"))
+const ResetPassword = lazy(() => import("../pages/ResetPassword"))
 
 export const routes: RouteObject[] = [
     {
