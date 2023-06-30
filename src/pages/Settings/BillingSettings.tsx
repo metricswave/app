@@ -49,7 +49,7 @@ export default function BillingSettings() {
                             <div className="flex flex-col space-y-3 bg-blue-100/25 dark:bg-blue-900/10 border border-blue-500/50 dark:border-blue-700 rounded-sm p-4 w-full">
                                 <div className="font-bold text-zinc-800 dark:text-zinc-100">Free Plan</div>
                                 <div className="text-sm opacity-70 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-                                    <span>500 events per month</span>
+                                    <span>1000 events per month</span>
                                     <span className="hidden sm:inline">/</span>
                                     <span>Unlimited event types</span>
                                 </div>
@@ -64,7 +64,7 @@ export default function BillingSettings() {
                                 <div className="text-sm opacity-70 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
                                     <span>{number_formatter(usageLimit)} events per month</span>
                                     <span className="hidden sm:inline">/</span>
-                                    <span>Unlimited event types</span>
+                                    <span>24 months of data retention</span>
                                 </div>
                             </div>
                         </div>
@@ -80,7 +80,7 @@ export default function BillingSettings() {
                                 <div className="text-sm opacity-70 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
                                     <span>{number_formatter(usageLimit)} events per month</span>
                                     <span className="hidden sm:inline">/</span>
-                                    <span>Unlimited events types</span>
+                                    <span>24 months of data retention</span>
                                 </div>
                                 <NoLinkButton loading={portalLoading}
                                               className="text-blue-500"
