@@ -8,7 +8,6 @@ import {portalCheckout} from "../../helpers/PortalCheckout"
 import {useUserUsageState} from "../../storage/UserUsage"
 import {planPrice, useAvailablePricesState} from "../../storage/AvailablePrices"
 import {price_formatter} from "../../helpers/PriceFormatter"
-import {app} from "../../config/app"
 
 export default function BillingSettings() {
     const {user} = useUserState(true)
@@ -17,7 +16,9 @@ export default function BillingSettings() {
     const {availablePrices, loaded, purchase} = useAvailablePricesState()
     const [period, setPeriod] = useState<"monthly" | "yearly">("yearly")
     const {userUsage} = useUserUsageState()
-    const [usageLimit] = useState(user!.subscription_type === "free" ? 1000 : 75000)
+    const subscribedPlan = user?.subscription_plan_id ?
+        availablePrices.find(p => p.id === user.subscription_plan_id)! :
+        availablePrices.find(p => p.id === 1)!
 
     return (
         <div className="flex flex-col space-y-14">
@@ -32,12 +33,12 @@ export default function BillingSettings() {
 
                 <div className="rounded-sm bg-blue-100 dark:bg-zinc-500/20 h-8 w-full">
                     <div className={["rounded-sm bg-blue-500 h-8 max-w-full w-10 shadow"].join(" ")} style={{
-                        width: `${(userUsage.usage / usageLimit) * 100}%`,
+                        width: `${(userUsage.usage / (subscribedPlan.eventsLimit ?? 9999999)) * 100}%`,
                     }}></div>
                 </div>
 
                 <div className="flex flex-col text-sm mt-4 space-y-2 opacity-70">
-                    <span>{number_formatter(userUsage.usage)} / {number_formatter(usageLimit)} events sent.</span>
+                    <span>{number_formatter(userUsage.usage)} / {subscribedPlan.eventsLimit === null ? "Unlimited" : number_formatter(subscribedPlan.eventsLimit)} events sent.</span>
                 </div>
             </div>
 
@@ -60,11 +61,21 @@ export default function BillingSettings() {
                     {user?.subscription_type === "lifetime" && (
                         <div className="flex flex-row space-x-4">
                             <div className="flex flex-col space-y-3 bg-blue-100/25 dark:bg-blue-900/10 border border-blue-500/50 dark:border-blue-700 rounded-sm p-4 w-full">
-                                <div className="font-bold text-zinc-800 dark:text-zinc-100">Lifetime Licence</div>
+                                <div className="font-bold text-zinc-800 dark:text-zinc-100">
+                                    {subscribedPlan.name} Plan &mdash; Lifetime Licence
+                                </div>
                                 <div className="text-sm opacity-70 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-                                    <span>{number_formatter(usageLimit)} events per month</span>
+                                    {subscribedPlan.eventsLimit === null ? (
+                                        <span>Unlimited events per month</span>
+                                    ) : (
+                                        <span>{number_formatter(subscribedPlan.eventsLimit)} events per month</span>
+                                    )}
                                     <span className="hidden sm:inline">/</span>
-                                    <span>24 months of data retention</span>
+                                    {subscribedPlan.dataRetentionInMonths === null ? (
+                                        <span>Unlimited data retention</span>
+                                    ) : (
+                                        <span>{subscribedPlan.dataRetentionInMonths} months of data retention</span>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -76,11 +87,21 @@ export default function BillingSettings() {
                             portalCheckout("/settings/billing")
                         }}>
                             <div className="flex flex-col space-y-3 bg-blue-100/25 dark:bg-blue-900/10 border border-blue-500/50 dark:border-blue-700 rounded-sm p-4 w-full">
-                                <div className="font-bold text-zinc-800 dark:text-zinc-100">Monthly Subscription</div>
+                                <div className="font-bold text-zinc-800 dark:text-zinc-100">
+                                    {subscribedPlan.name} Plan
+                                </div>
                                 <div className="text-sm opacity-70 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-                                    <span>{number_formatter(usageLimit)} events per month</span>
+                                    {subscribedPlan.eventsLimit === null ? (
+                                        <span>Unlimited events per month</span>
+                                    ) : (
+                                        <span>{number_formatter(subscribedPlan.eventsLimit)} events per month</span>
+                                    )}
                                     <span className="hidden sm:inline">/</span>
-                                    <span>24 months of data retention</span>
+                                    {subscribedPlan.dataRetentionInMonths === null ? (
+                                        <span>Unlimited data retention</span>
+                                    ) : (
+                                        <span>{subscribedPlan.dataRetentionInMonths} months of data retention</span>
+                                    )}
                                 </div>
                                 <NoLinkButton loading={portalLoading}
                                               className="text-blue-500"
@@ -91,7 +112,7 @@ export default function BillingSettings() {
                 </div>
             </div>
 
-            {user?.subscription_type === "free" && (
+            {(user?.subscription_type === "free") && (
                 <div className="flex flex-col space-y-4">
                     <div>
                         <h3 className="font-bold mb-2">Upgrade Plan</h3>
