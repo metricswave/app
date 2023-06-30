@@ -2,7 +2,7 @@ import {useEffect, useState} from "react"
 import {expirableLocalStorage} from "../helpers/ExpirableLocalStorage"
 import {fetchAuthApi} from "../helpers/ApiFetcher"
 
-const KEY = "nw:available-prices"
+const KEY = "nw:available-plans"
 
 type AvailablePrices = Plan[]
 
