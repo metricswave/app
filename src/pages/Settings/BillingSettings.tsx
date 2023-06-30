@@ -15,7 +15,7 @@ export default function BillingSettings() {
     const [portalLoading, setPortalLoading] = useState(false)
     const [loadingPurchase, setLoadingPurchase] = useState(false)
     const {availablePrices, loaded, purchase} = useAvailablePricesState()
-    const [period, setPeriod] = useState<"monthly" | "yearly">("monthly")
+    const [period, setPeriod] = useState<"monthly" | "yearly">("yearly")
     const {userUsage} = useUserUsageState()
     const [usageLimit] = useState(user!.subscription_type === "free" ? 1000 : 75000)
 
@@ -101,6 +101,17 @@ export default function BillingSettings() {
                     <div>
                         <div className="flex flex-col space-y-4">
 
+                            <div className="pt-2 -mb-4">
+                                <div
+                                    className="w-auto text-sm text-blue-500 border-blue-500 dark:hover:border-blue-200 dark:hover:text-blue-200 hover:text-blue-700 hover:border-blue-700 smooth-all cursor-pointer border-b border-dotted inline-block"
+                                    onClick={() => {
+                                        setPeriod(period === "monthly" ? "yearly" : "monthly")
+                                    }}
+                                >
+                                    Switch to {period === "monthly" ? "yearly" : "monthly"} prices.
+                                </div>
+                            </div>
+
                             {loaded && <>
 
                                 {availablePrices.map(plan => {
@@ -127,7 +138,9 @@ export default function BillingSettings() {
                                                     "bg-zinc-100/25 dark:bg-blue-900/5 border-blue-200/50 dark:border-blue-900/50 hover:border-blue-500/70 hover:dark:border-blue-700 hover:bg-blue-100/70 dark:hover:bg-blue-900/20 cursor-pointer",
                                                 ].join(" ")}>
                                                 <div className="font-bold text-blue-500">
-                                                    {plan.name} Plan &mdash; {planPrice(plan, period) === null ? "Contact Us" : price_formatter(planPrice(plan, period)) + "/mo"}
+                                                    {plan.name} Plan &mdash; {planPrice(plan, period) === null ? "Contact Us" : price_formatter(planPrice(plan, period)) + "/" + (period === "monthly" ? "mo" : "y")}
+                                                    {period === "yearly" && plan.name === "Business" &&
+                                                        <span className="ml-2 text-sm">(2 months free)</span>}
                                                 </div>
                                                 <div className="text-sm opacity-70 flex flex-col gap-2">
                                                     {planPrice(plan, period) > 0 &&
