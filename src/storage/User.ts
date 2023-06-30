@@ -3,7 +3,7 @@ import {fetchAuthApi} from "../helpers/ApiFetcher"
 import {User} from "../types/User"
 import {DAY_SECONDS, expirableLocalStorage} from "../helpers/ExpirableLocalStorage"
 
-const USER_REFRESH_KEY: string = "nw:user:refresh"
+const USER_REFRESH_KEY: string = "nw:user:refresh:v2"
 const USER_KEY: string = "nw:user"
 
 export const getUser = (): User | null => {
