@@ -27,20 +27,17 @@ export function planPrice(plan: Plan, type: "monthly" | "yearly"): number {
 export function useAvailablePricesState() {
     const cachedPrices = expirableLocalStorage.get<AvailablePrices | null>(KEY, null)
     const [availablePrices, setAvailablePrices] = useState<AvailablePrices>(
-        cachedPrices || {
-            monthly: {
-                price: 0,
-                remaining: 0,
-                total_available: 0,
-                type: "monthly",
+        cachedPrices || [
+            {
+                id: 1,
+                name: "Free",
+                monthlyPrice: 0,
+                yearlyPrice: 0,
+                dataRetentionInMonths: 6,
+                dedicatedSupport: false,
+                eventsLimit: 1000,
             },
-            lifetime: {
-                price: 0,
-                remaining: 0,
-                total_available: 0,
-                type: "lifetime",
-            },
-        },
+        ],
     )
     const [loaded, setLoaded] = useState(cachedPrices !== null)
 

@@ -8,6 +8,7 @@ import {portalCheckout} from "../../helpers/PortalCheckout"
 import {useUserUsageState} from "../../storage/UserUsage"
 import {planPrice, useAvailablePricesState} from "../../storage/AvailablePrices"
 import {price_formatter} from "../../helpers/PriceFormatter"
+import LoadingPage from "../LoadingPage"
 
 export default function BillingSettings() {
     const {user} = useUserState(true)
@@ -16,9 +17,13 @@ export default function BillingSettings() {
     const {availablePrices, loaded, purchase} = useAvailablePricesState()
     const [period, setPeriod] = useState<"monthly" | "yearly">("yearly")
     const {userUsage} = useUserUsageState()
-    const subscribedPlan = user?.subscription_plan_id ?
+    const subscribedPlan = user?.subscription_plan_id && availablePrices.length > 1 ?
         availablePrices.find(p => p.id === user.subscription_plan_id)! :
         availablePrices.find(p => p.id === 1)!
+
+    if (!loaded) {
+        return <LoadingPage/>
+    }
 
     return (
         <div className="flex flex-col space-y-14">
