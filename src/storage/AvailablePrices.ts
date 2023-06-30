@@ -4,17 +4,24 @@ import {fetchAuthApi} from "../helpers/ApiFetcher"
 
 const KEY = "nw:available-prices"
 
-type AvailablePrices = {
-    monthly: Price,
-    lifetime: Price,
+type AvailablePrices = Plan[]
+
+export type Plan = {
+    id: number
+    name: string
+    monthlyPrice: number
+    yearlyPrice: number
+    dataRetentionInMonths: number | null
+    dedicatedSupport: boolean
+    eventsLimit: number | null
 }
 
-type Price = {
-    id: number,
-    price: number,
-    remaining: number,
-    total_available: number,
-    type: "monthly" | "lifetime",
+export function planPrice(plan: Plan, type: "monthly" | "yearly"): number {
+    if (type === "monthly") {
+        return plan.monthlyPrice
+    } else {
+        return plan.yearlyPrice
+    }
 }
 
 export function useAvailablePricesState() {
@@ -39,7 +46,7 @@ export function useAvailablePricesState() {
 
     useEffect(() => {
         fetchAuthApi<AvailablePrices>(
-            `/checkout/prices`,
+            `/checkout/plans`,
             {
                 success: (data) => {
                     setLoaded(true)
@@ -55,9 +62,9 @@ export function useAvailablePricesState() {
     return {
         availablePrices,
         loaded,
-        purchase: (priceId: number) => {
+        purchase: (planId: number, period: string) => {
             fetchAuthApi<{ path: string }>(
-                `/checkout/prices/${priceId}`,
+                `/checkout/plan/${planId}/${period}`,
                 {
                     success: (data) => {
                         window.location.href = data.data.path

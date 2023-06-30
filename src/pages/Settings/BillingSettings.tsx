@@ -6,14 +6,16 @@ import {number_formatter} from "../../helpers/NumberFormatter"
 import {NoLinkButton} from "../../components/buttons/LinkButton"
 import {portalCheckout} from "../../helpers/PortalCheckout"
 import {useUserUsageState} from "../../storage/UserUsage"
-import {useAvailablePricesState} from "../../storage/AvailablePrices"
+import {planPrice, useAvailablePricesState} from "../../storage/AvailablePrices"
 import {price_formatter} from "../../helpers/PriceFormatter"
+import {app} from "../../config/app"
 
 export default function BillingSettings() {
     const {user} = useUserState(true)
     const [portalLoading, setPortalLoading] = useState(false)
     const [loadingPurchase, setLoadingPurchase] = useState(false)
     const {availablePrices, loaded, purchase} = useAvailablePricesState()
+    const [period, setPeriod] = useState<"monthly" | "yearly">("monthly")
     const {userUsage} = useUserUsageState()
     const [usageLimit] = useState(user!.subscription_type === "free" ? 1000 : 75000)
 
@@ -101,45 +103,42 @@ export default function BillingSettings() {
 
                             {loaded && <>
 
-                                <div
-                                    onClick={() => {
-                                        if (loadingPurchase) return
-                                        setLoadingPurchase(true)
-                                        purchase(availablePrices.monthly.id)
-                                    }}
-                                    className={[
-                                        "flex flex-col space-y-3 bg-zinc-100/25 dark:bg-blue-900/5 border border-blue-200/50 dark:border-blue-900/50 rounded-sm p-4 w-full hover:border-blue-500/70 hover:dark:border-blue-700 hover:bg-blue-100/70 dark:hover:bg-blue-900/20 smooth",
-                                        loadingPurchase ? "animate-pulse cursor-not-allowed" : "cursor-pointer",
-                                    ].join(" ")}>
-                                    <div className="font-bold text-blue-500">
-                                        Monthly Subscription &mdash; {price_formatter(availablePrices.monthly.price)}/mo
-                                    </div>
-                                    <div className="text-sm opacity-70 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-                                        <span>Paid monthly, cancel at any time.</span>
-                                        <span className="hidden sm:inline">/</span>
-                                        <span>{number_formatter(75000)} events per month</span>
-                                    </div>
-                                </div>
+                                {availablePrices.map(plan => {
+                                        if (plan.id === 1) {
+                                            return (<div key={plan.id}></div>)
+                                        }
 
-                                <div
-                                    onClick={() => {
-                                        if (loadingPurchase) return
-                                        setLoadingPurchase(true)
-                                        purchase(availablePrices.lifetime.id)
-                                    }}
-                                    className={[
-                                        "flex flex-col space-y-3 bg-zinc-100/25 dark:bg-blue-900/5 border border-blue-200/50 dark:border-blue-900/50 rounded-sm p-4 w-full hover:border-blue-500/70 hover:dark:border-blue-700 hover:bg-blue-100/70 dark:hover:bg-blue-900/20 smooth",
-                                        loadingPurchase ? "animate-pulse cursor-not-allowed" : "cursor-pointer",
-                                    ].join(" ")}>
-                                    <div className="font-bold text-blue-500">
-                                        Lifetime License &mdash; {price_formatter(availablePrices.lifetime.price)}
-                                    </div>
-                                    <div className="text-sm opacity-70 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-                                        <span>One payment only.</span>
-                                        <span className="hidden sm:inline">/</span>
-                                        <span>{number_formatter(75000)} events per month</span>
-                                    </div>
-                                </div>
+                                        return (<div
+                                                key={plan.id}
+                                                onClick={() => {
+                                                    if (loadingPurchase) return
+                                                    setLoadingPurchase(true)
+
+                                                    if (planPrice(plan, period) === null) {
+                                                        window.location.href = "mailto:sales@metricswave.com"
+                                                        setLoadingPurchase(false)
+                                                    } else {
+                                                        purchase(plan.id, period)
+                                                    }
+                                                }}
+                                                className={[
+                                                    "flex flex-col space-y-3 border  rounded-sm p-4 w-full smooth",
+                                                    loadingPurchase ? "animate-pulse cursor-not-allowed" : "",
+                                                    "bg-zinc-100/25 dark:bg-blue-900/5 border-blue-200/50 dark:border-blue-900/50 hover:border-blue-500/70 hover:dark:border-blue-700 hover:bg-blue-100/70 dark:hover:bg-blue-900/20 cursor-pointer",
+                                                ].join(" ")}>
+                                                <div className="font-bold text-blue-500">
+                                                    {plan.name} Plan &mdash; {planPrice(plan, period) === null ? "Contact Us" : price_formatter(planPrice(plan, period)) + "/mo"}
+                                                </div>
+                                                <div className="text-sm opacity-70 flex flex-col gap-2">
+                                                    {planPrice(plan, period) > 0 &&
+                                                        <span>Paid monthly, cancel at any time.</span>}
+                                                    <span>{plan.eventsLimit === null ? "Unlimited" : number_formatter(plan.eventsLimit)} events per month</span>
+                                                    <span>{plan.dataRetentionInMonths === null ? "Unlimited" : number_formatter(plan.dataRetentionInMonths)} months of data retention</span>
+                                                </div>
+                                            </div>
+                                        )
+                                    },
+                                )}
 
                             </>}
 
@@ -150,3 +149,4 @@ export default function BillingSettings() {
         </div>
     )
 }
+
