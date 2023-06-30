@@ -5,7 +5,6 @@ import React, {useState} from "react"
 import {FormService, Service} from "../../types/Service"
 import {DialogComponent} from "../dialog/DialogComponent"
 import ServiceFormConnection from "./ServiceFormConnection"
-import {track} from "@amplitude/analytics-browser"
 
 type Props = {
     service: Service
@@ -22,7 +21,6 @@ export default function DisconnectedService({service, loading, connectService, o
             <BlockContainer
                 onClick={(e) => {
                     e.preventDefault()
-                    track("Connect Service")
                     if (loading) return
                     connectService(service)
                 }}
@@ -57,7 +55,6 @@ export default function DisconnectedService({service, loading, connectService, o
             <DialogComponent
                 open={open}
                 onOpenChange={state => {
-                    if (state) track("Connect Service")
                     setOpen(state)
                 }}
                 button={
