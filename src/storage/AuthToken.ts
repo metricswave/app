@@ -21,6 +21,26 @@ export function useAuthState() {
         setTokens(tokens)
     }
 
+    const impersonate = (id: number) => {
+        fetchAuthApi<Tokens>(
+            `/auth/impersonate/`,
+            {
+                method: "POST",
+                body: {
+                    user_id: id,
+                    device_name: DeviceName.name(),
+                },
+                success: (data) => {
+                    localStorage.clear()
+                    set(data.data)
+                    navigate("/")
+                },
+                error: () => null,
+                catcher: () => null,
+            },
+        )
+    }
+
     const logout = () => {
         fetchAuthApi("/logout", {
             method: "POST",
@@ -67,5 +87,5 @@ export function useAuthState() {
         return () => clearInterval(interval)
     }, [tokens])
 
-    return {isAuth: tokens !== null, tokens, setTokens: set, logout}
+    return {isAuth: tokens !== null, tokens, setTokens: set, logout, impersonate}
 }

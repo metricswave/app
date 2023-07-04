@@ -17,6 +17,7 @@ import Settings from "../pages/Settings/Settings"
 import ProfileSettings from "../pages/Settings/ProfileSettings"
 import BillingSettings from "../pages/Settings/BillingSettings"
 import Triggers from "../pages/Triggers"
+import Impersonate from "../pages/Impersonate"
 
 const ServiceConnection = lazy(() => import("../pages/ServiceConnection"))
 const Trigger = lazy(() => import("../pages/Trigger"))
@@ -95,6 +96,10 @@ export const routes: RouteObject[] = [
             {
                 path: "/auth/reset-password",
                 element: <ResetPassword/>,
+            },
+            {
+                path: "/auth/impersonate",
+                element: <Impersonate/>,
             },
         ],
     },
