@@ -13,7 +13,9 @@ type Props = {
     closeWidgetForm: () => void,
     editWidget: (event: DashboardItem) => void,
     moveWidgetUp: () => void,
+    canMoveUp: boolean,
     moveWidgetDown: () => void,
+    canMoveDown: boolean,
 }
 
 export function EditWidget(
@@ -26,7 +28,9 @@ export function EditWidget(
         closeWidgetForm,
         editWidget,
         moveWidgetUp,
+        canMoveUp,
         moveWidgetDown,
+        canMoveDown,
     }: Props,
 ) {
     const {triggers, triggerByUuid} = useTriggersState()
@@ -80,6 +84,8 @@ export function EditWidget(
                 closeWidgetForm()
                 moveWidgetDown()
             }}
+            canMoveUp={canMoveUp}
+            canMoveDown={canMoveDown}
         />
     </>)
 }

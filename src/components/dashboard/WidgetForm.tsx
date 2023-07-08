@@ -24,7 +24,9 @@ type Props = {
     submitWidgetForm: () => void
     showMoveButtons?: boolean
     moveWidgetUp?: () => void
+    canMoveUp?: boolean
     moveWidgetDown?: () => void
+    canMoveDown?: boolean
 }
 export default function WidgetForm(
     {
@@ -43,7 +45,9 @@ export default function WidgetForm(
         submitButtonLabel = "Add Widget",
         submitWidgetForm,
         showMoveButtons = false,
+        canMoveUp = true,
         moveWidgetUp,
+        canMoveDown = true,
         moveWidgetDown,
     }: Props,
 ) {
@@ -81,7 +85,12 @@ export default function WidgetForm(
             {showMoveButtons && (
                 <div className="flex flex-row justify-between text-sm pb-4">
                     <div
-                        className="flex flex-row items-center gap-2 hover:text-blue-500 cursor-pointer opacity-70 hover:opacity-100 smooth-all"
+                        className={[
+                            "flex flex-row items-center gap-2 smooth-all",
+                            canMoveUp ?
+                                "hover:text-blue-500 cursor-pointer opacity-70 hover:opacity-100" :
+                                "text-gray-400 opacity-50 cursor-default",
+                        ].join(" ")}
                         onClick={moveWidgetUp}
                     >
                         <ChevronUpIcon/>
@@ -91,7 +100,12 @@ export default function WidgetForm(
                     <div className="border-r soft-border/50"></div>
 
                     <div
-                        className="flex flex-row items-center gap-2 hover:text-blue-500 cursor-pointer opacity-70 hover:opacity-100 smooth-all"
+                        className={[
+                            "flex flex-row items-center gap-2 smooth-all",
+                            canMoveDown ?
+                                "hover:text-blue-500 cursor-pointer opacity-70 hover:opacity-100" :
+                                "text-gray-400 opacity-50 cursor-default",
+                        ].join(" ")}
                         onClick={moveWidgetDown}
                     >
                         Move Down

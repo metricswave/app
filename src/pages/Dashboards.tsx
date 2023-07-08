@@ -212,6 +212,8 @@ export function Dashboards() {
                         moveWidgetUp={() => {
                             moveWidgetUp(dashboardIndex, key)
                         }}
+                        canMoveDown={key < dashboards[dashboardIndex].items.length - 1}
+                        canMoveUp={key > 0}
                     />
                 ))}
 

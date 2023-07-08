@@ -21,7 +21,9 @@ export default function DashboardWidget(
         removeWidget,
         editWidget,
         moveWidgetUp,
+        canMoveUp,
         moveWidgetDown,
+        canMoveDown,
     }: {
         eventUuid: string,
         title: string,
@@ -34,7 +36,9 @@ export default function DashboardWidget(
         removeWidget: () => void,
         editWidget: (item: DashboardItem) => void,
         moveWidgetUp: () => void,
+        canMoveUp: boolean,
         moveWidgetDown: () => void,
+        canMoveDown: boolean,
     },
 ) {
     const [view, setView] = useState<"editing" | "viewing">("viewing")
@@ -81,7 +85,9 @@ export default function DashboardWidget(
                         closeWidgetForm={() => setView("viewing")}
                         editWidget={editWidget}
                         moveWidgetUp={moveWidgetUp}
+                        canMoveUp={canMoveUp}
                         moveWidgetDown={moveWidgetDown}
+                        canMoveDown={canMoveDown}
                     />
 
                     <div className={"w-full max-w-[400px]"}>
