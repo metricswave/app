@@ -1,20 +1,17 @@
 import SectionContainer from "../components/sections/SectionContainer"
 import PageTitle from "../components/sections/PageTitle"
 import React, {useEffect, useState} from "react"
-import {useTriggersState} from "../storage/Triggers"
 import {calculateDefaultDateForPeriod, DEFAULT_PERIOD, Period, periods} from "../types/Period"
 import {AddWidget} from "../components/dashboard/AddWidget"
 import {Dashboard, DashboardItem, useDashboardsState} from "../storage/Dashboard"
-import {CheckIcon, TrashIcon} from "@radix-ui/react-icons"
 import DashboardDropDownField from "../components/dashboard/DashboardDropDownField"
 import {CopyButtonIcon} from "../components/form/CopyButton"
 import CircleArrowsIcon from "../components/icons/CircleArrowsIcon"
-import {TriggerParamsStats} from "../components/triggers/TriggerParamsStats"
-import {TriggerStats} from "../components/triggers/TriggerStats"
 import {useSearchParams} from "react-router-dom"
 import {fetchAuthApi} from "../helpers/ApiFetcher"
 import {PeriodChooser} from "../components/dashboard/PeriodChooser"
 import {NewDashboardDialog} from "../components/dashboard/NewDashboardDialog"
+import DashboardWidget from "../components/dashboard/DashboardWidget"
 
 export function Dashboards() {
     const {
@@ -26,14 +23,12 @@ export function Dashboards() {
         publicDashboardPath,
     } = useDashboardsState()
     const [searchParams, setSearchParams] = useSearchParams()
-    const {triggerByUuid} = useTriggersState()
     const [period, setPeriod] = useState<Period>(searchParams.get("period") as Period ?? DEFAULT_PERIOD)
     const periodConfiguration = periods.find(p => p.value === period)!
     const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0])
     const [dashboardIndex, setDashboardIndex] = useState<number>(
         searchParams.get("dashboard") !== null ? parseInt(searchParams.get("dashboard")!) : 0,
     )
-    const [removeConfirm, setRemoveConfirm] = useState<string>("")
     const [compareWithPrevious, setCompareWithPrevious] = useState<boolean>(searchParams.get("compare") === "1")
     const [dashboardJustCreated, setDashboardJustCreated] = useState<boolean>(false)
     const setPeriodAndDate = (period: Period) => {
@@ -41,28 +36,32 @@ export function Dashboards() {
         setPeriod(period)
     }
     const [newDashboardDialogOpen, setNewDashboardDialogOpen] = useState<boolean>(false)
-
-    let addButtonSize = "w-full"
-    const dashboardsHasLoad = dashboards !== undefined && dashboards.length > 0 && dashboards[dashboardIndex] !== undefined
-    if (dashboardsHasLoad) {
-        addButtonSize = dashboards[dashboardIndex].items.length % 2 === 0 && dashboards[dashboardIndex].items.length !== 0 ? "" : "md:col-span-2"
-    }
     const [changedToPublic, setChangedToPublic] = useState<boolean>(false)
+
+    let addButtonSize = "md:col-span-2"
+    const dashboardsHasLoad = dashboards !== undefined
+        && dashboards.length > 0
+        && dashboards[dashboardIndex] !== undefined
+
+    if (dashboardsHasLoad) {
+        addButtonSize = dashboards[dashboardIndex].items.reduce((acc, item) => {
+            return acc + (item.size === "base" ? 1 : 2)
+        }, 0) % 2 === 0 ? "md:col-span-2" : "md:col-span-1"
+    }
 
     useEffect(
         () => setSearchParams({compare: compareWithPrevious ? "1" : "0", period, dashboard: dashboardIndex.toString()}),
         [period, dashboardIndex, compareWithPrevious],
     )
 
-    const removeWidget = (dashboardIndex: number, widgetIndex: number) => {
-        const removeConfirmKey = `${dashboardIndex}-${widgetIndex}`
-        if (removeConfirm !== removeConfirmKey) {
-            setRemoveConfirm(removeConfirmKey)
-            return
-        }
+    const editWidget = (dashboardIndex: number, widgetIndex: number, item: DashboardItem) => {
+        updateDashboard(dashboardIndex, {
+            items: dashboards[dashboardIndex].items.map((w, i) => i === widgetIndex ? item : w),
+        })
+    }
 
+    const removeWidget = (dashboardIndex: number, widgetIndex: number) => {
         removeWidgetFromDashboard(dashboardIndex, widgetIndex)
-        setRemoveConfirm("")
     }
 
     const handleDashboardUpdate = (dashboardIndex: number, fields: Partial<Dashboard>) => {
@@ -89,6 +88,32 @@ export function Dashboards() {
         setNewDashboardDialogOpen(false)
         setDashboardJustCreated(true)
         reloadDashboards(true)
+    }
+
+    const moveWidgetDown = (dashboardIndex: number, widgetIndex: number) => {
+        if (widgetIndex === dashboards[dashboardIndex].items.length - 1) {
+            return
+        }
+
+        const items = dashboards[dashboardIndex].items
+        const item = items[widgetIndex]
+        const nextItem = items[widgetIndex + 1]
+        items[widgetIndex] = nextItem
+        items[widgetIndex + 1] = item
+        updateDashboard(dashboardIndex, {items})
+    }
+
+    const moveWidgetUp = (dashboardIndex: number, widgetIndex: number) => {
+        if (widgetIndex === 0) {
+            return
+        }
+
+        const items = dashboards[dashboardIndex].items
+        const item = items[widgetIndex]
+        const previousItem = items[widgetIndex - 1]
+        items[widgetIndex] = previousItem
+        items[widgetIndex - 1] = item
+        updateDashboard(dashboardIndex, {items})
     }
 
     useEffect(() => {
@@ -166,59 +191,29 @@ export function Dashboards() {
 
         {dashboardsHasLoad && <SectionContainer size={"extra-big"}>
             <div className="-mx-2.5 pb-64 grid gap-4 grid-cols-1 md:grid-cols-2 ">
-                {dashboards[dashboardIndex].items.map(({eventUuid, title, size, type, parameter}, key) => {
-                    const trigger = triggerByUuid(eventUuid)
-                    const confirmed = removeConfirm === `${dashboardIndex}-${key}`
-
-                    if (trigger === undefined) {
-                        return null
-                    }
-
-                    return (
-                        <div
-                            key={key}
-                            className={[
-                                "relative group bg-white dark:bg-zinc-800/40 rounded-sm p-5 pb-4 shadow",
-                                (size === "base" ? "" : "md:col-span-2"),
-                            ].join(" ")}
-                        >
-                            <div
-                                title={"Remove widget"}
-                                className={[
-                                    "absolute right-4 top-4 rounded-sm cursor-pointer opacity-0 group-hover:opacity-25 text-lg group-hover:hover:opacity-100 hover:text-red-500 smooth p-3",
-                                    confirmed ? "bg-red-200 dark:bg-red-700/30" : "bg-zinc-100 dark:bg-zinc-700",
-                                ].join(" ")}
-                                onClick={() => removeWidget(dashboardIndex, key)}
-                            >
-                                {confirmed && <CheckIcon className="w-4 h-4"/>}
-                                {!confirmed && <TrashIcon className="w-4 h-4"/>}
-                            </div>
-
-                            {type === "stats" &&
-                                <TriggerStats
-                                    trigger={trigger}
-                                    title={title}
-                                    defaultPeriod={periodConfiguration.period}
-                                    defaultDate={date}
-                                    hideViewSwitcher
-                                    compareWithPrevious={compareWithPrevious}
-                                />
-                            }
-
-                            {type === "parameter" &&
-                                <TriggerParamsStats
-                                    trigger={trigger}
-                                    defaultParameter={parameter}
-                                    title={title}
-                                    defaultPeriod={periodConfiguration.period}
-                                    defaultDate={date}
-                                    compareWithPrevious={compareWithPrevious}
-                                    hideFilters
-                                />
-                            }
-                        </div>
-                    )
-                })}
+                {dashboards[dashboardIndex].items.map(({eventUuid, title, size, type, parameter}, key) => (
+                    <DashboardWidget
+                        eventUuid={eventUuid}
+                        title={title}
+                        size={size as "base" | "large"}
+                        type={type}
+                        period={periodConfiguration}
+                        compareWithPrevious={compareWithPrevious}
+                        date={date}
+                        removeWidget={() => removeWidget(dashboardIndex, key)}
+                        editWidget={(item: DashboardItem) => {
+                            editWidget(dashboardIndex, key, item)
+                        }}
+                        parameter={parameter}
+                        key={key}
+                        moveWidgetDown={() => {
+                            moveWidgetDown(dashboardIndex, key)
+                        }}
+                        moveWidgetUp={() => {
+                            moveWidgetUp(dashboardIndex, key)
+                        }}
+                    />
+                ))}
 
                 <AddWidget
                     defaultStep={

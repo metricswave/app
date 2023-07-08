@@ -9,13 +9,15 @@ type Props = {
     onClick: () => Promise<void>
 } & React.ButtonHTMLAttributes<HTMLButtonElement>
 
-export default function DeleteButton({
-                                         text,
-                                         justIcon = false,
-                                         alreadyConfirmed = false,
-                                         onClick: clicked,
-                                         ...props
-                                     }: Props) {
+export default function DeleteButton(
+    {
+        text,
+        justIcon = false,
+        alreadyConfirmed = false,
+        onClick: clicked,
+        ...props
+    }: Props,
+) {
     const [confirmed, setConfirmed] = React.useState<boolean>(alreadyConfirmed)
     const [loading, setLoading] = React.useState<boolean>(false)
 
