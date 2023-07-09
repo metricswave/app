@@ -6,13 +6,14 @@ import InputFieldBox from "../form/InputFieldBox"
 import CopyButton from "../form/CopyButton"
 import TextareaFieldBox from "../form/TextareaFieldBox"
 import {Trigger} from "../../types/Trigger"
+import {visitSnippet} from "../../storage/Triggers"
 
 export function WebhookTriggerDetails({trigger}: { trigger: Trigger }) {
     const query = (trigger.configuration.fields.parameters as string[])
         .map((param) => `${param}={value}`)
         .join("&")
     const url = `${app.webhooks}/${trigger.uuid}?${query}`
-    const snippet = `<script defer event-uuid="${trigger.uuid}" src="https://metricswave.com/js/visits.js"></script>`
+    const snippet = visitSnippet(trigger)
 
     return (
         <Tabs.Root

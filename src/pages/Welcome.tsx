@@ -1,4 +1,4 @@
-import {useTriggersState} from "../storage/Triggers"
+import {useTriggersState, visitSnippet} from "../storage/Triggers"
 import {useEffect, useState} from "react"
 import {useNavigate, useSearchParams} from "react-router-dom"
 import CircleArrowsIcon from "../components/icons/CircleArrowsIcon"
@@ -55,7 +55,7 @@ export function Welcome() {
     }, [loadedTriggers, loadedUsage])
 
     useEffect(() => {
-        setSnippet(`<script defer event-uuid="${triggers.pop()?.uuid}" src="https://metricswave.com/js/visits.js"></script>`)
+        setSnippet(visitSnippet(triggers.pop()!))
     }, [triggers])
 
     useEffect(() => {

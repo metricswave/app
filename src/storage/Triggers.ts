@@ -8,6 +8,10 @@ const TRIGGER_REFRESH_KEY: string = "nw:triggers:refresh:v2"
 
 const TIME_FIELDS: string[] = ["time", "arrival_time"]
 
+export function visitSnippet(trigger: Trigger): string {
+    return `<script defer event-uuid="${trigger.uuid}" src="https://tracker.metricswave.com/js/visits.js"></script>`
+}
+
 export function useTriggersState() {
     const [loadedTriggers, setLoadedTriggers] = useState<boolean>(false)
     const [isFresh, setIsFresh] = useState<true | false>(
