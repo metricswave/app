@@ -230,10 +230,9 @@ export function TriggerStats(
                            }}/>
                     <YAxis stroke="#888888"
                            fontSize={12}
-                           width={30}
                            tickLine={false}
                            axisLine={false}
-                           tickFormatter={(value) => `${value}`}/>
+                           tickFormatter={(value) => number_formatter(value)}/>
                     <defs>
                         <linearGradient
                             id="colorCurrent"
