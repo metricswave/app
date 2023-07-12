@@ -59,7 +59,7 @@ export default function DashboardWidget(
             {view === "viewing" && <div
                 title={"Edit widget"}
                 className={[
-                    "absolute right-4 top-4 rounded-sm cursor-pointer opacity-0 group-hover:opacity-25 text-lg group-hover:hover:opacity-100 hover:text-blue-500 smooth-all p-3 bg-blue-50 hover:bg-blue-100",
+                    "absolute right-4 top-4 rounded-sm cursor-pointer opacity-0 group-hover:opacity-25 text-lg group-hover:hover:opacity-100 group-hover:hover:text-blue-500 smooth-all p-3 dark:group-hover:bg-zinc-700 dark:group-hover:text-blue-50"
                 ].join(" ")}
                 onClick={() => setView("editing")}
             >
@@ -68,7 +68,7 @@ export default function DashboardWidget(
             {view === "editing" && <div
                 title={"Stop editing widget"}
                 className={[
-                    "absolute right-4 top-4 rounded-sm cursor-pointer opacity-0 group-hover:opacity-25 text-lg group-hover:hover:opacity-100 hover:text-red-500 smooth-all p-3 bg-red-50 hover:bg-red-100",
+                    "absolute right-4 top-4 rounded-sm cursor-pointer opacity-0 group-hover:opacity-25 text-lg group-hover:hover:opacity-100 group-hover:hover:text-blue-500 smooth-all p-3 dark:group-hover:bg-zinc-700 dark:group-hover:text-blue-50"
                 ].join(" ")}
                 onClick={() => setView("viewing")}
             >
