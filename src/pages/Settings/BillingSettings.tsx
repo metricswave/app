@@ -165,7 +165,7 @@ export default function BillingSettings() {
                                                 ].join(" ")}>
                                                 <div className="font-bold text-blue-500">
                                                     {plan.name} Plan &mdash; {planPrice(plan, period) === null ? "Contact Us" : price_formatter(planPrice(plan, period)) + "/" + (period === "monthly" ? "mo" : "y")}
-                                                    {period === "yearly" && plan.name === "Business" &&
+                                                    {period === "yearly" && (plan.name === "Business" || plan.name === "Starter") &&
                                                         <span className="ml-2 text-sm">(2 months free)</span>}
                                                 </div>
                                                 <div className="text-sm opacity-70 flex flex-col gap-2">

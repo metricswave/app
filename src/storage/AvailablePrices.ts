@@ -8,7 +8,7 @@ type AvailablePrices = Plan[]
 
 export type Plan = {
     id: number
-    name: string
+    name: "Free" | "Basic" | "Starter" | "Business" | "Enterprise"
     monthlyPrice: number
     yearlyPrice: number
     dataRetentionInMonths: number | null
