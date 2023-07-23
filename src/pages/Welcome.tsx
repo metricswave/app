@@ -47,7 +47,6 @@ export function Welcome() {
             method: "POST",
             success: (data) => {
                 refreshTriggers()
-                setStep("add-code")
             },
             error: (error) => null,
             catcher: (e) => null,
@@ -55,8 +54,11 @@ export function Welcome() {
     }, [loadedTriggers, loadedUsage])
 
     useEffect(() => {
-        setSnippet(visitSnippet(triggers.pop()!))
-    }, [triggers])
+        if (triggers.length > 0) {
+            setSnippet(visitSnippet(triggers.pop()!))
+            setStep("add-code")
+        }
+    }, [triggers, step])
 
     useEffect(() => {
         if (allowFinish) {
