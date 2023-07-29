@@ -54,7 +54,7 @@ export function useTriggerParamsStatsState() {
         const methods = {
             success: (data: ApiResponse<ParamsStats>) => {
                 if (publicDashboard === undefined) {
-                    expirableLocalStorage.set(key, data, FIVE_SECONDS)
+                    expirableLocalStorage.set(key, data.data, FIVE_SECONDS)
                 }
                 setStatsFor(data.data, current)
                 setLoadingFor(false, current)
@@ -70,6 +70,7 @@ export function useTriggerParamsStatsState() {
         }
 
         if (publicDashboard === undefined && expirableLocalStorage.get(key, null) !== null) {
+            setStatsFor(expirableLocalStorage.get(key, undefined), current)
             setLoadingFor(false, current)
             return
         }
