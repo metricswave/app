@@ -24,7 +24,7 @@ export default function App() {
         <AuthContext.Provider value={{user}}>
             <div className="">
                 <header id="top-nav-menu"
-                        className="flex flex-row space-x-4 items-center justify-between py-3 px-5 border-b soft-border text-sm fixed top-0 left-0 right-0 bg-[var(--background-color)] z-30 drop-shadow-sm dark:drop-shadow-xl">
+                        className="flex flex-row space-x-4 items-center justify-between py-3 px-5 border-b soft-border text-sm fixed top-0 left-0 right-0 bg-white dark:bg-zinc-900 bg-opacity-70 dark:bg-opacity-50 z-30 drop-shadow-sm dark:drop-shadow-xl backdrop-blur-lg">
                     <Logo/>
                     <div className="hidden sm:block">
                         <NavigationItems/>
@@ -63,7 +63,7 @@ export default function App() {
                 <FeedbackWidget/>
 
                 <div id="bottom-nav-menu"
-                     className="fixed bottom-0 left-0 right-0 p-4 border-t soft-border sm:hidden bg-[var(--background-color)] drop-shadow-2xl z-30">
+                     className="fixed bottom-0 left-0 right-0 p-4 border-t soft-border sm:hidden bg-white dark:bg-zinc-900 bg-opacity-70 dark:bg-opacity-50 backdrop-blur-lg drop-shadow-2xl z-30">
                     <MobileNavigationItems/>
                 </div>
             </div>

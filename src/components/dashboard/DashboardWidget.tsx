@@ -5,8 +5,10 @@ import React, {useState} from "react"
 import {useTriggersState} from "../../storage/Triggers"
 import {PeriodConfiguration} from "../../types/Period"
 import {EditWidget} from "./EditWidget"
-import {DashboardItem} from "../../storage/Dashboard"
+import {DashboardItem, DashboardItemType} from "../../storage/Dashboard"
 import DeleteButton from "../form/DeleteButton"
+import {TriggerFunnelStats} from "../triggers/TriggerFunnelStats"
+import {app} from "../../config/app"
 
 export default function DashboardWidget(
     {
@@ -28,7 +30,7 @@ export default function DashboardWidget(
         eventUuid: string,
         title: string,
         size: "base" | "large",
-        type: "stats" | "parameter",
+        type: DashboardItemType,
         parameter?: string,
         period: PeriodConfiguration,
         compareWithPrevious: boolean,
@@ -54,12 +56,13 @@ export default function DashboardWidget(
             className={[
                 "relative group bg-white dark:bg-zinc-800/40 rounded-sm p-5 pb-4 shadow",
                 (size === "base" ? "" : "md:col-span-2"),
+                !app.isProduction && `event-${eventUuid} type-${type} size-${size} parameter-${parameter}`,
             ].join(" ")}
         >
             {view === "viewing" && <div
                 title={"Edit widget"}
                 className={[
-                    "absolute right-4 top-4 rounded-sm cursor-pointer opacity-0 group-hover:opacity-25 text-lg group-hover:hover:opacity-100 group-hover:hover:text-blue-500 smooth-all p-3 dark:group-hover:bg-zinc-700 dark:group-hover:text-blue-50"
+                    "absolute right-4 top-4 rounded-sm cursor-pointer opacity-0 group-hover:opacity-25 text-lg group-hover:hover:opacity-100 group-hover:hover:text-blue-500 smooth-all p-3 dark:group-hover:bg-zinc-700 dark:group-hover:text-blue-50",
                 ].join(" ")}
                 onClick={() => setView("editing")}
             >
@@ -68,7 +71,7 @@ export default function DashboardWidget(
             {view === "editing" && <div
                 title={"Stop editing widget"}
                 className={[
-                    "absolute right-4 top-4 rounded-sm cursor-pointer opacity-0 group-hover:opacity-25 text-lg group-hover:hover:opacity-100 group-hover:hover:text-blue-500 smooth-all p-3 dark:group-hover:bg-zinc-700 dark:group-hover:text-blue-50"
+                    "absolute right-4 top-4 rounded-sm cursor-pointer opacity-0 group-hover:opacity-25 text-lg group-hover:hover:opacity-100 group-hover:hover:text-blue-500 smooth-all p-3 dark:group-hover:bg-zinc-700 dark:group-hover:text-blue-50",
                 ].join(" ")}
                 onClick={() => setView("viewing")}
             >
@@ -101,6 +104,12 @@ export default function DashboardWidget(
             }
 
             {view === "viewing" && <>
+                {type === "funnel" && <TriggerFunnelStats
+                    title={title}
+                    trigger={trigger}
+                    defaultPeriod={period.period}
+                />}
+
                 {type === "stats" &&
                     <TriggerStats
                         trigger={trigger}

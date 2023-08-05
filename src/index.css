@@ -22,6 +22,16 @@
     /*  Size and spacing */
     --landing-max-width: 768px;
     --app-padding: 1rem;
+
+    /* Funnel */
+    --color-funnel-label: var(--color-zinc-900);
+    --backgroud-color-funnel-tooltip: var(--color-white);
+    --color-funnel-1: var(--color-blue-500);
+    --color-funnel-2: var(--color-blue-400);
+    --color-funnel-3: var(--color-blue-300);
+    --color-funnel-4: var(--color-blue-200);
+    --color-funnel-5: var(--color-blue-100);
+    --color-funnel-6: var(--color-blue-50);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -36,6 +46,16 @@
         --form-select-background: rgba(39, 39, 42, 0.55);
         --form-select-content-background: #27272A;
         --form-select-item-background: #181818;
+
+        /* Funnel */
+        --color-funnel-label: var(--color-blue-200);
+        --backgroud-color-funnel-tooltip: var(--color-zinc-900);
+        --color-funnel-1: var(--color-blue-900);
+        --color-funnel-2: var(--color-blue-800);
+        --color-funnel-3: var(--color-blue-700);
+        --color-funnel-4: var(--color-blue-600);
+        --color-funnel-5: var(--color-blue-500);
+        --color-funnel-6: var(--color-blue-400);
     }
 }
 

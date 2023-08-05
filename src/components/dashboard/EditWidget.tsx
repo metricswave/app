@@ -8,7 +8,7 @@ type Props = {
     eventUuid: string,
     eventTitle: string,
     eventSize: "base" | "large",
-    eventType: "stats" | "parameter",
+    eventType: DashboardItemType,
     eventParameter?: string,
     closeWidgetForm: () => void,
     editWidget: (event: DashboardItem) => void,

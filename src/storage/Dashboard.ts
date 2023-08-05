@@ -16,9 +16,9 @@ export type DashboardItem = {
     title: string
     size: DashboardItemSize
     parameter?: string
-} & (StatItem | ParameterItem)
+} & (StatItem | ParameterItem | FunnelItem)
 
-export type DashboardItemType = "stats" | "parameter"
+export type DashboardItemType = "stats" | "parameter" | "funnel"
 
 export type DashboardItemSize = "base" | "large"
 
@@ -29,6 +29,10 @@ type StatItem = {
 type ParameterItem = {
     type: "parameter"
     parameter: string
+}
+
+type FunnelItem = {
+    type: "funnel"
 }
 
 const KEY = "nw:dashboards"

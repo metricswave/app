@@ -5,9 +5,9 @@ import {Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recha
 import {useEffect, useState} from "react"
 import {number_formatter} from "../../helpers/NumberFormatter"
 import {calculateDefaultDateForPeriod, fieldTypeForPeriod, Period} from "../../types/Period"
-import CircleArrowsIcon from "../icons/CircleArrowsIcon"
 import InputFieldBox from "../form/InputFieldBox"
 import {ArrowDownIcon, ArrowUpIcon} from "@radix-ui/react-icons"
+import {TriggerStatsLoading} from "./TriggerStatsLoading"
 
 function getGraphData(stats: Stats, previousPeriodStats: Stats, view: Period) {
     const data = stats.plot.map((stat, index) => ({
@@ -78,14 +78,7 @@ export function TriggerStats(
     }, [stats, previousPeriodStats, period])
 
     if (statsLoading) {
-        return (
-            <div className="">
-                <div className="flex flex-col gap-4 items-center animate-pulse py-20 justify-center">
-                    <CircleArrowsIcon className="animate-spin h-6"/>
-                    <div>Loading…</div>
-                </div>
-            </div>
-        )
+        return (<TriggerStatsLoading/>)
     }
 
     return (
@@ -188,28 +181,33 @@ export function TriggerStats(
                                 const diffPercentage = (score - previousScore) / previousScore * 100
 
                                 return (<>
-                                    <div className="bg-white dark:bg-zinc-800 p-2 shadow rounded-sm text-sm">
-                                        <p className="flex flex-row gap-2">
-                                            <span className="min-w-[60px] text-right">{scoreString}</span>
+                                    <div className="bg-white dark:bg-zinc-900 p-2 shadow rounded-sm text-sm">
+                                        <p className="flex flex-row justify-between gap-2">
                                             <span className="opacity-75">{formattedDate}</span>
+                                            <span className="font-bold min-w-[60px] text-right">{scoreString}</span>
                                         </p>
-                                        <p className="flex flex-row gap-2">
-                                            <span className="min-w-[60px] text-right">{previousScoreString}</span>
+                                        <p className="flex flex-row justify-between gap-2">
                                             <span className="opacity-75">{formattedPreciousDate}</span>
+                                            <span className="font-bold min-w-[60px] text-right">{previousScoreString}</span>
                                         </p>
-                                        <p className="flex flex-row gap-2">
-                                            <span className="min-w-[60px] text-right">{number_formatter(diffPercentage, {maximumFractionDigits: 0})}%</span>
-                                            {diffPercentage >= 0 && <ArrowUpIcon className="text-green-500"/>}
-                                            {diffPercentage < 0 && <ArrowDownIcon className="text-red-500"/>}
+                                        <p className="flex flex-row justify-between gap-2">
+                                            <span></span>
+                                            <div className="flex flex-row gap-0.5 justify-end items-center font-bold min-w-[60px] text-right">
+                                                {diffPercentage >= 0 &&
+                                                    <ArrowUpIcon className="text-green-500"/>}
+                                                {diffPercentage < 0 && <ArrowDownIcon className="text-red-500"/>}
+                                                {number_formatter(diffPercentage, {maximumFractionDigits: 0})}%
+                                            </div>
                                         </p>
                                     </div>
                                 </>)
                             }
 
                             return (<>
-                                <div className="bg-white dark:bg-zinc-800 p-2 shadow rounded-sm text-sm">
+                                <div className="bg-white dark:bg-zinc-900 p-2 shadow rounded-sm text-sm">
                                     <p>
-                                        <span className="opacity-75">{formattedDate}:</span> <span>{scoreString}</span>
+                                        <span className="opacity-75">{formattedDate}:</span>
+                                        <span className="font-bold">{scoreString}</span>
                                     </p>
                                 </div>
                             </>)
