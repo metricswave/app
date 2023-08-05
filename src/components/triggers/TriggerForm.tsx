@@ -4,15 +4,12 @@ import PrimaryButton from "../form/PrimaryButton"
 import {Trigger, TriggerTypeId, TriggerVia} from "../../types/Trigger"
 import React, {FormEvent, ReactElement, useState} from "react"
 import {BellEmoji, Emoji, emojiFromNative} from "../../types/Emoji"
-import WeekdayFieldBox from "../form/WeekdayFieldBox"
 import ParametersFieldBox from "../form/ParametersFieldBox"
-import {TriggerType, TriggerTypeField} from "../../types/TriggerType"
+import {TriggerType, TriggerTypeField, WebhookTriggerType} from "../../types/TriggerType"
 import CheckboxInputGroup, {CheckboxGroupValue} from "../form/CheckboxInputGroup"
 import {useUserServicesState} from "../../storage/UserServices"
 import {mergeDefaultWithTriggerViaValues} from "../../helpers/TriggerViaValues"
-import LocationFieldBox, {LocationValue} from "../form/LocationFieldBox"
-import AddressFieldBox from "../form/AddressFieldBox"
-import SelectFieldBox from "../form/SelectFieldBox"
+import {LocationValue} from "../form/LocationFieldBox"
 import AutocompleteTextareaFieldBox from "../form/AutocompleteTextareaFieldBox"
 import InputLabel from "../form/InputLabel"
 import {LinkButton} from "../buttons/LinkButton"
@@ -21,6 +18,7 @@ type Props = {
     onSubmit: TriggerFormSubmit,
     trigger?: Trigger,
     triggerType: TriggerType,
+    webhookTriggerType?: WebhookTriggerType | undefined,
 }
 
 type FieldValues = { [key: string]: string | string[] | LocationValue }
@@ -39,6 +37,8 @@ export type TriggerFormSubmit = (
 function getTriggerInitialState(trigger: Trigger | undefined, triggerType: TriggerType): {
     [key: string]: string | string[]
 } {
+    // todo: add default values to parameters field name
+
     return trigger ?
         trigger.configuration.fields :
         triggerType.configuration.fields.reduce((acc, field) => {
@@ -47,29 +47,23 @@ function getTriggerInitialState(trigger: Trigger | undefined, triggerType: Trigg
         }, {} as { [key: string]: string | string[] })
 }
 
-function triggerInitialStateTitle(triggerType: TriggerType): string {
-    switch (triggerType.id) {
-        case TriggerTypeId.WeatherSummary:
-            return "Today: {weather.today.condition}"
-        case TriggerTypeId.TimeToLeave:
-            return "Time to leave for {destination}"
-        case TriggerTypeId.CalendarTimeToLeave:
-            return "Time to leave for {event.title}"
+function triggerInitialStateTitle(type: WebhookTriggerType): string {
+    switch (type) {
+        case "visits":
+            return "New Visit"
+        case "funnel":
+            return "Funnel"
     }
 
-    return ""
+    return "Custom event"
 }
 
-function triggerInitialStateContent(triggerType: TriggerType): string {
-    switch (triggerType.id) {
-        case TriggerTypeId.WeatherSummary:
-            return "**Temperature:** {weather.today.temperature2m_min}°/{weather.today.temperature2m_max}°\n" +
-                "**Precipitation probability:** {weather.today.precipitation_probability_max}\n" +
-                "**Sunrise:** {weather.today.sunrise} / {weather.today.sunset}"
-        case TriggerTypeId.TimeToLeave:
-            return "Depending on current traffic, it will take {duration} to be {travel_mode}. You have 15 minutes to leave if you want to be there on time."
-        case TriggerTypeId.CalendarTimeToLeave:
-            return "Depending on current traffic, it will take {duration} to be {travel_mode}. You have 15 minutes to leave if you want to be there at {event.time}."
+function triggerInitialStateContent(type: WebhookTriggerType): string {
+    switch (type) {
+        case "visits":
+            return "Visit to: {path}"
+        case "funnel":
+            return "Step: {step}"
     }
 
     return ""
@@ -159,14 +153,21 @@ export default function TriggerForm(
         onSubmit: submit,
         triggerType,
         trigger,
+        webhookTriggerType,
     }: Props,
 ) {
     const [loading, setLoading] = useState<boolean>(false)
     const {userServices} = useUserServicesState()
 
     const [emoji, setEmoji] = useState<Emoji>(trigger ? emojiFromNative(trigger.emoji) : BellEmoji)
-    const [title, setTitle] = useState<string>(trigger ? trigger.title : triggerInitialStateTitle(triggerType))
-    const [content, setContent] = useState<string>(trigger ? trigger.content : triggerInitialStateContent(triggerType))
+    const [title, setTitle] = useState<string>(trigger ?
+        trigger.title :
+        triggerInitialStateTitle(webhookTriggerType ?? "custom"),
+    )
+    const [content, setContent] = useState<string>(trigger ?
+        trigger.content :
+        triggerInitialStateContent(webhookTriggerType ?? "custom"),
+    )
     const [values, setValues] = useState<FieldValues>(getTriggerInitialState(trigger, triggerType))
     const [errors, setErrors] = useState<{ [key: string]: string[] }>({})
     const [viaValues, setViaValues] = useState<Array<TriggerVia>>(
@@ -187,66 +188,10 @@ export default function TriggerForm(
 
     const renderDynamicField = (field: TriggerTypeField): ReactElement => {
         switch (field.type) {
-            case "location":
-                return (<div key={field.name}>
-                    <LocationFieldBox
-                        value={values[field.name] as LocationValue}
-                        setValue={(value) => {
-                            setValues({...values, [field.name]: value})
-                        }}
-                        label={field.label}
-                        name={field.name}
-                        required={field.required}
-                        showRequired
-                    />
-                </div>)
-            case "weekdays":
-                return (<div key={field.name}>
-                    <WeekdayFieldBox
-                        value={values[field.name] as string[]}
-                        setValue={(value) => {
-                            setValues({...values, [field.name]: value})
-                        }}
-                        label={field.label}
-                        name={field.name}
-                        multiple={field.multiple}
-                        required={field.required}
-                        showRequired
-                    />
-                </div>)
-            case "select":
-                return (<div key={field.name}>
-                    <SelectFieldBox
-                        options={field.options!}
-                        value={values[field.name] as string | string[]}
-                        setValue={(value) => {
-                            setValues({...values, [field.name]: value})
-                        }}
-                        label={field.label}
-                        name={field.name}
-                        multiple={field.multiple}
-                        required={field.required}
-                        showRequired
-                    />
-                </div>)
             case "parameters":
                 return (<div key={field.name}>
                     <ParametersFieldBox
                         value={values[field.name] as string[]}
-                        setValue={(value) => {
-                            setValues({...values, [field.name]: value})
-                        }}
-                        label={field.label}
-                        name={field.name}
-                        placeholder={field.label}
-                        required={field.required}
-                        showRequired
-                    />
-                </div>)
-            case "address":
-                return (<div key={field.name}>
-                    <AddressFieldBox
-                        value={values[field.name] as string}
                         setValue={(value) => {
                             setValues({...values, [field.name]: value})
                         }}

@@ -1,9 +1,8 @@
 import React, {useEffect, useState} from "react"
 import * as Dialog from "@radix-ui/react-dialog"
-import {useTriggerTypesState} from "../../storage/TriggerTypes"
-import {TriggerType} from "../../types/TriggerType"
+import {WebhookTriggerType} from "../../types/TriggerType"
 import {NoLinkButton, SecondaryLinkButton} from "../buttons/LinkButton"
-import TriggersAddChooserStep from "./TriggersAddChooserStep"
+import WebhookTriggerTypeChooser from "./TriggersAddChooserStep"
 import {TriggersAddConfigureStep} from "./TriggersAddConfigureStep"
 
 export default function TriggersAdd(
@@ -15,8 +14,7 @@ export default function TriggersAdd(
         onLastStep?: () => void
     },
 ) {
-    const {triggersTypesToAdd, defaultTriggerType} = useTriggerTypesState()
-    const [triggerType, setTriggerType] = useState<TriggerType | null>(defaultTriggerType ?? null)
+    const [triggerType, setTriggerType] = useState<WebhookTriggerType | null>(null)
     const [triggerCreated, setTriggerCreated] = useState<string | null>(null)
 
     useEffect(() => {
@@ -28,12 +26,12 @@ export default function TriggersAdd(
     return (
         <>
             {triggerType === null &&
-                <TriggersAddChooserStep triggerTypes={triggersTypesToAdd} chooser={setTriggerType}/>
+                <WebhookTriggerTypeChooser chooser={setTriggerType}/>
             }
 
             {triggerType !== null && triggerCreated === null &&
                 <TriggersAddConfigureStep
-                    triggerType={triggerType}
+                    webhookTriggerType={triggerType}
                     onTriggerCreated={(uuid) => {
                         setTriggerCreated(uuid)
                     }}

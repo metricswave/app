@@ -1,15 +1,17 @@
-import {TriggerType} from "../../types/TriggerType"
+import {TriggerType, WebhookTriggerType} from "../../types/TriggerType"
 import * as Dialog from "@radix-ui/react-dialog"
 import {fetchAuthApi} from "../../helpers/ApiFetcher"
 import {generateUuid} from "../../helpers/UuidGenerator"
 import TriggerForm, {TriggerFormSubmit} from "../triggers/TriggerForm"
+import {useTriggerTypesState} from "../../storage/TriggerTypes"
 
 type Props = {
-    triggerType: TriggerType
+    webhookTriggerType: WebhookTriggerType
     onTriggerCreated: (uuid: string) => void
 }
 
-export const TriggersAddConfigureStep = ({triggerType, onTriggerCreated: triggerCreated}: Props) => {
+export const TriggersAddConfigureStep = ({webhookTriggerType, onTriggerCreated: triggerCreated}: Props) => {
+    const triggerType: TriggerType = useTriggerTypesState().defaultTriggerType!
     const handleSubmit: TriggerFormSubmit = async (
         {emoji, title, content, values, via},
         setErrors,
@@ -56,6 +58,7 @@ export const TriggersAddConfigureStep = ({triggerType, onTriggerCreated: trigger
             <TriggerForm
                 onSubmit={handleSubmit}
                 triggerType={triggerType}
+                webhookTriggerType={webhookTriggerType}
             />
         </>
     )
