@@ -13,7 +13,7 @@ type Props = {
 export const TriggersAddConfigureStep = ({webhookTriggerType, onTriggerCreated: triggerCreated}: Props) => {
     const triggerType: TriggerType = useTriggerTypesState().defaultTriggerType!
     const handleSubmit: TriggerFormSubmit = async (
-        {emoji, title, content, values, via},
+        {emoji, title, content, values, via, type, steps},
         setErrors,
     ) => {
         const uuid = generateUuid()
@@ -29,6 +29,8 @@ export const TriggersAddConfigureStep = ({webhookTriggerType, onTriggerCreated: 
                 via,
                 "configuration": {
                     fields: values,
+                    type,
+                    ...(type === "funnel" && {steps}),
                     version: triggerType.configuration.version,
                 },
             },

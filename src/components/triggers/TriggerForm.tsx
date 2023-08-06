@@ -1,9 +1,9 @@
 import EmojiInputFieldBox from "../form/EmojiInputFieldBox"
 import InputFieldBox from "../form/InputFieldBox"
 import PrimaryButton from "../form/PrimaryButton"
-import {Trigger, TriggerTypeId, TriggerVia} from "../../types/Trigger"
-import React, {FormEvent, ReactElement, useState} from "react"
-import {BellEmoji, Emoji, emojiFromNative} from "../../types/Emoji"
+import {Trigger, TriggerVia} from "../../types/Trigger"
+import React, {FormEvent, ReactElement, useEffect, useState} from "react"
+import {BellEmoji, Emoji, emojiFromNative, FunnelEmoji, VisitsEmoji} from "../../types/Emoji"
 import ParametersFieldBox from "../form/ParametersFieldBox"
 import {TriggerType, TriggerTypeField, WebhookTriggerType} from "../../types/TriggerType"
 import CheckboxInputGroup, {CheckboxGroupValue} from "../form/CheckboxInputGroup"
@@ -13,12 +13,14 @@ import {LocationValue} from "../form/LocationFieldBox"
 import AutocompleteTextareaFieldBox from "../form/AutocompleteTextareaFieldBox"
 import InputLabel from "../form/InputLabel"
 import {LinkButton} from "../buttons/LinkButton"
+import TextareaFieldBox from "../form/TextareaFieldBox"
 
 type Props = {
     onSubmit: TriggerFormSubmit,
     trigger?: Trigger,
     triggerType: TriggerType,
     webhookTriggerType?: WebhookTriggerType | undefined,
+    autoCreate?: boolean
 }
 
 type FieldValues = { [key: string]: string | string[] | LocationValue }
@@ -30,19 +32,45 @@ export type TriggerFormSubmit = (
         content: string,
         values: FieldValues,
         via: Array<TriggerVia>,
+        type: WebhookTriggerType,
+        steps: string[]
     },
     setErrors: (errors: { [key: string]: string[] }) => void,
 ) => Promise<void>
 
-function getTriggerInitialState(trigger: Trigger | undefined, triggerType: TriggerType): {
+function getTriggerInitialState(
+    trigger: Trigger | undefined,
+    fields: TriggerTypeField[],
+    webhookType: WebhookTriggerType,
+): {
     [key: string]: string | string[]
 } {
-    // todo: add default values to parameters field name
-
     return trigger ?
         trigger.configuration.fields :
-        triggerType.configuration.fields.reduce((acc, field) => {
-            acc[field.name] = field.default ?? (field.multiple ? [] : "")
+        fields.reduce((acc, field) => {
+            if (field.name === "parameters" && webhookType === "visits") {
+                acc[field.name] = [
+                    "path",
+                    "domain",
+                    "language",
+                    "userAgent",
+                    "platform",
+                    "referrer",
+                    "utm_source",
+                    "utm_medium",
+                    "utm_campaign",
+                    "utm_term",
+                    "utm_content",
+                ]
+            } else if (field.name === "parameters" && webhookType === "funnel") {
+                acc[field.name] = [
+                    "step",
+                    "user_id",
+                ]
+            } else {
+                acc[field.name] = field.default ?? (field.multiple ? [] : "")
+            }
+
             return acc
         }, {} as { [key: string]: string | string[] })
 }
@@ -58,6 +86,17 @@ function triggerInitialStateTitle(type: WebhookTriggerType): string {
     return "Custom event"
 }
 
+function triggerInitialStateEmoji(type: WebhookTriggerType): Emoji {
+    switch (type) {
+        case "visits":
+            return VisitsEmoji
+        case "funnel":
+            return FunnelEmoji
+    }
+
+    return BellEmoji
+}
+
 function triggerInitialStateContent(type: WebhookTriggerType): string {
     switch (type) {
         case "visits":
@@ -70,82 +109,11 @@ function triggerInitialStateContent(type: WebhookTriggerType): string {
 }
 
 function autocompleteOptionsForTriggerType(triggerType: TriggerType, values: FieldValues): string[] {
-    switch (triggerType.id) {
-        case TriggerTypeId.CalendarTimeToLeave:
-            return [
-                "origin",
-                "destination",
-                "travel_mode",
-                "arrival_time",
-                "distance",
-                "meters",
-                "duration",
-                "seconds",
-                "event.title",
-                "event.date",
-                "event.time",
-            ]
-        case TriggerTypeId.WeatherSummary:
-            return [
-                "weather.today.code",
-                "weather.today.condition",
-                "weather.today.temperature2m_max",
-                "weather.today.temperature2m_min",
-                "weather.today.apparent_temperature_max",
-                "weather.today.apparent_temperature_min",
-                "weather.today.sunrise",
-                "weather.today.sunset",
-                "weather.today.uv_index_max",
-                "weather.today.uv_index_clear_sky_max",
-                "weather.today.precipitation_sum",
-                "weather.today.rain_sum",
-                "weather.today.showers_sum",
-                "weather.today.snowfall_sum",
-                "weather.today.precipitation_hours",
-                "weather.today.precipitation_probability_max",
-                "weather.today.wind_speed10m_max",
-                "weather.today.wind_gusts10m_max",
-                "weather.today.wind_direction10m_dominant",
-                "weather.today.shortwave_radiation_sum",
-                "weather.today.et0_fao_evapotranspiration",
-                "weather.tomorrow.code",
-                "weather.tomorrow.condition",
-                "weather.tomorrow.temperature2m_max",
-                "weather.tomorrow.temperature2m_min",
-                "weather.tomorrow.apparent_temperature_max",
-                "weather.tomorrow.apparent_temperature_min",
-                "weather.tomorrow.sunrise",
-                "weather.tomorrow.sunset",
-                "weather.tomorrow.uv_index_max",
-                "weather.tomorrow.uv_index_clear_sky_max",
-                "weather.tomorrow.precipitation_sum",
-                "weather.tomorrow.rain_sum",
-                "weather.tomorrow.showers_sum",
-                "weather.tomorrow.snowfall_sum",
-                "weather.tomorrow.precipitation_hours",
-                "weather.tomorrow.precipitation_probability_max",
-                "weather.tomorrow.wind_speed10m_max",
-                "weather.tomorrow.wind_gusts10m_max",
-                "weather.tomorrow.wind_direction10m_dominant",
-                "weather.tomorrow.shortwave_radiation_sum",
-                "weather.tomorrow.et0_fao_evapotranspiration",
-            ]
-        case TriggerTypeId.TimeToLeave:
-            return [
-                "origin",
-                "destination",
-                "travel_mode",
-                "arrival_time",
-                "distance",
-                "meters",
-                "duration",
-                "seconds",
-            ]
-        case TriggerTypeId.Webhook:
-            return values["parameters"] as string[] ?? []
+    if (values["parameters"] === undefined) {
+        return []
     }
 
-    return []
+    return values["parameters"] as string[] ?? []
 }
 
 export default function TriggerForm(
@@ -154,12 +122,17 @@ export default function TriggerForm(
         triggerType,
         trigger,
         webhookTriggerType,
+        autoCreate = false,
     }: Props,
 ) {
     const [loading, setLoading] = useState<boolean>(false)
     const {userServices} = useUserServicesState()
+    const [minimalFormFields] = useState<boolean>(webhookTriggerType !== "custom")
 
-    const [emoji, setEmoji] = useState<Emoji>(trigger ? emojiFromNative(trigger.emoji) : BellEmoji)
+    const [emoji, setEmoji] = useState<Emoji>(trigger ?
+        emojiFromNative(trigger.emoji) :
+        triggerInitialStateEmoji(webhookTriggerType ?? "custom"),
+    )
     const [title, setTitle] = useState<string>(trigger ?
         trigger.title :
         triggerInitialStateTitle(webhookTriggerType ?? "custom"),
@@ -168,20 +141,39 @@ export default function TriggerForm(
         trigger.content :
         triggerInitialStateContent(webhookTriggerType ?? "custom"),
     )
-    const [values, setValues] = useState<FieldValues>(getTriggerInitialState(trigger, triggerType))
+    const [fields] = useState<TriggerTypeField[]>(triggerType.configuration.fields)
+    const [values, setValues] = useState<FieldValues>(
+        getTriggerInitialState(trigger, fields, webhookTriggerType ?? "custom"),
+    )
     const [errors, setErrors] = useState<{ [key: string]: string[] }>({})
     const [viaValues, setViaValues] = useState<Array<TriggerVia>>(
         mergeDefaultWithTriggerViaValues(userServices, trigger),
     )
 
-    const handleSubmit = async (event: FormEvent) => {
-        event.preventDefault()
-        event.stopPropagation()
+    const [steps, setSteps] = useState<string>("")
+
+    const handleSubmit = async (event?: FormEvent) => {
+        if (event) {
+            event.preventDefault()
+            event.stopPropagation()
+        }
 
         setErrors({})
         setLoading(true)
 
-        await submit({emoji, title, content, values, via: viaValues}, setErrors)
+        const stepsArray = steps.split("\n").filter((step) => step !== "")
+        await submit(
+            {
+                emoji,
+                title,
+                content,
+                values,
+                via: viaValues,
+                type: webhookTriggerType ?? "custom",
+                steps: stepsArray,
+            },
+            setErrors,
+        )
 
         setLoading(false)
     }
@@ -191,6 +183,7 @@ export default function TriggerForm(
             case "parameters":
                 return (<div key={field.name}>
                     <ParametersFieldBox
+                        visible={!minimalFormFields}
                         value={values[field.name] as string[]}
                         setValue={(value) => {
                             setValues({...values, [field.name]: value})
@@ -219,6 +212,10 @@ export default function TriggerForm(
                 </div>)
         }
     }
+
+    useEffect(() => {
+        autoCreate && handleSubmit()
+    }, [autoCreate])
 
     return (
         <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
@@ -249,41 +246,63 @@ export default function TriggerForm(
                 placeholder="Notification Content"
                 required
                 showRequired
+                visible={!minimalFormFields}
             />
 
-            {viaValues.length === 0 ? (<>
-                <div className="flex flex-col border transition-all border-zinc-200/60 hover:border-zinc-200 focus-within:hover:border-zinc-300 focus-within:border-zinc-300 duration-300 dark:border-zinc-700/60 rounded-sm hover:dark:border-zinc-700 group focus-within:dark:border-zinc-600 hover:focus-within:dark:border-zinc-600">
+            {!minimalFormFields && <>
+                {viaValues.length === 0 ? (<>
+                    <div className="flex flex-col border transition-all border-zinc-200/60 hover:border-zinc-200 focus-within:hover:border-zinc-300 focus-within:border-zinc-300 duration-300 dark:border-zinc-700/60 rounded-sm hover:dark:border-zinc-700 group focus-within:dark:border-zinc-600 hover:focus-within:dark:border-zinc-600">
 
-                    <InputLabel name={"via"} label={"Notification Channels"} required={false} showRequired={false}/>
+                        <InputLabel name={"via"} label={"Notification Channels"} required={false} showRequired={false}/>
 
-                    <div className="pt-3 px-4 text-sm opacity-80 pb-4">
-                        To share this event on a channel you need to create it before. You can do it in the <LinkButton
-                        text="channels page"
-                        href="/services"/>.
+                        <div className="pt-3 px-4 text-sm opacity-80 pb-4">
+                            To share this event on a channel you need to create it before. You can do it in
+                            the <LinkButton
+                            text="channels page"
+                            href="/services"/>.
+                        </div>
                     </div>
-                </div>
-            </>) : (<>
-                <CheckboxInputGroup
-                    name="via"
-                    label="Notification Channels"
-                    values={viaValues.map(v => {
-                        return {value: v.id.toString(), ...v} as CheckboxGroupValue
-                    })}
-                    onCheckedChanged={(values) => {
-                        const viaValues = (values as Array<CheckboxGroupValue & { type: string }>)
-                            .map((v) => {
-                                return {
-                                    id: parseInt(v.value), label: v.label, checked: v.checked, type: v.type as string,
-                                } as TriggerVia
-                            })
+                </>) : (<>
+                    <CheckboxInputGroup
+                        name="via"
+                        label="Notification Channels"
+                        values={viaValues.map(v => {
+                            return {value: v.id.toString(), ...v} as CheckboxGroupValue
+                        })}
+                        onCheckedChanged={(values) => {
+                            const viaValues = (values as Array<CheckboxGroupValue & { type: string }>)
+                                .map((v) => {
+                                    return {
+                                        id: parseInt(v.value),
+                                        label: v.label,
+                                        checked: v.checked,
+                                        type: v.type as string,
+                                    } as TriggerVia
+                                })
 
-                        setViaValues(viaValues)
+                            setViaValues(viaValues)
+                        }}
+                    />
+                </>)}
+            </>}
+
+            {fields.map(renderDynamicField)}
+
+            {webhookTriggerType === "funnel" && (<div key="steps">
+                <TextareaFieldBox
+                    value={steps}
+                    setValue={(value) => {
+                        setSteps(value)
                     }}
-                    error={viaValues.filter((value) => value.checked).length === 0 ? "This trigger will not be sent to any channel" : false}
+                    label="Steps"
+                    name="steps"
+                    placeholder={"Step 1\nStep 2\nStep 3"}
+                    required={true}
+                    description={"One step per line, and in order."}
+                    height="h-[100px]"
+                    showRequired
                 />
-            </>)}
-
-            {triggerType.configuration.fields.map(renderDynamicField)}
+            </div>)}
 
             {
                 Object.keys(errors).length > 0

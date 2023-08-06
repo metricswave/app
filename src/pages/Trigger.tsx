@@ -1,9 +1,11 @@
-import SectionContainer from "../components/sections/SectionContainer"
 import {useTriggersState} from "../storage/Triggers"
 import {useNavigate, useParams} from "react-router-dom"
-import TriggerDetails from "../components/triggers/TriggerDetails"
 import {useUserServicesState} from "../storage/UserServices"
-import {useState} from "react"
+import {useEffect, useState} from "react"
+import LoadingPage from "./LoadingPage"
+import {Trigger as TriggerType} from "../types/Trigger"
+import SectionContainer from "../components/sections/SectionContainer"
+import TriggerDetails from "../components/triggers/TriggerDetails"
 import {TriggerStats} from "../components/triggers/TriggerStats"
 import {TriggerParamsStats} from "../components/triggers/TriggerParamsStats"
 
@@ -11,8 +13,18 @@ export default function Trigger() {
     const navigate = useNavigate()
     useUserServicesState()
     const [triggerUuid] = useState<string>(useParams().triggerUuid as string)
-    const {triggerByUuid, refreshTriggers} = useTriggersState()
-    const trigger = triggerByUuid(triggerUuid)!
+    const {triggers, triggerByUuid, refreshTriggers} = useTriggersState()
+    const [trigger, setTrigger] = useState<TriggerType | undefined>(triggerByUuid(triggerUuid))
+
+    useEffect(() => {
+        const t = triggerByUuid(triggerUuid)
+        if (t !== undefined) setTrigger(t)
+    }, [triggers])
+
+    if (trigger === undefined) {
+        return <LoadingPage/>
+    }
+
     const hasParams = trigger.configuration.fields["parameters"] !== undefined
         && trigger.configuration.fields["parameters"].length > 0
 

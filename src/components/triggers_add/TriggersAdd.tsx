@@ -1,9 +1,8 @@
 import React, {useEffect, useState} from "react"
-import * as Dialog from "@radix-ui/react-dialog"
 import {WebhookTriggerType} from "../../types/TriggerType"
-import {NoLinkButton, SecondaryLinkButton} from "../buttons/LinkButton"
 import WebhookTriggerTypeChooser from "./TriggersAddChooserStep"
 import {TriggersAddConfigureStep} from "./TriggersAddConfigureStep"
+import {useNavigate} from "react-router-dom"
 
 export default function TriggersAdd(
     {
@@ -16,10 +15,12 @@ export default function TriggersAdd(
 ) {
     const [triggerType, setTriggerType] = useState<WebhookTriggerType | null>(null)
     const [triggerCreated, setTriggerCreated] = useState<string | null>(null)
+    const navigate = useNavigate()
 
     useEffect(() => {
         if (triggerCreated !== null) {
             lastStep()
+            navigate(`/events/${triggerCreated}`)
         }
     }, [triggerCreated])
 
@@ -36,20 +37,6 @@ export default function TriggersAdd(
                         setTriggerCreated(uuid)
                     }}
                 />
-            }
-
-            {triggerCreated !== null &&
-                <div className="flex flex-col space-y-4 items-center justify-center pt-12">
-                    <h2 className="text-2xl mb-10">Event Created</h2>
-
-                    <SecondaryLinkButton href={`/events/${triggerCreated}`} text="Go to Events"/>
-
-                    <Dialog.Close asChild>
-                        <div>
-                            <NoLinkButton text="Done" onClick={done}/>
-                        </div>
-                    </Dialog.Close>
-                </div>
             }
         </>
     )

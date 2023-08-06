@@ -1,5 +1,6 @@
 import {LocationValue} from "../components/form/LocationFieldBox"
 import {WeekDaysType} from "../components/form/WeekdayFieldBox"
+import {WebhookTriggerType} from "./TriggerType"
 
 export enum TriggerTypeId {
     Webhook = 1,
@@ -24,6 +25,7 @@ export type BaseTrigger = {
     content: string
     trigger_type_id: TriggerTypeId
     configuration: {
+        type: WebhookTriggerType,
         fields: { [key: string]: string }
     }
     via: TriggerVia[]

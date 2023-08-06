@@ -13,6 +13,7 @@ type Props = {
     name: string,
     placeholder: string
     height?: string
+    description?: string
 }
 
 export default function TextareaFieldBox(
@@ -28,6 +29,7 @@ export default function TextareaFieldBox(
         showRequired = false,
         height = "h-[180px]",
         placeholder,
+        description = undefined,
     }: Props,
 ) {
     return (
@@ -49,6 +51,12 @@ export default function TextareaFieldBox(
                           required={required}
                           placeholder={placeholder}
                 />
+
+                {description &&
+                    <p className={`text-xs opacity-50 pt-2 px-4 leading-normal ` + (error ? "pb-2" : "pb-4")}>
+                        {description}
+                    </p>
+                }
 
                 {error && <p className="text-red-500 text-xs mb-4 mx-4">{error}</p>}
 
