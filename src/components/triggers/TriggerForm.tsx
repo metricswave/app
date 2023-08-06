@@ -108,7 +108,7 @@ function triggerInitialStateContent(type: WebhookTriggerType): string {
     return ""
 }
 
-function autocompleteOptionsForTriggerType(triggerType: TriggerType, values: FieldValues): string[] {
+function autocompleteOptionsForTriggerType(values: FieldValues): string[] {
     if (values["parameters"] === undefined) {
         return []
     }
@@ -150,7 +150,9 @@ export default function TriggerForm(
         mergeDefaultWithTriggerViaValues(userServices, trigger),
     )
 
-    const [steps, setSteps] = useState<string>("")
+    const [steps, setSteps] = useState<string>(
+        trigger && trigger.configuration.steps ? trigger.configuration.steps.join("\n") : "",
+    )
 
     const handleSubmit = async (event?: FormEvent) => {
         if (event) {
@@ -241,7 +243,7 @@ export default function TriggerForm(
                 setValue={setContent}
                 label="Content"
                 name="content"
-                autocompleteOptions={autocompleteOptionsForTriggerType(triggerType, values)}
+                autocompleteOptions={autocompleteOptionsForTriggerType(values)}
                 error={errors["content"] !== undefined ? errors["content"][0] : false}
                 placeholder="Notification Content"
                 required

@@ -6,6 +6,7 @@ import {useNavigate, useParams} from "react-router-dom"
 import {useTriggersState} from "../storage/Triggers"
 import {useState} from "react"
 import SectionContainer from "../components/sections/SectionContainer"
+import {triggerWebhookReadableType, webhookTriggerTypeIcon} from "../storage/TriggerWebhookTypeIcon"
 
 export default function TriggerEdit() {
     const navigate = useNavigate()
@@ -17,7 +18,7 @@ export default function TriggerEdit() {
     const triggerType = getTriggerTypeById(trigger.trigger_type_id)!
 
     const handleSubmit: TriggerFormSubmit = async (
-        {emoji, title, content, values, via},
+        {emoji, title, content, values, via, type, steps},
         setErrors,
     ) => {
         fetchAuthApi(`/triggers/${trigger.uuid}`, {
@@ -28,6 +29,8 @@ export default function TriggerEdit() {
                 content,
                 "configuration": {
                     fields: values,
+                    type,
+                    ...(type === "funnel" && {steps}),
                     version: triggerType.configuration.version,
                 },
                 via,
@@ -48,13 +51,16 @@ export default function TriggerEdit() {
             <PageTitle title="Configure Trigger"/>
 
             <div className="mt-2 pb-6 opacity-70 flex flex-row items-center space-x-2">
-                <img src={`/images/trigger-types/${triggerType.icon}`}
-                     alt={triggerType.name}
-                     className="w-4 h-4 rounded-sm"/>
-                <div className="">{triggerType.name}</div>
+                {webhookTriggerTypeIcon(trigger.configuration.type ?? "custom")}
+                <div className="">{triggerWebhookReadableType(trigger.configuration.type ?? "custom")}</div>
             </div>
 
-            <TriggerForm onSubmit={handleSubmit} triggerType={triggerType} trigger={trigger}/>
+            <TriggerForm
+                onSubmit={handleSubmit}
+                triggerType={triggerType}
+                trigger={trigger}
+                webhookTriggerType={trigger.configuration.type}
+            />
         </SectionContainer>
     )
 }

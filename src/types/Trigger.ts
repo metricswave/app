@@ -26,7 +26,8 @@ export type BaseTrigger = {
     trigger_type_id: TriggerTypeId
     configuration: {
         type: WebhookTriggerType,
-        fields: { [key: string]: string }
+        fields: { [key: string]: string },
+        steps?: string[],
     }
     via: TriggerVia[]
 }
