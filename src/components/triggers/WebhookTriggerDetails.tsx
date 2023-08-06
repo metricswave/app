@@ -40,6 +40,32 @@ export function WebhookTriggerDetails({trigger}: { trigger: Trigger }) {
         )
     }
 
+    if (trigger.configuration.type === "funnel") {
+        return (
+            <div className="flex flex-col gap-3">
+                <p className="text-sm md:text-base">
+                    This is a funnel event with two fields (step, and user_id). You just have to call the next path with
+                    this values filled. <LinkButton target="_blank"
+                                                    href={`${app.web}/documentation/tracking/funnels`}
+                                                    text="Here you can find more info about it."/>
+                </p>
+
+                <div className="text-sm md:text-base">
+                    <InputFieldBox
+                        value={url}
+                        setValue={() => null}
+                        label="Webhook Path"
+                        name="webhook_path"
+                        placeholder=""
+                        disabled
+                    />
+
+                    <CopyButton textToCopy={url} className="w-full mt-2"/>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className="flex flex-col gap-3">
             <p className="text-sm md:text-base">

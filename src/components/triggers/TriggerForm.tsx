@@ -141,7 +141,7 @@ export default function TriggerForm(
         trigger.content :
         triggerInitialStateContent(webhookTriggerType ?? "custom"),
     )
-    const [fields] = useState<TriggerTypeField[]>(triggerType.configuration.fields)
+    const [fields] = useState<TriggerTypeField[]>(triggerType?.configuration?.fields ?? [])
     const [values, setValues] = useState<FieldValues>(
         getTriggerInitialState(trigger, fields, webhookTriggerType ?? "custom"),
     )
