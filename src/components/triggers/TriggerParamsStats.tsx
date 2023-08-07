@@ -8,10 +8,7 @@ import InputFieldBox from "../form/InputFieldBox"
 import {calculateDefaultDateForPeriod, fieldTypeForPeriod, Period} from "../../types/Period"
 import CircleArrowsIcon from "../icons/CircleArrowsIcon"
 import {ArrowDownIcon, ArrowUpIcon} from "@radix-ui/react-icons"
-
-function percentage_of(totalScore: number, score: number): number {
-    return Math.min(100, Math.max(Math.round((score / totalScore) * 100), 1))
-}
+import {percentage_of} from "../../helpers/PercentageOf"
 
 type Props = {
     trigger: Trigger
@@ -55,7 +52,7 @@ export function TriggerParamsStats(
     const paramStats: ParamStatRow[] = stats !== undefined && stats.plot !== undefined && stats.plot[parameter] !== undefined ?
         Object.values(stats.plot[parameter]) :
         []
-    const previeousParamStats: ParamStatRow[] | undefined = previousStats !== undefined && previousStats.plot !== undefined && previousStats.plot[parameter] !== undefined ?
+    const previousParamsStats: ParamStatRow[] | undefined = previousStats !== undefined && previousStats.plot !== undefined && previousStats.plot[parameter] !== undefined ?
         Object.values(previousStats.plot[parameter]) :
         undefined
     const totalScore = paramStats.reduce((acc, curr) => acc + curr.score, 0)
@@ -159,8 +156,8 @@ export function TriggerParamsStats(
                         </div>
 
                         {paramStats.slice(0, 8).map((stat, index) => {
-                            const previousStatScore = previeousParamStats !== undefined ?
-                                previeousParamStats.find((s) => s.param === stat.param)?.score ?? 0 :
+                            const previousStatScore = previousParamsStats !== undefined ?
+                                previousParamsStats.find((s) => s.param === stat.param)?.score ?? 0 :
                                 0
                             const percentageDifference = number_formatter(
                                 ((stat.score - previousStatScore) / previousStatScore * 100), {

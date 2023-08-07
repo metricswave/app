@@ -6,8 +6,7 @@ import LoadingPage from "./LoadingPage"
 import {Trigger as TriggerType} from "../types/Trigger"
 import SectionContainer from "../components/sections/SectionContainer"
 import TriggerDetails from "../components/triggers/TriggerDetails"
-import {TriggerStats} from "../components/triggers/TriggerStats"
-import {TriggerParamsStats} from "../components/triggers/TriggerParamsStats"
+import TriggerAutomaticGraph from "../components/triggers/TriggerAutomaticGraph"
 
 export default function Trigger() {
     const navigate = useNavigate()
@@ -25,9 +24,6 @@ export default function Trigger() {
         return <LoadingPage/>
     }
 
-    const hasParams = trigger.configuration.fields["parameters"] !== undefined
-        && trigger.configuration.fields["parameters"].length > 0
-
     return (
         <div className="pb-36">
             <SectionContainer>
@@ -40,19 +36,8 @@ export default function Trigger() {
                 />
             </SectionContainer>
 
-            <SectionContainer size="big">
-                <div className="relative group bg-white dark:bg-zinc-800/40 rounded-sm p-5 pb-4 shadow">
-                    <TriggerStats trigger={trigger} title={"Hits"} defaultPeriod={"month"}/>
-                </div>
-            </SectionContainer>
+            <TriggerAutomaticGraph trigger={trigger}/>
 
-            {hasParams && (
-                <SectionContainer size="big">
-                    <div className="relative group bg-white dark:bg-zinc-800/40 rounded-sm p-5 pb-4 shadow">
-                        <TriggerParamsStats trigger={trigger}/>
-                    </div>
-                </SectionContainer>
-            )}
         </div>
     )
 }
