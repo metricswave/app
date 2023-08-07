@@ -28,6 +28,32 @@ type Props = {
     moveWidgetDown?: () => void
     canMoveDown?: boolean
 }
+
+function getTypeOptionsForTrigger(selectedTrigger: Trigger | null) {
+    if (selectedTrigger?.configuration.type === "funnel") {
+        return [
+            {
+                value: "funnel",
+                label: "Funnel",
+            },
+        ]
+    }
+
+    const hasParameters = selectedTrigger?.configuration.fields.parameters !== undefined &&
+        selectedTrigger?.configuration.fields.parameters.length > 0
+
+    return [
+        {
+            value: "stats",
+            label: "Stats",
+        },
+        ...(hasParameters ? [{
+            value: "parameter",
+            label: "Parameter",
+        }] : []),
+    ]
+}
+
 export default function WidgetForm(
     {
         title,
@@ -165,21 +191,7 @@ export default function WidgetForm(
 
             <DropDownSelectFieldBox
                 value={type}
-                options={[
-                    {
-                        value: "stats",
-                        label: "Stats",
-                    },
-                    ...(
-                        selectedTrigger?.configuration.fields.parameters !== undefined &&
-                        selectedTrigger?.configuration.fields.parameters.length > 0 ?
-                            [{
-                                value: "parameter",
-                                label: "Parameter",
-                            }] :
-                            []
-                    ),
-                ]}
+                options={getTypeOptionsForTrigger(selectedTrigger)}
                 setValue={(value) => {
                     setType(value as DashboardItemType)
                 }}
