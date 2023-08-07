@@ -1,12 +1,13 @@
 import PageTitle from "../sections/PageTitle"
 import {Trigger} from "../../types/Trigger"
 import {useEffect, useState} from "react"
-import {calculateDefaultDateForPeriod, Period} from "../../types/Period"
+import {calculateDefaultDateForPeriod, fieldTypeForPeriod, Period} from "../../types/Period"
 import {TriggerStatsLoading} from "./TriggerStatsLoading"
 import {ParamStatRow, useTriggerParamsStatsState} from "../../storage/TriggerParamsStats"
 import {ResponsiveFunnel} from "@nivo/funnel"
 import {FunnelDatum} from "@nivo/funnel/dist/types/types"
 import {percentage_of} from "../../helpers/PercentageOf"
+import InputFieldBox from "../form/InputFieldBox"
 
 const responsiveFunnelTheme = {
     fontFamily: "var(--font-mono)",
@@ -40,10 +41,9 @@ export function TriggerFunnelStats(
     {
         trigger,
         title,
-        defaultParameter,
         defaultDate,
         publicDashboard,
-        defaultPeriod = "day",
+        defaultPeriod = "month",
         hideFilters = false,
         compareWithPrevious = false,
         height = "400",
@@ -54,7 +54,7 @@ export function TriggerFunnelStats(
         "The funnel shows the number of hits for each step of the funnel.",
     )
 
-    const {stats, previousStats, loadStats, loadPreviousStats, statsLoading} = useTriggerParamsStatsState()
+    const {stats, loadStats, loadPreviousStats, statsLoading} = useTriggerParamsStatsState()
 
     const [hasStats, setHasStats] = useState<boolean>(false)
     const [data, setData] = useState<FunnelDatum[]>([])
@@ -62,21 +62,22 @@ export function TriggerFunnelStats(
     const [date, setDate] = useState<string>(defaultDate ?? calculateDefaultDateForPeriod(period))
     const [fieldDate, setFieldDate] = useState<string>()
 
-    // const dateFieldType = fieldTypeForPeriod(period)
-    // const setPeriodAndDate = (period: Period) => {
-    //     const date = calculateDefaultDateForPeriod(period)
-    //     setDate(date)
-    //     setFieldDate(
-    //         fieldTypeForPeriod(period) === "month" ? date.slice(0, 7) : date,
-    //     )
-    //     setPeriod(period)
-    // }
+    const dateFieldType = fieldTypeForPeriod(period)
+    const setPeriodAndDate = (period: Period) => {
+        const date = calculateDefaultDateForPeriod(period)
+        setDate(date)
+        setFieldDate(
+            fieldTypeForPeriod(period) === "month" ? date.slice(0, 7) : date,
+        )
+        setPeriod(period)
+    }
 
     useEffect(() => {
         const hasStats = stats !== undefined && stats.plot !== undefined && stats.plot[parameter] !== undefined
         setHasStats(hasStats)
     }, [stats])
 
+    // Set data and description
     useEffect(() => {
         if (hasStats === false) {
             return
@@ -106,10 +107,10 @@ export function TriggerFunnelStats(
     // const totalScore = paramStats.reduce((acc, curr) => acc + curr.score, 0)
     // const totalScoreString = number_formatter(totalScore)
 
-    // useEffect(() => {
-    //     setDate(fieldTypeForPeriod(period) === "month" ? fieldDate + "-01" : fieldDate!)
-    // }, [fieldDate])
-    // useEffect(() => setPeriodAndDate(defaultPeriod), [defaultPeriod])
+    useEffect(() => {
+        setDate(fieldTypeForPeriod(period) === "month" ? fieldDate + "-01" : fieldDate!)
+    }, [fieldDate])
+    useEffect(() => setPeriodAndDate(defaultPeriod), [defaultPeriod])
     // useEffect(() => setDate(defaultDate!), [defaultDate])
 
     // Load stats and compare with previous on changes
@@ -133,6 +134,19 @@ export function TriggerFunnelStats(
                     title={title ?? "Funnel"}
                     description={description}
                 />
+
+                {!hideFilters &&
+                    <div className="w-full sm:w-1/3">
+                        <InputFieldBox
+                            setValue={setFieldDate}
+                            label="Date"
+                            type={dateFieldType}
+                            name="date"
+                            placeholder={"Date"}
+                            value={fieldDate as string}
+                        />
+                    </div>
+                }
             </div>
 
             <div style={{height: `${height}px`}}>
