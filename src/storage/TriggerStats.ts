@@ -1,6 +1,6 @@
 import {Trigger} from "../types/Trigger"
 import {useState} from "react"
-import {Period} from "../types/Period"
+import {Period, safeApiPeriod} from "../types/Period"
 import {expirableLocalStorage, FIVE_SECONDS} from "../helpers/ExpirableLocalStorage"
 import {ApiResponse, fetchApi, fetchAuthApi} from "../helpers/ApiFetcher"
 import {subDays, subMonths, subYears} from "date-fns"
@@ -83,7 +83,7 @@ export function useTriggerStatsState() {
             return
         }
 
-        const params = new URLSearchParams({period, ...(date ? {date} : {})}).toString()
+        const params = new URLSearchParams({period: safeApiPeriod(period), ...(date ? {date} : {})}).toString()
         if (publicDashboard !== undefined) {
             fetchApi<Stats>(
                 `/dashboards/${publicDashboard}/triggers/${trigger.uuid}/graph-stats?` + params,

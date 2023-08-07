@@ -1,7 +1,7 @@
 import {Trigger} from "../types/Trigger"
 import {useState} from "react"
 import {ApiResponse, fetchApi, fetchAuthApi} from "../helpers/ApiFetcher"
-import {Period} from "../types/Period"
+import {Period, safeApiPeriod} from "../types/Period"
 import {expirableLocalStorage, FIVE_SECONDS} from "../helpers/ExpirableLocalStorage"
 import {getPreviousPeriodDate} from "./TriggerStats"
 
@@ -49,7 +49,7 @@ export function useTriggerParamsStatsState() {
 
         setLoadingFor(true, current)
 
-        const query = new URLSearchParams({period, ...(date ? {date} : {})})
+        const query = new URLSearchParams({period: safeApiPeriod(period), ...(date ? {date} : {})})
 
         const methods = {
             success: (data: ApiResponse<ParamsStats>) => {

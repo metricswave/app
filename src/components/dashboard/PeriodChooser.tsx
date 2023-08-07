@@ -29,7 +29,7 @@ export function PeriodChooser(
             </DropdownMenu.Trigger>
             <DropdownMenu.Portal>
                 <DropdownMenu.Content
-                    className="min-w-[220px] bg-white dark:bg-zinc-800 rounded-md p-[5px] shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),_0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)] will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade"
+                    className="min-w-[220px] bg-white dark:bg-zinc-800 rounded-md p-[5px] shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),_0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)] will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade z-50"
                     sideOffset={5}
                     align={"end"}
                 >
@@ -39,7 +39,7 @@ export function PeriodChooser(
                             return (
                                 <DropdownMenu.Item
                                     key={index}
-                                    className="group text-[13px] leading-none rounded-[3px] flex items-center h-[25px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:opacity-30 data-[disabled]:pointer-events-none data-[highlighted]:bg-blue-50 dark:data-[highlighted]:bg-blue-800/20 data-[highlighted]:text-blue-500 dark:data-[highlighted]:text-blue-100"
+                                    className="group text-[13px] leading-none rounded-[3px] flex items-center h-[35px] sm:h-[25px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:opacity-30 data-[disabled]:pointer-events-none data-[highlighted]:bg-blue-50 dark:data-[highlighted]:bg-blue-800/20 data-[highlighted]:text-blue-500 dark:data-[highlighted]:text-blue-100"
                                     onSelect={() => setPeriodAndDate(p.period)}
                                 >
                                     {p.value === activePeriodValue &&
@@ -65,7 +65,7 @@ export function PeriodChooser(
                     />
 
                     <DropdownMenu.Item
-                        className="group text-[13px] leading-none rounded-[3px] flex items-center h-[25px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:opacity-30 data-[disabled]:pointer-events-none data-[highlighted]:bg-blue-50 dark:data-[highlighted]:bg-blue-800/20 data-[highlighted]:text-blue-500 dark:data-[highlighted]:text-blue-100"
+                        className="group text-[13px] leading-none rounded-[3px] flex items-center h-[35px] sm:h-[25px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:opacity-30 data-[disabled]:pointer-events-none data-[highlighted]:bg-blue-50 dark:data-[highlighted]:bg-blue-800/20 data-[highlighted]:text-blue-500 dark:data-[highlighted]:text-blue-100"
                         onSelect={() => setCompareWithPrevious(!compareWithPrevious)}
                     >
                         {compareWithPrevious &&

@@ -1,51 +1,51 @@
 import {startOfMonth, startOfYear, subMonths, subYears} from "date-fns"
 import format from "date-fns/format"
 
-export type Period = "day" | "7d" | "month" | "30d" | "year" | "12m"
+export type Period = "day" | "7d" | "month" | "previous-month" | "30d" | "year" | "previous-year" | "12m"
 
 export const DEFAULT_PERIOD: Period = "30d"
 
-export type PeriodConfiguration = { value: string, label: string, period: Period, date: string | null }
+export type PeriodConfiguration = { value: string, label: string, period: Period, date: number }
 
 export const periods: (PeriodConfiguration)[] = [
-    {value: "7d", label: "7 days", period: "7d", date: null},
-    {value: "30d", label: "30 days", period: "30d", date: null},
-    {value: "12m", label: "12 months", period: "12m", date: null},
-    {value: "month", label: "Month to date", period: "month", date: null},
+    {value: "7d", label: "7 days", period: "7d", date: 0},
+    {value: "30d", label: "30 days", period: "30d", date: 0},
+    {value: "12m", label: "12 months", period: "12m", date: 0},
+    {value: "month", label: "Month to date", period: "month", date: 0},
     {
         value: "previous-month",
         label: "Previous month",
-        period: "month",
-        date: null,
+        period: "previous-month",
+        date: -1,
     },
-    {value: "year", label: "Year to date", period: "year", date: null},
+    {value: "year", label: "Year to date", period: "year", date: 0},
     {
         value: "previous-year",
         label: "Previous year",
-        period: "year",
-        date: null,
+        period: "previous-year",
+        date: -1,
     },
 ]
 
 export const periodsWithSeparators: ({ separator: true } | PeriodConfiguration)[] = [
-    {value: "7d", label: "7 days", period: "7d", date: null},
-    {value: "30d", label: "30 days", period: "30d", date: null},
-    {value: "12m", label: "12 months", period: "12m", date: null},
+    {value: "7d", label: "7 days", period: "7d", date: 0},
+    {value: "30d", label: "30 days", period: "30d", date: 0},
+    {value: "12m", label: "12 months", period: "12m", date: 0},
     {separator: true},
-    {value: "month", label: "Month to date", period: "month", date: null},
+    {value: "month", label: "Month to date", period: "month", date: 0},
     {
         value: "previous-month",
         label: "Previous month",
-        period: "month",
-        date: null,
+        period: "previous-month",
+        date: -1,
     },
     {separator: true},
-    {value: "year", label: "Year to date", period: "year", date: null},
+    {value: "year", label: "Year to date", period: "year", date: 0},
     {
         value: "previous-year",
         label: "Previous year",
-        period: "year",
-        date: null,
+        period: "previous-year",
+        date: -1,
     },
 ]
 
@@ -74,4 +74,16 @@ export const calculateDefaultDateForPeriod = (periodValue: string): string => {
     }
 
     return format(date, "yyyy-MM-dd")
+}
+
+export const safeApiPeriod = (period: Period): string => {
+    if (period === "previous-month") {
+        return "month"
+    }
+
+    if (period === "previous-year") {
+        return "year"
+    }
+
+    return period
 }

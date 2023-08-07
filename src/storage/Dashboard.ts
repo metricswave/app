@@ -92,6 +92,7 @@ export function useDashboardsState() {
     }
 
     const addWidgetToDashboard = (dashboardIndex: number, item: DashboardItem) => {
+        console.log({dashboardIndex, item})
         const dashboard = dashboards[dashboardIndex]
         const newDashboard = {
             ...dashboard,

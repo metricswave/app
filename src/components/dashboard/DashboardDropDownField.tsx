@@ -61,7 +61,7 @@ export default function DashboardDropDownField(
                             {options.map((option, index) => (
                                 <DropdownMenu.Item
                                     key={index}
-                                    className="group text-[13px] leading-none rounded-[3px] flex items-center h-[25px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:opacity-30 data-[disabled]:pointer-events-none data-[highlighted]:bg-blue-50 dark:data-[highlighted]:bg-blue-800/20 data-[highlighted]:text-blue-500 dark:data-[highlighted]:text-blue-100"
+                                    className="group text-[13px] leading-none rounded-[3px] flex items-center h-[35px] sm:h-[25px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:opacity-30 data-[disabled]:pointer-events-none data-[highlighted]:bg-blue-50 dark:data-[highlighted]:bg-blue-800/20 data-[highlighted]:text-blue-500 dark:data-[highlighted]:text-blue-100"
                                     onSelect={(e) => {
                                         setTimeout(() => setValue(option.value), 100)
                                     }}
@@ -76,7 +76,7 @@ export default function DashboardDropDownField(
                             <DropdownMenu.Separator className="h-[1px] bg-zinc-400/20 dark:bg-zinc-700 m-[5px]"/>
 
                             <DropdownMenu.Item
-                                className="group text-[13px] leading-none rounded-[3px] flex items-center h-[25px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:opacity-30 data-[disabled]:pointer-events-none data-[highlighted]:bg-blue-50 dark:data-[highlighted]:bg-blue-800/20 data-[highlighted]:text-blue-500 dark:data-[highlighted]:text-blue-100"
+                                className="group text-[13px] leading-none rounded-[3px] flex items-center h-[35px] sm:h-[25px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:opacity-30 data-[disabled]:pointer-events-none data-[highlighted]:bg-blue-50 dark:data-[highlighted]:bg-blue-800/20 data-[highlighted]:text-blue-500 dark:data-[highlighted]:text-blue-100"
                                 onSelect={(e) => {
                                     setTimeout(initCreateNewDashboard, 100)
                                 }}

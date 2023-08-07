@@ -97,8 +97,7 @@ export function Dashboards() {
 
         const items = dashboards[dashboardIndex].items
         const item = items[widgetIndex]
-        const nextItem = items[widgetIndex + 1]
-        items[widgetIndex] = nextItem
+        items[widgetIndex] = items[widgetIndex + 1]
         items[widgetIndex + 1] = item
         updateDashboard(dashboardIndex, {items})
     }
@@ -110,8 +109,7 @@ export function Dashboards() {
 
         const items = dashboards[dashboardIndex].items
         const item = items[widgetIndex]
-        const previousItem = items[widgetIndex - 1]
-        items[widgetIndex] = previousItem
+        items[widgetIndex] = items[widgetIndex - 1]
         items[widgetIndex - 1] = item
         updateDashboard(dashboardIndex, {items})
     }

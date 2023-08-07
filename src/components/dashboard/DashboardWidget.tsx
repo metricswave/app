@@ -10,6 +10,23 @@ import DeleteButton from "../form/DeleteButton"
 import {TriggerFunnelStats} from "../triggers/TriggerFunnelStats"
 import {app} from "../../config/app"
 
+type Props = {
+    eventUuid: string,
+    title: string,
+    size: "base" | "large",
+    type: DashboardItemType,
+    parameter?: string,
+    period: PeriodConfiguration,
+    compareWithPrevious: boolean,
+    date: string,
+    removeWidget: () => void,
+    editWidget: (item: DashboardItem) => void,
+    moveWidgetUp: () => void,
+    canMoveUp: boolean,
+    moveWidgetDown: () => void,
+    canMoveDown: boolean,
+}
+
 export default function DashboardWidget(
     {
         eventUuid,
@@ -26,22 +43,7 @@ export default function DashboardWidget(
         canMoveUp,
         moveWidgetDown,
         canMoveDown,
-    }: {
-        eventUuid: string,
-        title: string,
-        size: "base" | "large",
-        type: DashboardItemType,
-        parameter?: string,
-        period: PeriodConfiguration,
-        compareWithPrevious: boolean,
-        date: string,
-        removeWidget: () => void,
-        editWidget: (item: DashboardItem) => void,
-        moveWidgetUp: () => void,
-        canMoveUp: boolean,
-        moveWidgetDown: () => void,
-        canMoveDown: boolean,
-    },
+    }: Props,
 ) {
     const [view, setView] = useState<"editing" | "viewing">("viewing")
     const {triggerByUuid} = useTriggersState()
@@ -50,6 +52,8 @@ export default function DashboardWidget(
     if (trigger === undefined) {
         return null
     }
+
+    console.log({period: period.period, date})
 
     return (
         <div
@@ -108,6 +112,8 @@ export default function DashboardWidget(
                     title={title}
                     trigger={trigger}
                     defaultPeriod={period.period}
+                    defaultDate={date}
+                    hideFilters
                 />}
 
                 {type === "stats" &&

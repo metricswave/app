@@ -3,7 +3,7 @@ import DropDownSelectFieldBox from "../form/DropDownSelectFieldBox"
 import {Trigger} from "../../types/Trigger"
 import {DashboardItemSize, DashboardItemType} from "../../storage/Dashboard"
 import PrimaryButton from "../form/PrimaryButton"
-import {useState} from "react"
+import {useEffect, useState} from "react"
 import {ChevronDownIcon, ChevronUpIcon} from "@radix-ui/react-icons"
 
 type Props = {
@@ -79,6 +79,7 @@ export default function WidgetForm(
 ) {
     const [titleError, setTitleError] = useState<string | false>(false)
     const [eventError, setEventError] = useState<string | false>(false)
+    const [typesOptions, setTypesOptions] = useState<{ value: string, label: string }[]>([])
 
     const handleSubmitWidgetForm = () => {
         let hasError = false
@@ -101,6 +102,15 @@ export default function WidgetForm(
             submitWidgetForm()
         }
     }
+
+    useEffect(() => {
+        setTypesOptions(getTypeOptionsForTrigger(selectedTrigger))
+    }, [selectedTrigger])
+    useEffect(() => {
+        if (typesOptions.length > 0) {
+            setType(typesOptions[0].value as DashboardItemType)
+        }
+    }, [typesOptions])
 
     return (<>
         <div className="flex flex-col flex-grow w-full max-w-[400px] space-y-4">
@@ -191,7 +201,7 @@ export default function WidgetForm(
 
             <DropDownSelectFieldBox
                 value={type}
-                options={getTypeOptionsForTrigger(selectedTrigger)}
+                options={typesOptions}
                 setValue={(value) => {
                     setType(value as DashboardItemType)
                 }}

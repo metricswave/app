@@ -19,7 +19,7 @@ export function FeedbackWidget() {
             description={"We'd love to hear from you!"}
             open={open}
             onOpenChange={setOpen}
-            button={<div className="fixed bottom-[6.4rem] sm:bottom-4 right-4 z-50">
+            button={<div className="fixed bottom-[6.4rem] sm:bottom-4 right-4 z-40">
                 <button
                     className={[
                         "rounded-full p-5 shadow-lg bg-blue-50 dark:bg-zinc-900 hover:bg-blue-100 smooth cursor-pointer shadow-blue-900/20 dark:shadow-black/50 border-blue-100 dark:border-blue-500/10 border hover:border-blue-200 dark:hover:bg-zinc-800 dark:hover:border-blue-500/30",
