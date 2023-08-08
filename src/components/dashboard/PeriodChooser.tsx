@@ -39,7 +39,7 @@ export function PeriodChooser(
                             return (
                                 <DropdownMenu.Item
                                     key={index}
-                                    className="group text-[13px] leading-none rounded-[3px] flex items-center h-[35px] sm:h-[25px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:opacity-30 data-[disabled]:pointer-events-none data-[highlighted]:bg-blue-50 dark:data-[highlighted]:bg-blue-800/20 data-[highlighted]:text-blue-500 dark:data-[highlighted]:text-blue-100"
+                                    className="group text-[13px] leading-none rounded-[3px] flex items-center h-[35px] sm:h-[30px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:opacity-30 data-[disabled]:pointer-events-none data-[highlighted]:bg-blue-50 dark:data-[highlighted]:bg-blue-800/20 data-[highlighted]:text-blue-500 dark:data-[highlighted]:text-blue-100"
                                     onSelect={() => setPeriodAndDate(p.period)}
                                 >
                                     {p.value === activePeriodValue &&
@@ -65,7 +65,7 @@ export function PeriodChooser(
                     />
 
                     <DropdownMenu.Item
-                        className="group text-[13px] leading-none rounded-[3px] flex items-center h-[35px] sm:h-[25px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:opacity-30 data-[disabled]:pointer-events-none data-[highlighted]:bg-blue-50 dark:data-[highlighted]:bg-blue-800/20 data-[highlighted]:text-blue-500 dark:data-[highlighted]:text-blue-100"
+                        className="group text-[13px] leading-none rounded-[3px] flex items-center h-[35px] sm:h-[30px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:opacity-30 data-[disabled]:pointer-events-none data-[highlighted]:bg-blue-50 dark:data-[highlighted]:bg-blue-800/20 data-[highlighted]:text-blue-500 dark:data-[highlighted]:text-blue-100"
                         onSelect={() => setCompareWithPrevious(!compareWithPrevious)}
                     >
                         {compareWithPrevious &&
