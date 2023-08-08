@@ -12,6 +12,7 @@ import {FIVE_MINUTES_SECONDS, FIVE_SECONDS, TWO_SECONDS} from "../helpers/Expira
 import {useUserState} from "../storage/User"
 import SecondaryButton from "../components/form/SecondaryButton"
 import EventTracker from "../helpers/EventTracker"
+import {DeviceName} from "../storage/DeviceName"
 
 
 type Step = "loading" | "add-code"
@@ -75,6 +76,7 @@ export function Welcome() {
     }, [])
 
     const handleFinish = () => {
+        EventTracker.track("675c40d3-d5c8-44df-bcb5-7882d1959e45", {step: "Welcomed", user_id: DeviceName.name()})
         const referrer = localStorage.getItem("metricswave:referrer") ?? document.referrer
         EventTracker.track("f3fcf7cc-416d-4ff9-bc12-3878e9127ff7", {email: user?.email, referrer, step: 2})
 

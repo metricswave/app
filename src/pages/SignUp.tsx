@@ -1,7 +1,7 @@
 import PrimaryButton from "../components/form/PrimaryButton"
 import Authentication from "../components/wrappers/Authentication"
 import {LinkButton, NoLinkButton} from "../components/buttons/LinkButton"
-import {FormEvent, useState} from "react"
+import {FormEvent, useEffect, useState} from "react"
 import {DeviceName} from "../storage/DeviceName"
 import {fetchApi} from "../helpers/ApiFetcher"
 import {Tokens} from "../types/Token"
@@ -87,6 +87,7 @@ export default function SignUp() {
                 window.location.href = "/welcome"
                 setLoading(false)
 
+                EventTracker.track("675c40d3-d5c8-44df-bcb5-7882d1959e45", {step: "Logged", user_id: DeviceName.name()})
                 const referrer = localStorage.getItem("metricswave:referrer") ?? document.referrer
                 EventTracker.track("f3fcf7cc-416d-4ff9-bc12-3878e9127ff7", {email, referrer, step: 1})
             },
@@ -99,6 +100,14 @@ export default function SignUp() {
             },
         })
     }
+
+    useEffect(() => {
+        if (!withEmail) {
+            EventTracker.track("675c40d3-d5c8-44df-bcb5-7882d1959e45", {step: "Init", user_id: DeviceName.name()})
+        } else {
+            EventTracker.track("675c40d3-d5c8-44df-bcb5-7882d1959e45", {step: "oAuth / Form", user_id: DeviceName.name()})
+        }
+    }, [withEmail])
 
     return (
         <Authentication

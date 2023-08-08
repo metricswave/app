@@ -25,6 +25,7 @@ export default function ServiceConnection() {
         if (!user) return
 
         if (userCreated) {
+            EventTracker.track("675c40d3-d5c8-44df-bcb5-7882d1959e45", {step: "Logged", user_id: DeviceName.name()})
             const referrer = localStorage.getItem("metricswave:referrer") ?? document.referrer
             EventTracker.track("f3fcf7cc-416d-4ff9-bc12-3878e9127ff7", {email: user?.email, referrer, step: 1})
         }
