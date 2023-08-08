@@ -140,7 +140,7 @@ export function TriggerStats(
                                                 <ArrowDownIcon className="h-4 text-red-500"/>
                                             }
                                             <div className="text-sm text-gray-400 dark:text-gray-600">
-                                                {percentageDifference}%
+                                                {number_formatter(percentageDifference)}%
                                             </div>
                                         </div>}
                                     </div>}
