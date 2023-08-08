@@ -8,6 +8,7 @@ import {calculateDefaultDateForPeriod, fieldTypeForPeriod, Period} from "../../t
 import InputFieldBox from "../form/InputFieldBox"
 import {ArrowDownIcon, ArrowUpIcon} from "@radix-ui/react-icons"
 import {TriggerStatsLoading} from "./TriggerStatsLoading"
+import {percentage_diff} from "../../helpers/PercentageOf"
 
 function getGraphData(stats: Stats, previousPeriodStats: Stats, view: Period) {
     const data = stats.plot.map((stat, index) => ({
@@ -106,12 +107,8 @@ export function TriggerStats(
                 <div className="flex flex-col sm:flex-row justify-start sm:items-center mb-10">
                     {Object.values(stats.headers).map((header, index) => {
                         const key = Object.keys(stats.headers!)[index] as "unique" | "pageViews" | "visits"
-                        const previousStatsHeaders = previousPeriodStats?.headers ?
-                            (previousPeriodStats?.headers[key]) :
-                            0
-                        const percentageDifference = previousStatsHeaders !== 0 ?
-                            number_formatter((header - previousStatsHeaders) / previousStatsHeaders * 100) :
-                            0
+                        const previousStatsHeaders = previousPeriodStats?.headers ? (previousPeriodStats?.headers[key]) : 0
+                        const percentageDifference = percentage_diff(header, previousStatsHeaders)
 
                         return (
                             <div

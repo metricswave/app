@@ -6,8 +6,10 @@ import {TriggerStatsLoading} from "./TriggerStatsLoading"
 import {ParamStatRow, useTriggerParamsStatsState} from "../../storage/TriggerParamsStats"
 import {ResponsiveFunnel} from "@nivo/funnel"
 import {FunnelDatum} from "@nivo/funnel/dist/types/types"
-import {percentage_of} from "../../helpers/PercentageOf"
+import {percentage_diff, percentage_of} from "../../helpers/PercentageOf"
 import InputFieldBox from "../form/InputFieldBox"
+import {ArrowDownIcon, ArrowUpIcon} from "@radix-ui/react-icons"
+import {number_formatter} from "../../helpers/NumberFormatter"
 
 const responsiveFunnelTheme = {
     fontFamily: "var(--font-mono)",
@@ -19,7 +21,7 @@ const responsiveFunnelTheme = {
     },
     tooltip: {
         container: {
-            backgroundColor: "var(--backgroud-color-funnel-tooltip)",
+            backgroundColor: "var(--background-color-funnel-tooltip)",
             fontSize: 14,
         },
     },
@@ -53,11 +55,13 @@ export function TriggerFunnelStats(
     const [description, setDescription] = useState<string>(
         "The funnel shows the number of hits for each step of the funnel.",
     )
+    const [previousDescription, setPreviousDescription] = useState<string | null>(null)
 
-    const {stats, loadStats, loadPreviousStats, statsLoading} = useTriggerParamsStatsState()
+    const {stats, previousStats, loadStats, loadPreviousStats, statsLoading} = useTriggerParamsStatsState()
 
     const [hasStats, setHasStats] = useState<boolean>(false)
     const [data, setData] = useState<FunnelDatum[]>([])
+    const [previousData, setPreviousData] = useState<FunnelDatum[]>([])
     const [period, setPeriod] = useState<Period>(defaultPeriod)
     const [date, setDate] = useState<string>(defaultDate ?? calculateDefaultDateForPeriod(period))
     const [fieldDate, setFieldDate] = useState<string>()
@@ -79,7 +83,7 @@ export function TriggerFunnelStats(
 
     // Set data and description
     useEffect(() => {
-        if (hasStats === false) {
+        if (!hasStats) {
             return
         }
 
@@ -92,26 +96,79 @@ export function TriggerFunnelStats(
                 value: paramStat?.score ?? 0,
             }
         })
-        const percentageOfUserThatReachedLastStep = percentage_of(
-            newData[0].value,
-            newData[newData.length - 1].value,
-        )
 
         setData(newData)
-        setDescription(`${percentageOfUserThatReachedLastStep}% of users reached the last step of the funnel.`)
-    }, [hasStats])
+    }, [stats, hasStats])
 
-    // const previousParamStats: ParamStatRow[] | undefined = previousStats !== undefined && previousStats.plot !== undefined && previousStats.plot[parameter] !== undefined ?
-    //     Object.values(previousStats.plot[parameter]) :
-    //     undefined
-    // const totalScore = paramStats.reduce((acc, curr) => acc + curr.score, 0)
-    // const totalScoreString = number_formatter(totalScore)
+    // Set description
+    useEffect(() => {
+        if (data.length === 0) {
+            return
+        }
+
+        const percentageOfUserThatReachedLastStep = percentage_of(
+            data[0].value,
+            data[data.length - 1].value,
+        )
+
+        setDescription(`${percentageOfUserThatReachedLastStep}% of users reached the last step of the funnel.`)
+    }, [data])
+
+    // Set previous data
+    useEffect(() => {
+        if (!hasStats) {
+            return
+        }
+
+        if (!compareWithPrevious) {
+            setPreviousDescription(null)
+            return
+        }
+
+        if (previousStats?.plot === undefined || previousStats.plot[parameter] === undefined) {
+            return
+        }
+
+        const previousParamStats: ParamStatRow[] = hasStats ? Object.values(previousStats!.plot[parameter]) : []
+        const newData = trigger.configuration.steps!.map((paramKey) => {
+            const paramStat = previousParamStats.find((paramStat) => paramStat.param === paramKey)
+            return {
+                id: paramKey,
+                label: paramKey,
+                value: paramStat?.score ?? 0,
+            }
+        })
+
+        setPreviousData(newData)
+    }, [previousStats, compareWithPrevious, hasStats])
 
     useEffect(() => {
-        setDate(fieldTypeForPeriod(period) === "month" ? fieldDate + "-01" : fieldDate!)
-    }, [fieldDate])
+        if (data.length === 0 || previousData.length === 0) {
+            return
+        }
+
+        const percentageOfUserThatReachedLastStep = percentage_of(
+            data[0].value,
+            data[data.length - 1].value,
+        )
+
+        const previousPercentageOfUserThatReachedLastStep = percentage_of(
+            previousData[0].value,
+            previousData[previousData.length - 1].value,
+        )
+
+        if (isNaN(percentageOfUserThatReachedLastStep) || isNaN(previousPercentageOfUserThatReachedLastStep)) {
+            return
+        }
+
+        setPreviousDescription(
+            `${percentageOfUserThatReachedLastStep}% of users reached the last step of the funnel, compared to ${previousPercentageOfUserThatReachedLastStep}% in the previous period.`,
+        )
+    }, [data, previousStats])
+
+    useEffect(() => setDate(fieldTypeForPeriod(period) === "month" ? fieldDate + "-01" : fieldDate!), [fieldDate])
     useEffect(() => setPeriodAndDate(defaultPeriod), [defaultPeriod])
-    // useEffect(() => setDate(defaultDate!), [defaultDate])
+    useEffect(() => setDate(defaultDate!), [defaultDate])
 
     // Load stats and compare with previous on changes
     useEffect(
@@ -132,7 +189,7 @@ export function TriggerFunnelStats(
             <div className="pb-6 flex flex-col sm:flex-row space-y-3 sm:space-y-0 items-start sm:items-center justify-between">
                 <PageTitle
                     title={title ?? "Funnel"}
-                    description={description}
+                    description={compareWithPrevious && previousDescription !== null ? previousDescription : description}
                 />
 
                 {!hideFilters &&
@@ -172,6 +229,42 @@ export function TriggerFunnelStats(
                     borderOpacity={1}
                     motionConfig="wobbly"
                 />
+            </div>
+
+            <div className="pt-3 pb-2">
+                <ul className="flex flex-row justify-evenly text-center">
+                    {data.map((d) => {
+                        const previousStats = previousData.find((pd) => pd.id === d.id)?.value ?? 0
+                        const percentageDifference = percentage_diff(d.value, previousStats)
+
+                        return (
+                            <li key={d.id} className="flex-1 flex flex-col gap-2 text-sm sm:text-xs">
+                                <div className="flex flex-row gap-2 items-center justify-center">
+                                    <span className="opacity-70">{d.label}</span>
+                                    <span>{d.value}</span>
+                                </div>
+
+                                {compareWithPrevious && <div
+                                    className="cursor-help flex flex-row gap-1 items-center justify-center"
+                                    title={`Previous period: ${previousStats} hits`}
+                                >
+                                    {percentageDifference !== Infinity && <>
+                                        {percentageDifference > 0 ?
+                                            <ArrowUpIcon className="h-4 text-green-500"/> :
+                                            <ArrowDownIcon className="h-4 text-red-500"/>
+                                        }
+                                    </>}
+
+                                    {
+                                        percentageDifference === Infinity ?
+                                            <span className="text-xs opacity-50">No Previous Data</span> :
+                                            <span>{number_formatter(percentageDifference)}%</span>
+                                    }
+                                </div>}
+                            </li>
+                        )
+                    })}
+                </ul>
             </div>
         </div>
     )

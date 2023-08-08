@@ -53,8 +53,6 @@ export default function DashboardWidget(
         return null
     }
 
-    console.log({period: period.period, date})
-
     return (
         <div
             className={[
@@ -114,6 +112,7 @@ export default function DashboardWidget(
                     defaultPeriod={period.period}
                     defaultDate={date}
                     hideFilters
+                    compareWithPrevious={compareWithPrevious}
                 />}
 
                 {type === "stats" &&

@@ -25,7 +25,7 @@
 
     /* Funnel */
     --color-funnel-label: var(--color-zinc-900);
-    --backgroud-color-funnel-tooltip: var(--color-white);
+    --background-color-funnel-tooltip: var(--color-white);
     --color-funnel-1: var(--color-blue-500);
     --color-funnel-2: var(--color-blue-400);
     --color-funnel-3: var(--color-blue-300);
@@ -49,7 +49,7 @@
 
         /* Funnel */
         --color-funnel-label: var(--color-blue-200);
-        --backgroud-color-funnel-tooltip: var(--color-zinc-900);
+        --background-color-funnel-tooltip: var(--color-zinc-900);
         --color-funnel-1: var(--color-blue-900);
         --color-funnel-2: var(--color-blue-800);
         --color-funnel-3: var(--color-blue-700);
