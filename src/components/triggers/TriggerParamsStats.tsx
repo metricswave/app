@@ -177,11 +177,11 @@ export function TriggerParamsStats(
                                     </div>
 
                                     <div className="flex flex-row gap-4 items-center justify-start">
-                                        <div className="flex-grow flex flex-col gap-2">
+                                        <div className="flex-grow flex flex-col gap-1.5">
                                             <div className="w-full flex flex-row gap-2">
                                                 {[0, 1, 2, 3].map((i) => {
-                                                    const barPercentage = percentage_of(totalScore, stat.score) - (25 * i)
-                                                    const p = barPercentage < 1 ? 0 : Math.min(barPercentage, 25)
+                                                    const barPercentage = percentage_of(totalScore, stat.score) - (23 * i)
+                                                    const p = barPercentage < 1 ? 0 : Math.min(barPercentage, 23)
 
                                                     return (
                                                         <div key={i} className="h-1 rounded bg-blue-500"
@@ -194,8 +194,8 @@ export function TriggerParamsStats(
                                             {compareWithPrevious && (
                                                 <div className="w-full flex flex-row gap-2">
                                                     {[0, 1, 2, 3].map((i) => {
-                                                        const barPercentage = percentage_of(totalScore, previousStatScore) - (25 * i)
-                                                        const p = barPercentage < 1 ? 0 : Math.min(barPercentage, 25)
+                                                        const barPercentage = percentage_of(totalScore, previousStatScore) - (23 * i)
+                                                        const p = barPercentage < 1 ? 0 : Math.min(barPercentage, 23)
 
                                                         return (
                                                             <div key={i} className="h-1 rounded bg-slate-500"
