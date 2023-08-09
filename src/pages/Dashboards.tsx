@@ -171,7 +171,7 @@ export function Dashboards() {
 
             </div>
 
-            {changedToPublic && <div>
+            {dashboards[dashboardIndex].uuid !== null && changedToPublic && <div>
                 <div className="p-4 bg-green-100 border border-green-200 dark:bg-green-800/20 dark:border-green-800/50">
                     <div className=" flex flex-row gap-2 items-center justify-between">
                         <p className="text-mauve12 text-sm leading-[19px] font-bold">Share your dashboard!</p>

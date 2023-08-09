@@ -2,6 +2,7 @@ import {useEffect, useState} from "react"
 import {fetchAuthApi} from "../helpers/ApiFetcher"
 import {expirableLocalStorage, THIRTY_SECONDS} from "../helpers/ExpirableLocalStorage"
 import {useAuthState} from "./AuthToken"
+import {slugify} from "../helpers/Slugify"
 
 export type Dashboard = {
     id: string
@@ -85,6 +86,7 @@ export function useDashboardsState() {
             body: newDashboards[index],
             success: (data) => {
                 expirableLocalStorage.set(KEY, newDashboards, THIRTY_SECONDS)
+                reloadDashboards(true)
             },
             error: (err: any) => null,
             catcher: (err: any) => null,
@@ -134,6 +136,9 @@ export function useDashboardsState() {
         removeWidgetFromDashboard,
         updateDashboard: updateDashboardFields,
         reloadDashboards,
-        publicDashboardPath: (dashboard: Dashboard) => `https://app.metricswave.com/${dashboard.uuid}/${dashboard.name}`,
+        publicDashboardPath: (dashboard: Dashboard) => {
+            const n = slugify(dashboard.name)
+            return `https://app.metricswave.com/${dashboard.uuid}/${n}`
+        },
     }
 }
