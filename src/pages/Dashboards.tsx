@@ -2,7 +2,6 @@ import SectionContainer from "../components/sections/SectionContainer"
 import PageTitle from "../components/sections/PageTitle"
 import React, {useEffect, useState} from "react"
 import {calculateDefaultDateForPeriod, DEFAULT_PERIOD, Period, periods} from "../types/Period"
-import {AddWidget} from "../components/dashboard/AddWidget"
 import {Dashboard, DashboardItem, useDashboardsState} from "../storage/Dashboard"
 import DashboardDropDownField from "../components/dashboard/DashboardDropDownField"
 import {CopyButtonIcon} from "../components/form/CopyButton"
@@ -11,16 +10,11 @@ import {useSearchParams} from "react-router-dom"
 import {fetchAuthApi} from "../helpers/ApiFetcher"
 import {PeriodChooser} from "../components/dashboard/PeriodChooser"
 import {NewDashboardDialog} from "../components/dashboard/NewDashboardDialog"
-import DashboardWidget from "../components/dashboard/DashboardWidget"
+import {DashboardView} from "../components/dashboard/DashboardView"
 
 export function Dashboards() {
     const {
-        dashboards,
-        addWidgetToDashboard,
-        removeWidgetFromDashboard,
-        updateDashboard,
-        reloadDashboards,
-        publicDashboardPath,
+        dashboards, addWidgetToDashboard, updateDashboard, reloadDashboards, publicDashboardPath,
     } = useDashboardsState()
     const [searchParams, setSearchParams] = useSearchParams()
     const [period, setPeriod] = useState<Period>(searchParams.get("period") as Period ?? DEFAULT_PERIOD)
@@ -39,30 +33,17 @@ export function Dashboards() {
     const [changedToPublic, setChangedToPublic] = useState<boolean>(false)
 
     let addButtonSize = "md:col-span-2"
-    const dashboardsHasLoad = dashboards !== undefined
-        && dashboards.length > 0
+    const dashboardsHasLoad = dashboards !== undefined && dashboards.length > 0
         && dashboards[dashboardIndex] !== undefined
-
     if (dashboardsHasLoad) {
         addButtonSize = dashboards[dashboardIndex].items.reduce((acc, item) => {
             return acc + (item.size === "base" ? 1 : 2)
         }, 0) % 2 === 0 ? "md:col-span-2" : "md:col-span-1"
     }
 
-    useEffect(
-        () => setSearchParams({compare: compareWithPrevious ? "1" : "0", period, dashboard: dashboardIndex.toString()}),
-        [period, dashboardIndex, compareWithPrevious],
-    )
-
-    const editWidget = (dashboardIndex: number, widgetIndex: number, item: DashboardItem) => {
-        updateDashboard(dashboardIndex, {
-            items: dashboards[dashboardIndex].items.map((w, i) => i === widgetIndex ? item : w),
-        })
-    }
-
-    const removeWidget = (dashboardIndex: number, widgetIndex: number) => {
-        removeWidgetFromDashboard(dashboardIndex, widgetIndex)
-    }
+    useEffect(() => setSearchParams(
+        {compare: compareWithPrevious ? "1" : "0", period, dashboard: dashboardIndex.toString()},
+    ), [period, dashboardIndex, compareWithPrevious])
 
     const handleDashboardUpdate = (dashboardIndex: number, fields: Partial<Dashboard>) => {
         if (fields.public !== undefined && fields.public && !dashboards[dashboardIndex].public) {
@@ -90,30 +71,6 @@ export function Dashboards() {
         reloadDashboards(true)
     }
 
-    const moveWidgetDown = (dashboardIndex: number, widgetIndex: number) => {
-        if (widgetIndex === dashboards[dashboardIndex].items.length - 1) {
-            return
-        }
-
-        const items = dashboards[dashboardIndex].items
-        const item = items[widgetIndex]
-        items[widgetIndex] = items[widgetIndex + 1]
-        items[widgetIndex + 1] = item
-        updateDashboard(dashboardIndex, {items})
-    }
-
-    const moveWidgetUp = (dashboardIndex: number, widgetIndex: number) => {
-        if (widgetIndex === 0) {
-            return
-        }
-
-        const items = dashboards[dashboardIndex].items
-        const item = items[widgetIndex]
-        items[widgetIndex] = items[widgetIndex - 1]
-        items[widgetIndex - 1] = item
-        updateDashboard(dashboardIndex, {items})
-    }
-
     useEffect(() => {
         if (dashboardJustCreated) {
             setDashboardIndex(dashboards.length - 1)
@@ -131,9 +88,11 @@ export function Dashboards() {
     }
 
     return <>
-        <NewDashboardDialog created={handleDashboardCreated}
-                            open={newDashboardDialogOpen}
-                            setOpen={setNewDashboardDialogOpen}/>
+        <NewDashboardDialog
+            created={handleDashboardCreated}
+            open={newDashboardDialogOpen}
+            setOpen={setNewDashboardDialogOpen}
+        />
 
         <SectionContainer size={"big"}>
             <div className="flex flex-row space-y-4 justify-between items-center">
@@ -168,7 +127,6 @@ export function Dashboards() {
                     compareWithPrevious={compareWithPrevious}
                     setCompareWithPrevious={setCompareWithPrevious}
                 />
-
             </div>
 
             {dashboards[dashboardIndex].uuid !== null && changedToPublic && <div>
@@ -180,53 +138,22 @@ export function Dashboards() {
                             <div className="cursor-pointer rounded-sm hover:bg-zinc-100 smooth p-1">
                                 <CopyButtonIcon textToCopy={publicDashboardPath(dashboards[dashboardIndex])}/>
                             </div>
-
                         </div>
                     </div>
                 </div>
             </div>}
         </SectionContainer>
 
-        {dashboardsHasLoad && <SectionContainer size={"extra-big"}>
-            <div className="-mx-2.5 pb-64 grid gap-4 grid-cols-1 md:grid-cols-2 ">
-                {dashboards[dashboardIndex].items.map(({eventUuid, title, size, type, parameter}, key) => (
-                    <DashboardWidget
-                        eventUuid={eventUuid}
-                        title={title}
-                        size={size as "base" | "large"}
-                        type={type}
-                        period={periodConfiguration}
-                        compareWithPrevious={compareWithPrevious}
-                        date={date}
-                        removeWidget={() => removeWidget(dashboardIndex, key)}
-                        editWidget={(item: DashboardItem) => {
-                            editWidget(dashboardIndex, key, item)
-                        }}
-                        parameter={parameter}
-                        key={key}
-                        moveWidgetDown={() => {
-                            moveWidgetDown(dashboardIndex, key)
-                        }}
-                        moveWidgetUp={() => {
-                            moveWidgetUp(dashboardIndex, key)
-                        }}
-                        canMoveDown={key < dashboards[dashboardIndex].items.length - 1}
-                        canMoveUp={key > 0}
-                    />
-                ))}
-
-                <AddWidget
-                    defaultStep={
-                        dashboards[dashboardIndex] === undefined || dashboards[dashboardIndex].items.length === 0 ?
-                            "selecting" :
-                            "idle"
-                    }
-                    addButtonSize={addButtonSize}
-                    addWidgetToDashboard={(item: DashboardItem) => {
-                        addWidgetToDashboard(dashboardIndex, item)
-                    }}
-                />
-            </div>
-        </SectionContainer>}
+        {dashboardsHasLoad && <DashboardView
+            dashboards={dashboards}
+            dashboardIndex={dashboardIndex}
+            addButtonSize={addButtonSize}
+            period={periodConfiguration}
+            compareWithPrevious={compareWithPrevious}
+            date={date}
+            addWidgetToDashboard={(item: DashboardItem) => {
+                addWidgetToDashboard(dashboardIndex, item)
+            }}
+        />}
     </>
 }

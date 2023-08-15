@@ -223,7 +223,7 @@ export function TriggerFunnelStats(
                     afterSeparatorLength={0}
                     afterSeparatorOffset={15}
                     currentPartSizeExtension={10}
-                    borderWidth={4}
+                    borderWidth={2}
                     currentBorderWidth={8}
                     fillOpacity={0.5}
                     borderOpacity={1}

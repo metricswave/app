@@ -4,7 +4,7 @@ import {Trigger} from "../../types/Trigger"
 import {DashboardItemSize, DashboardItemType} from "../../storage/Dashboard"
 import PrimaryButton from "../form/PrimaryButton"
 import {useEffect, useState} from "react"
-import {ChevronDownIcon, ChevronUpIcon} from "@radix-ui/react-icons"
+import {twMerge} from "../../helpers/TwMerge"
 
 type Props = {
     addButtonSize?: string
@@ -22,11 +22,8 @@ type Props = {
     setParameter: (value: string) => void
     submitButtonLabel?: string
     submitWidgetForm: () => void
-    showMoveButtons?: boolean
-    moveWidgetUp?: () => void
-    canMoveUp?: boolean
-    moveWidgetDown?: () => void
-    canMoveDown?: boolean
+    showTitle?: boolean,
+    className?: string,
 }
 
 function getTypeOptionsForTrigger(selectedTrigger: Trigger | null) {
@@ -70,11 +67,8 @@ export default function WidgetForm(
         setParameter,
         submitButtonLabel = "Add Widget",
         submitWidgetForm,
-        showMoveButtons = false,
-        canMoveUp = true,
-        moveWidgetUp,
-        canMoveDown = true,
-        moveWidgetDown,
+        showTitle = true,
+        className = "",
     }: Props,
 ) {
     const [titleError, setTitleError] = useState<string | false>(false)
@@ -113,42 +107,13 @@ export default function WidgetForm(
     }, [typesOptions])
 
     return (<>
-        <div className="flex flex-col flex-grow w-full max-w-[400px] space-y-4">
-            <div className="font-bold opacity-80 text-center pb-4">
+        <div className={twMerge(
+            "flex flex-col flex-grow w-full max-w-[400px] space-y-4",
+            className ?? "",
+        )}>
+            {showTitle && <div className="font-bold opacity-80 text-center pb-4">
                 Configure your Widget
-            </div>
-
-            {showMoveButtons && (
-                <div className="flex flex-row justify-between text-sm pb-4">
-                    <div
-                        className={[
-                            "flex flex-row items-center gap-2 smooth-all",
-                            canMoveUp ?
-                                "hover:text-blue-500 cursor-pointer opacity-70 hover:opacity-100" :
-                                "text-gray-400 opacity-50 cursor-default",
-                        ].join(" ")}
-                        onClick={moveWidgetUp}
-                    >
-                        <ChevronUpIcon/>
-                        Move Up
-                    </div>
-
-                    <div className="border-r soft-border/50"></div>
-
-                    <div
-                        className={[
-                            "flex flex-row items-center gap-2 smooth-all",
-                            canMoveDown ?
-                                "hover:text-blue-500 cursor-pointer opacity-70 hover:opacity-100" :
-                                "text-gray-400 opacity-50 cursor-default",
-                        ].join(" ")}
-                        onClick={moveWidgetDown}
-                    >
-                        Move Down
-                        <ChevronDownIcon/>
-                    </div>
-                </div>
-            )}
+            </div>}
 
             <InputFieldBox
                 value={title}

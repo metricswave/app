@@ -1,8 +1,10 @@
 import React from "react"
+import {twMerge} from "../../helpers/TwMerge"
 
-export default function SectionContainer({size = "normal", children, ...props}: {
+export default function SectionContainer({size = "normal", children, className, ...props}: {
     size?: "normal" | "big" | "extra-big"
     children: React.ReactNode
+    className?: string
 }) {
     let width = "max-w-[700px]"
     if (size === "big") {
@@ -13,7 +15,10 @@ export default function SectionContainer({size = "normal", children, ...props}: 
 
     return (
         <div className={
-            `mt-1 sm:mt-4 p-6 flex flex-col space-y-4 mx-auto ${width}`
+            twMerge(
+                `mt-1 sm:mt-4 p-6 flex flex-col space-y-4 mx-auto ${width}`,
+                className,
+            )
         }>
             {children}
         </div>

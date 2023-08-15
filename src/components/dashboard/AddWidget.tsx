@@ -4,11 +4,14 @@ import {useTriggersState} from "../../storage/Triggers"
 import {DashboardItem, DashboardItemSize, DashboardItemType} from "../../storage/Dashboard"
 import WidgetForm from "./WidgetForm"
 import {Cross1Icon} from "@radix-ui/react-icons"
+import {twMerge} from "../../helpers/TwMerge"
 
 type Props = {
     addButtonSize?: string
     addWidgetToDashboard: (item: DashboardItem) => void
     defaultStep?: Steps
+    className?: string
+    formClassName?: string
 }
 
 type Steps = "idle" | "selecting"
@@ -18,6 +21,8 @@ export function AddWidget(
         addButtonSize = "w-full",
         addWidgetToDashboard,
         defaultStep,
+        className,
+        formClassName,
     }: Props,
 ) {
     const {triggers, triggerByUuid} = useTriggersState()
@@ -62,7 +67,10 @@ export function AddWidget(
             className={`float-left ${addButtonSize}`}
             onClick={() => setStep("selecting")}
         >
-            <div className="bg-white dark:bg-zinc-900 bg-opacity-25 rounded-sm p-14 border-2 border-dashed soft-border flex items-center justify-center smooth hover:cursor-pointer hover:border-blue-300 dark:hover:border-blue-800 hover:bg-opacity-70 group">
+            <div className={twMerge(
+                "bg-white dark:bg-zinc-900 bg-opacity-25 rounded-sm p-14 border-2 border-dashed soft-border flex items-center justify-center smooth hover:cursor-pointer hover:border-blue-300 dark:hover:border-blue-800 hover:bg-opacity-70 group",
+                className,
+            )}>
                 <div className="opacity-40 group-hover:opacity-70">Add Widget</div>
             </div>
         </div>
@@ -71,14 +79,17 @@ export function AddWidget(
     return (
         <div className={`relative float-left ${addButtonSize}`}>
             <div
-                className="absolute right-3 top-3 rounded-full cursor-pointer opacity-60 hover:opacity-90 smooth p-4"
+                className={twMerge("absolute right-3 top-3 rounded-full cursor-pointer opacity-60 hover:opacity-90 smooth p-4")}
                 onClick={() => setStep("idle")}
             >
                 <Cross1Icon/>
             </div>
 
             <div
-                className="bg-white dark:bg-zinc-800 bg-opacity-70 rounded-sm p-6 sm:py-14 border-2 border-dashed border-zinc-300 dark:border-zinc-600 flex items-center justify-center smooth group"
+                className={twMerge(
+                    "bg-white dark:bg-zinc-800 bg-opacity-70 rounded-sm p-6 sm:py-14 border-2 border-dashed border-zinc-300 dark:border-zinc-600 flex items-center justify-center smooth group",
+                    formClassName,
+                )}
             >
                 <WidgetForm
                     title={title}

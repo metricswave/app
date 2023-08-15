@@ -12,10 +12,6 @@ type Props = {
     eventParameter?: string,
     closeWidgetForm: () => void,
     editWidget: (event: DashboardItem) => void,
-    moveWidgetUp: () => void,
-    canMoveUp: boolean,
-    moveWidgetDown: () => void,
-    canMoveDown: boolean,
 }
 
 export function EditWidget(
@@ -27,10 +23,6 @@ export function EditWidget(
         eventParameter = "",
         closeWidgetForm,
         editWidget,
-        moveWidgetUp,
-        canMoveUp,
-        moveWidgetDown,
-        canMoveDown,
     }: Props,
 ) {
     const {triggers, triggerByUuid} = useTriggersState()
@@ -61,6 +53,8 @@ export function EditWidget(
 
     return (<>
         <WidgetForm
+            className="max-w-full"
+            showTitle={false}
             title={title}
             setTitle={setTitle}
             event={event}
@@ -75,17 +69,6 @@ export function EditWidget(
             setParameter={setParameter}
             submitWidgetForm={submitWidgetForm}
             submitButtonLabel={"Edit Widget"}
-            showMoveButtons={true}
-            moveWidgetUp={() => {
-                closeWidgetForm()
-                moveWidgetUp()
-            }}
-            moveWidgetDown={() => {
-                closeWidgetForm()
-                moveWidgetDown()
-            }}
-            canMoveUp={canMoveUp}
-            canMoveDown={canMoveDown}
         />
     </>)
 }

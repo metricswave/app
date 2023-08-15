@@ -18,6 +18,7 @@ import ProfileSettings from "../pages/Settings/ProfileSettings"
 import BillingSettings from "../pages/Settings/BillingSettings"
 import Triggers from "../pages/Triggers"
 import Impersonate from "../pages/Impersonate"
+import {DashboardsModify} from "../components/dashboard/DashboardsModify"
 
 const ServiceConnection = lazy(() => import("../pages/ServiceConnection"))
 const Trigger = lazy(() => import("../pages/Trigger"))
@@ -32,6 +33,10 @@ export const routes: RouteObject[] = [
             {
                 path: "/",
                 element: <Dashboards/>,
+            },
+            {
+                path: "/edit/:dashboardId",
+                element: <DashboardsModify/>,
             },
             {
                 path: "/services",
