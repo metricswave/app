@@ -168,7 +168,7 @@ function SortableItemView(
                             onClick={() => setOpen(id)}
                             className="cursor-pointer"
                         >
-                            <div className="smooth-all p-2 rounded bg-blue-50/50 border border-blue-100 hover:bg-blue-100">
+                            <div className="smooth-all p-2 rounded bg-blue-50/50 border border-blue-100 hover:bg-blue-100 dark:bg-zinc-800/50 dark:border-blue-900/40 hover:dark:bg-blue-900/10 hover:dark:border-blue-900/75">
                                 <EditIcon className="w-4 text-blue-500"/></div>
                         </li>
                         <li
@@ -182,8 +182,8 @@ function SortableItemView(
                                 deleteItem(id)
                             }}>
                             <div className={twMerge(
-                                "smooth-all p-2 rounded bg-red-50/50 border border-red-100 hover:bg-red-100",
-                                {"bg-red-100 border-red-200": deleteConfirm},
+                                "smooth-all p-2 rounded bg-red-50/50 border border-red-100 hover:bg-red-100 dark:bg-red-900/10 dark:border-red-900/25 hover:dark:bg-red-900/50 hover:dark:border-red-900/75",
+                                {"bg-red-100 border-red-200 dark:border-red-900/50 dark:bg-red-900/75": deleteConfirm},
                             )}>
                                 {!deleteConfirm && <DeleteIcon className="w-4 text-red-500"/>}
                                 {deleteConfirm && <CheckIcon className="w-4 text-red-500"/>}
