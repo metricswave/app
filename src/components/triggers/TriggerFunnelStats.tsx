@@ -87,7 +87,9 @@ export function TriggerFunnelStats(
             return
         }
 
-        const paramStats: ParamStatRow[] = hasStats ? Object.values(stats!.plot[parameter]) : []
+        const paramStats: ParamStatRow[] = hasStats && stats !== undefined ?
+            Object.values(stats.plot[parameter]) :
+            []
         const newData = trigger.configuration.steps!.map((paramKey) => {
             const paramStat = paramStats.find((paramStat) => paramStat.param === paramKey)
             return {
