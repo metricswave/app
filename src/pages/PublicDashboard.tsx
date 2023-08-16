@@ -97,7 +97,7 @@ export function PublicDashboard() {
 
                                 return (
                                     <DashboardWidget
-                                        eventUuid={eventUuid}
+                                        trigger={trigger}
                                         title={title}
                                         size={size as "base" | "large"}
                                         type={type}
@@ -106,6 +106,7 @@ export function PublicDashboard() {
                                         date={date}
                                         parameter={parameter}
                                         key={key}
+                                        publicDashboard={dashboardUuid}
                                     />
                                 )
                             })}

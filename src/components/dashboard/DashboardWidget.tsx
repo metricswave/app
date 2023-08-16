@@ -6,9 +6,9 @@ import {PeriodConfiguration} from "../../types/Period"
 import {DashboardItemType} from "../../storage/Dashboard"
 import {app} from "../../config/app"
 import {TriggerFunnelStats} from "../triggers/TriggerFunnelStats"
+import {Trigger} from "../../types/Trigger"
 
 type Props = {
-    eventUuid: string,
     title: string,
     size: "base" | "large",
     type: DashboardItemType,
@@ -16,11 +16,13 @@ type Props = {
     period: PeriodConfiguration,
     compareWithPrevious: boolean,
     date: string,
+    eventUuid?: string,
+    trigger?: Trigger
+    publicDashboard?: string | undefined,
 }
 
 export default function DashboardWidget(
     {
-        eventUuid,
         title,
         size,
         type,
@@ -28,10 +30,20 @@ export default function DashboardWidget(
         period,
         compareWithPrevious,
         date,
+        eventUuid = undefined,
+        trigger = undefined,
+        publicDashboard = undefined,
     }: Props,
 ) {
     const {triggerByUuid} = useTriggersState()
-    const trigger = triggerByUuid(eventUuid)
+
+    if (trigger === undefined && eventUuid !== undefined) {
+        trigger = triggerByUuid(eventUuid)
+    }
+
+    if (trigger === undefined && eventUuid === undefined) {
+        return null
+    }
 
     if (trigger === undefined) {
         return null
@@ -51,6 +63,7 @@ export default function DashboardWidget(
                 defaultPeriod={period.period}
                 defaultDate={date}
                 hideFilters
+                publicDashboard={publicDashboard}
                 compareWithPrevious={compareWithPrevious}
             />}
 
@@ -61,6 +74,7 @@ export default function DashboardWidget(
                     defaultPeriod={period.period}
                     defaultDate={date}
                     hideViewSwitcher
+                    publicDashboard={publicDashboard}
                     compareWithPrevious={compareWithPrevious}
                 />
             }
@@ -72,6 +86,7 @@ export default function DashboardWidget(
                     title={title}
                     defaultPeriod={period.period}
                     defaultDate={date}
+                    publicDashboard={publicDashboard}
                     compareWithPrevious={compareWithPrevious}
                     hideFilters
                 />
