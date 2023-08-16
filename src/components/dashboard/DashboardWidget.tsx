@@ -4,8 +4,8 @@ import React from "react"
 import {useTriggersState} from "../../storage/Triggers"
 import {PeriodConfiguration} from "../../types/Period"
 import {DashboardItemType} from "../../storage/Dashboard"
-import {TriggerFunnelStats} from "../triggers/TriggerFunnelStats"
 import {app} from "../../config/app"
+import {TriggerFunnelStats} from "../triggers/TriggerFunnelStats"
 
 type Props = {
     eventUuid: string,

@@ -1,15 +1,14 @@
 import SectionContainer from "../components/sections/SectionContainer"
 import PageTitle from "../components/sections/PageTitle"
 import React, {useEffect, useState} from "react"
-import {TriggerParamsStats} from "../components/triggers/TriggerParamsStats"
-import {calculateDefaultDateForPeriod, DEFAULT_PERIOD, Period} from "../types/Period"
+import {calculateDefaultDateForPeriod, DEFAULT_PERIOD, Period, periods} from "../types/Period"
 import {Dashboard} from "../storage/Dashboard"
 import {fetchApi} from "../helpers/ApiFetcher"
 import {useParams, useSearchParams} from "react-router-dom"
 import {usePublicDashboardTriggersState} from "../storage/PublicDashboardTriggers"
 import Logo from "../components/logo/Logo"
-import {TriggerStats} from "../components/triggers/TriggerStats"
 import {PeriodChooser} from "../components/dashboard/PeriodChooser"
+import DashboardWidget from "../components/dashboard/DashboardWidget"
 
 export function PublicDashboard() {
     const [searchParams, setSearchParams] = useSearchParams()
@@ -18,6 +17,7 @@ export function PublicDashboard() {
     const [dashboard, setDashboard] = useState<Dashboard | undefined>(undefined)
     const {triggerByUuid} = usePublicDashboardTriggersState(dashboardUuid!)
     const [period, setPeriod] = useState<Period>(searchParams.get("period") as Period ?? DEFAULT_PERIOD)
+    const periodConfiguration = periods.find(p => p.value === period)!
     const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0])
     const setPeriodAndDate = (period: Period) => {
         setDate(calculateDefaultDateForPeriod(period))
@@ -96,34 +96,17 @@ export function PublicDashboard() {
                                 }
 
                                 return (
-                                    <div
+                                    <DashboardWidget
+                                        eventUuid={eventUuid}
+                                        title={title}
+                                        size={size as "base" | "large"}
+                                        type={type}
+                                        period={periodConfiguration}
+                                        compareWithPrevious={compareWithPrevious}
+                                        date={date}
+                                        parameter={parameter}
                                         key={key}
-                                        className={[
-                                            "relative group bg-white dark:bg-zinc-800/40 rounded-sm p-5 pb-4 shadow",
-                                            (size === "base" ? "" : "md:col-span-2"),
-                                        ].join(" ")}
-                                    >
-
-                                        {type === "stats" &&
-                                            <TriggerStats publicDashboard={dashboardUuid}
-                                                          trigger={trigger}
-                                                          title={title}
-                                                          defaultPeriod={period}
-                                                          compareWithPrevious={compareWithPrevious}
-                                                          hideViewSwitcher/>
-                                        }
-                                        {type === "parameter" &&
-                                            <TriggerParamsStats
-                                                publicDashboard={dashboardUuid}
-                                                trigger={trigger}
-                                                defaultParameter={parameter}
-                                                title={title}
-                                                defaultPeriod={period}
-                                                compareWithPrevious={compareWithPrevious}
-                                                defaultDate={date}
-                                                hideFilters
-                                            />}
-                                    </div>
+                                    />
                                 )
                             })}
                         </div>
