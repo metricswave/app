@@ -10,8 +10,10 @@ import {planPrice, useAvailablePricesState} from "../../storage/AvailablePrices"
 import {price_formatter} from "../../helpers/PriceFormatter"
 import LoadingPage from "../LoadingPage"
 import eventTracker from "../../helpers/EventTracker"
+import {useLocation} from "react-router-dom"
 
 export default function BillingSettings() {
+    const queryParams = new URLSearchParams(useLocation().search)
     const {user} = useUserState(true)
     const [portalLoading, setPortalLoading] = useState(false)
     const [loadingPurchase, setLoadingPurchase] = useState(false)
@@ -23,10 +25,21 @@ export default function BillingSettings() {
         availablePrices.find(p => p.id === 1)!
 
     useEffect(() => {
-        eventTracker.track(
-            "edbecea2-9097-49bb-95ac-70eec9578960",
-            {step: "Go To Billing", user_id: user?.email},
-        )
+        if (queryParams.get("fromBillingPortal") === "true" && queryParams.get("success") === "true") {
+            eventTracker.track(
+                "edbecea2-9097-49bb-95ac-70eec9578960",
+                {step: "Upgraded", user_id: user?.email},
+            )
+        }
+    }, [])
+
+    useEffect(() => {
+        if (queryParams.get("fromBillingPortal") !== "true") {
+            eventTracker.track(
+                "edbecea2-9097-49bb-95ac-70eec9578960",
+                {step: "Go To Billing", user_id: user?.email},
+            )
+        }
     }, [])
 
     if (!loaded) {
