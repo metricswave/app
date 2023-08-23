@@ -1,5 +1,5 @@
 import format from "date-fns/format"
-import {useState} from "react"
+import {useEffect, useState} from "react"
 import {addMonths, startOfMonth} from "date-fns"
 import {useUserState} from "../../storage/User"
 import {number_formatter} from "../../helpers/NumberFormatter"
@@ -9,6 +9,7 @@ import {useUserUsageState} from "../../storage/UserUsage"
 import {planPrice, useAvailablePricesState} from "../../storage/AvailablePrices"
 import {price_formatter} from "../../helpers/PriceFormatter"
 import LoadingPage from "../LoadingPage"
+import eventTracker from "../../helpers/EventTracker"
 
 export default function BillingSettings() {
     const {user} = useUserState(true)
@@ -20,6 +21,13 @@ export default function BillingSettings() {
     const subscribedPlan = user?.subscription_plan_id && availablePrices.length > 1 ?
         availablePrices.find(p => p.id === user.subscription_plan_id)! :
         availablePrices.find(p => p.id === 1)!
+
+    useEffect(() => {
+        eventTracker.track(
+            "edbecea2-9097-49bb-95ac-70eec9578960",
+            {step: "Go To Billing", user_id: user?.email},
+        )
+    }, [])
 
     if (!loaded) {
         return <LoadingPage/>
@@ -155,7 +163,7 @@ export default function BillingSettings() {
                                                         window.location.href = "mailto:sales@metricswave.com"
                                                         setLoadingPurchase(false)
                                                     } else {
-                                                        purchase(plan.id, period)
+                                                        purchase(plan.id, period, user?.email)
                                                     }
                                                 }}
                                                 className={[
@@ -164,7 +172,7 @@ export default function BillingSettings() {
                                                     "bg-zinc-100/25 dark:bg-blue-900/5 border-blue-200/50 dark:border-blue-900/50 hover:border-blue-500/70 hover:dark:border-blue-700 hover:bg-blue-100/70 dark:hover:bg-blue-900/20 cursor-pointer",
                                                 ].join(" ")}>
                                                 <div className="font-bold text-blue-500">
-                                                    {plan.name} Plan &mdash; {planPrice(plan, period) === null ? "Contact Us" : price_formatter(planPrice(plan, period)) + "/" + (period === "monthly" ? "mo" : "y")}
+                                                    {plan.name} Plan &mdash; {planPrice(plan, period) === null ? "Contact Us" : price_formatter(planPrice(plan, period)) + "/" + (period === "monthly" ? "month" : "year")}
                                                     {period === "yearly" && (plan.name === "Business" || plan.name === "Starter") &&
                                                         <span className="ml-2 text-sm">(2 months free)</span>}
                                                 </div>

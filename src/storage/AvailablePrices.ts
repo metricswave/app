@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react"
 import {expirableLocalStorage} from "../helpers/ExpirableLocalStorage"
 import {fetchAuthApi} from "../helpers/ApiFetcher"
+import eventTracker from "../helpers/EventTracker"
 
 const KEY = "nw:available-plans"
 
@@ -59,11 +60,15 @@ export function useAvailablePricesState() {
     return {
         availablePrices,
         loaded,
-        purchase: (planId: number, period: string) => {
+        purchase: (planId: number, period: string, email?: string) => {
             fetchAuthApi<{ path: string }>(
                 `/checkout/plan/${planId}/${period}`,
                 {
                     success: (data) => {
+                        eventTracker.track(
+                            "edbecea2-9097-49bb-95ac-70eec9578960",
+                            {step: "Choose A Plan", user_id: email},
+                        )
                         window.location.href = data.data.path
                     },
                     error: (err: any) => null,
