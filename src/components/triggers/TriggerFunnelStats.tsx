@@ -261,11 +261,14 @@ export function TriggerFunnelStats(
                                         </div>
                                         <span className="opacity-70 text-xs">hits</span>
                                     </>}
-                                    {index !== 0 && <>
+                                    {index !== 0 && previousStep.value !== 0 && <>
                                         <div>
                                             <span className="pr-0.5">{stepRetention}</span>%
                                         </div>
                                         <span className="opacity-70 text-xs">from previous step</span>
+                                    </>}
+                                    {index !== 0 && previousStep.value === 0 && <>
+                                        <span className="opacity-70 text-xs">No hits in previous step</span>
                                     </>}
                                 </div>
 
