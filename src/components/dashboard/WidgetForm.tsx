@@ -100,11 +100,20 @@ export default function WidgetForm(
     useEffect(() => {
         setTypesOptions(getTypeOptionsForTrigger(selectedTrigger))
     }, [selectedTrigger])
+
     useEffect(() => {
-        if (typesOptions.length > 0) {
+        if (typesOptions.length > 0 && typesOptions.findIndex((option) => option.value === type) === -1) {
             setType(typesOptions[0].value as DashboardItemType)
         }
     }, [typesOptions])
+
+    useEffect(() => {
+        if (type === "parameter" && selectedTrigger?.configuration.fields.parameters.indexOf(parameter) === -1) {
+            setParameter(selectedTrigger?.configuration.fields.parameters[0]!)
+        } else if (type !== "parameter") {
+            setParameter("")
+        }
+    }, [type])
 
     return (<>
         <div className={twMerge(

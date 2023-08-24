@@ -231,6 +231,7 @@ function SortableItemView(
                             eventTitle={item.title}
                             eventSize={item.size}
                             eventType={item.type}
+                            eventParameter={item.parameter}
                             closeWidgetForm={() => null}
                             editWidget={(newItem) => editItem(id, newItem)}
                         />
