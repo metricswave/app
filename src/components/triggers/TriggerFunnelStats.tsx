@@ -251,6 +251,9 @@ export function TriggerFunnelStats(
 
                         return (
                             <li key={d.id} className="flex-1 flex flex-col gap-2 text-sm sm:text-xs">
+                                <div className="opacity-50 font-medium">
+                                    {d.label}
+                                </div>
                                 <div className="flex flex-row gap-2 items-center justify-center">
                                     {index === 0 && <>
                                         <div>
