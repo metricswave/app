@@ -10,6 +10,7 @@ import {percentage_of} from "../../helpers/PercentageOf"
 import InputFieldBox from "../form/InputFieldBox"
 import {ArrowDownIcon, ArrowUpIcon} from "@radix-ui/react-icons"
 import {number_formatter} from "../../helpers/NumberFormatter"
+import {twMerge} from "../../helpers/TwMerge"
 
 const responsiveFunnelTheme = {
     fontFamily: "var(--font-mono)",
@@ -37,6 +38,7 @@ type Props = {
     hideFilters?: boolean
     compareWithPrevious?: boolean
     height?: string
+    size?: "base" | "large"
 }
 
 export function TriggerFunnelStats(
@@ -49,6 +51,7 @@ export function TriggerFunnelStats(
         hideFilters = false,
         compareWithPrevious = false,
         height = "400",
+        size = "large",
     }: Props,
 ) {
     const parameter = "step"
@@ -235,7 +238,7 @@ export function TriggerFunnelStats(
             </div>
 
             <div className="pt-3 pb-2">
-                <ul className="flex-row justify-evenly text-center hidden sm:flex">
+                <ul className="flex-row justify-evenly hidden sm:flex">
                     {data.map((d: FunnelDatum, index) => {
                         const previousStep = data[index - 1] ?? {value: 0, id: ""}
                         const stepRetention = previousStep.value === 0 ?
@@ -251,10 +254,12 @@ export function TriggerFunnelStats(
 
                         return (
                             <li key={d.id} className="flex-1 flex flex-col gap-2 text-sm sm:text-xs">
-                                <div className="opacity-50 font-medium">
+                                <div className="opacity-50 font-medium flex flex-row items-center justify-center">
                                     {d.label}
                                 </div>
-                                <div className="flex flex-row gap-2 items-center justify-center">
+                                <div className={twMerge(
+                                    "flex flex-row gap-2 items-center justify-center",
+                                )}>
                                     {index === 0 && <>
                                         <div>
                                             <span className="pr-0.5">{d.value}</span>
@@ -265,7 +270,10 @@ export function TriggerFunnelStats(
                                         <div>
                                             <span className="pr-0.5">{stepRetention}</span>%
                                         </div>
-                                        <span className="opacity-70 text-xs">from previous step</span>
+                                        <span className={twMerge(
+                                            "opacity-70 text-xs hidden",
+                                            {"inline": size === "large"},
+                                        )}>from previous step</span>
                                     </>}
                                     {index !== 0 && previousStep.value === 0 && <>
                                         <span className="opacity-70 text-xs">No hits in previous step</span>
@@ -285,16 +293,22 @@ export function TriggerFunnelStats(
 
                                     {
                                         previousStatStepRetention === Infinity ?
-                                            <span className="text-xs opacity-50">No Previous Data</span> :
+                                            <span className={twMerge("text-xs opacity-50 inline")}>
+                                                    {
+                                                        size === "large" ?
+                                                            "No Previous Data" :
+                                                            "No Data"
+                                                    }
+                                                </span> :
                                             <>
                                                 <div>
                                                     <span className="pr-0.5">{number_formatter(retentionDifference)}</span>%
                                                 </div>
-                                                <span
+                                                {size === "large" && <span
                                                     className="opacity-70 cursor-help text-xs border-b border-b-dotted"
                                                     title="Retention difference compared with previous period">
-                                                    diff with previous
-                                                </span>
+                                                    {size === "large" ? "diff with previous" : "diff"}
+                                                </span>}
                                             </>
                                     }
                                 </div>}

@@ -65,6 +65,7 @@ export default function DashboardWidget(
                 hideFilters
                 publicDashboard={publicDashboard}
                 compareWithPrevious={compareWithPrevious}
+                size={size}
             />}
 
             {type === "stats" &&
