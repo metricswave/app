@@ -1,4 +1,4 @@
-import {useState} from "react"
+import {useEffect, useState} from "react"
 import {useParams} from "react-router-dom"
 import {Dashboard, DashboardItem, useDashboardsState} from "../../storage/Dashboard"
 import SectionContainer from "../sections/SectionContainer"
@@ -30,6 +30,8 @@ import {Cross1Icon} from "@radix-ui/react-icons"
 import DeleteIcon from "../icons/DeleteIcon"
 import CheckIcon from "../icons/CheckIcon"
 import {AddWidget} from "./AddWidget"
+import {LinkButton} from "../buttons/LinkButton"
+import {Toast} from "../toast/Toast"
 
 type SortableItem = { id: UniqueIdentifier, item: DashboardItem }
 
@@ -40,7 +42,14 @@ export function DashboardsModify() {
     const [items, setItems] = useState<SortableItem[]>(
         currentDashboard?.items.map((item, index) => ({id: index + 1, item})) ?? [],
     )
+    const [toastOpen, setToastOpen] = useState<boolean>(false)
     const [open, setOpen] = useState<UniqueIdentifier>(0)
+
+    useEffect(() => {
+        if (toastOpen) {
+            setTimeout(() => setToastOpen(false), 3000)
+        }
+    }, [toastOpen])
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -57,6 +66,7 @@ export function DashboardsModify() {
                 items: items.map(({item}) => item),
             },
         )
+        setToastOpen(true)
     }
 
     function addWidgetToDashboard(item: DashboardItem) {
@@ -88,6 +98,12 @@ export function DashboardsModify() {
     }
 
     return <SectionContainer className="sm:pt-12">
+        <Toast title={"Dashboard saved"} open={toastOpen}/>
+
+        <LinkButton href={`/?dashboard=${dashboardId}`} className="sm:hidden mb-4 text-sm">
+            ← Back to Dashboard
+        </LinkButton>
+
         <PageTitle title="Configure your Dashboard"/>
 
         <div className="pt-4 grid gap-4 grid-cols-1">
@@ -116,6 +132,10 @@ export function DashboardsModify() {
                 className="rounded border-solid border text-sm px-4 py-5"
                 formClassName="rounded border-solid border"
             />
+
+            <LinkButton href={`/?dashboard=${dashboardId}`} className="hidden sm:block text-sm mt-4">
+                ← Back to Dashboard
+            </LinkButton>
         </div>
     </SectionContainer>
 }

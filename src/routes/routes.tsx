@@ -35,10 +35,6 @@ export const routes: RouteObject[] = [
                 element: <Dashboards/>,
             },
             {
-                path: "/edit/:dashboardId",
-                element: <DashboardsModify/>,
-            },
-            {
                 path: "/services",
                 element: <Services/>,
             },
@@ -73,6 +69,11 @@ export const routes: RouteObject[] = [
                 ],
             },
         ],
+    },
+    {
+        path: "/edit/:dashboardId",
+        element: <DashboardsModify/>,
+        errorElement: <ErrorPage/>,
     },
     {
         path: "/auth/:driver/callback",

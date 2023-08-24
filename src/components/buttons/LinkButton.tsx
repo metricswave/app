@@ -1,5 +1,6 @@
 import React from "react"
 import ReactMarkdown from "react-markdown"
+import {twMerge} from "../../helpers/TwMerge"
 import className = ReactMarkdown.propTypes.className
 
 type LinkButtonProps = React.HTMLAttributes<HTMLAnchorElement> & {
@@ -42,9 +43,13 @@ export function DeleteNoLinkButton({text, children, loading, ...props}: NoLinkBu
     )
 }
 
-export function LinkButton({href, text, children, loading, ...props}: LinkButtonProps) {
+export function LinkButton({href, text, children, loading, className, ...props}: LinkButtonProps) {
     return (
-        <a href={href} className={(loading ? loadingClasses : classes) + ` ${className}`} {...props}>
+        <a href={href} className={twMerge(
+            (loading ? loadingClasses : classes),
+            classes,
+            className,
+        )} {...props}>
             {text ?? children}
         </a>
     )
