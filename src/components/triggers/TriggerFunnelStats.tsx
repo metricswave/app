@@ -6,7 +6,7 @@ import {TriggerStatsLoading} from "./TriggerStatsLoading"
 import {ParamStatRow, useTriggerParamsStatsState} from "../../storage/TriggerParamsStats"
 import {ResponsiveFunnel} from "@nivo/funnel"
 import {FunnelDatum} from "@nivo/funnel/dist/types/types"
-import {percentage_diff, percentage_of} from "../../helpers/PercentageOf"
+import {percentage_of} from "../../helpers/PercentageOf"
 import InputFieldBox from "../form/InputFieldBox"
 import {ArrowDownIcon, ArrowUpIcon} from "@radix-ui/react-icons"
 import {number_formatter} from "../../helpers/NumberFormatter"
@@ -90,14 +90,15 @@ export function TriggerFunnelStats(
         const paramStats: ParamStatRow[] = hasStats && stats !== undefined ?
             Object.values(stats.plot[parameter]) :
             []
-        const newData = trigger.configuration.steps!.map((paramKey) => {
-            const paramStat = paramStats.find((paramStat) => paramStat.param === paramKey)
-            return {
-                id: paramKey,
-                label: paramKey,
-                value: paramStat?.score ?? 0,
-            }
-        })
+        let newData = trigger.configuration.steps!
+            .map((paramKey) => {
+                const paramStat = paramStats.find((paramStat) => paramStat.param === paramKey)
+                return {
+                    id: paramKey,
+                    label: paramKey,
+                    value: paramStat?.score ?? 0,
+                }
+            })
 
         setData(newData)
     }, [stats, hasStats])
@@ -159,7 +160,7 @@ export function TriggerFunnelStats(
             previousData[previousData.length - 1].value,
         )
 
-        if (isNaN(percentageOfUserThatReachedLastStep) || isNaN(previousPercentageOfUserThatReachedLastStep)) {
+        if (isNaN(percentageOfUserThatReachedLastStep) || isNaN(previousPercentageOfUserThatReachedLastStep) || previousPercentageOfUserThatReachedLastStep === Infinity) {
             return
         }
 
@@ -234,33 +235,61 @@ export function TriggerFunnelStats(
             </div>
 
             <div className="pt-3 pb-2">
-                <ul className="flex flex-row justify-evenly text-center">
-                    {data.map((d) => {
-                        const previousStats = previousData.find((pd) => pd.id === d.id)?.value ?? 0
-                        const percentageDifference = percentage_diff(d.value, previousStats)
+                <ul className="flex-row justify-evenly text-center hidden sm:flex">
+                    {data.map((d: FunnelDatum, index) => {
+                        const previousStep = data[index - 1] ?? {value: 0, id: ""}
+                        const stepRetention = previousStep.value === 0 ?
+                            100 :
+                            percentage_of(previousStep.value, d.value)
+
+                        const previousStat = previousData.find((pd) => pd.id === d.id)?.value ?? 0
+                        const previousStatPreviousStep = previousStep.id !== "" ?
+                            (previousData.find((pd) => pd.id === previousStep.id)?.value ?? 0) :
+                            0
+                        const previousStatStepRetention = percentage_of(previousStatPreviousStep, previousStat)
+                        const retentionDifference = stepRetention - previousStatStepRetention
 
                         return (
                             <li key={d.id} className="flex-1 flex flex-col gap-2 text-sm sm:text-xs">
                                 <div className="flex flex-row gap-2 items-center justify-center">
-                                    <span className="opacity-70">{d.label}</span>
-                                    <span>{d.value}</span>
+                                    {index === 0 && <>
+                                        <div>
+                                            <span className="pr-0.5">{d.value}</span>
+                                        </div>
+                                        <span className="opacity-70 text-xs">hits</span>
+                                    </>}
+                                    {index !== 0 && <>
+                                        <div>
+                                            <span className="pr-0.5">{stepRetention}</span>%
+                                        </div>
+                                        <span className="opacity-70 text-xs">from previous step</span>
+                                    </>}
                                 </div>
 
                                 {compareWithPrevious && <div
                                     className="cursor-help flex flex-row gap-1 items-center justify-center"
-                                    title={`Previous period: ${previousStats} hits`}
+                                    title={`Previous period: ${previousStat} hits`}
                                 >
-                                    {percentageDifference !== Infinity && <>
-                                        {percentageDifference > 0 ?
+                                    {previousStatStepRetention !== Infinity && <>
+                                        {retentionDifference >= 0 ?
                                             <ArrowUpIcon className="h-4 text-green-500"/> :
                                             <ArrowDownIcon className="h-4 text-red-500"/>
                                         }
                                     </>}
 
                                     {
-                                        percentageDifference === Infinity ?
+                                        previousStatStepRetention === Infinity ?
                                             <span className="text-xs opacity-50">No Previous Data</span> :
-                                            <span>{number_formatter(percentageDifference)}%</span>
+                                            <>
+                                                <div>
+                                                    <span className="pr-0.5">{number_formatter(retentionDifference)}</span>%
+                                                </div>
+                                                <span
+                                                    className="opacity-70 cursor-help text-xs border-b border-b-dotted"
+                                                    title="Retention difference compared with previous period">
+                                                    diff with previous
+                                                </span>
+                                            </>
                                     }
                                 </div>}
                             </li>
