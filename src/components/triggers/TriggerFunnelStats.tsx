@@ -1,16 +1,22 @@
 import PageTitle from "../sections/PageTitle"
 import {Trigger} from "../../types/Trigger"
 import {useEffect, useState} from "react"
-import {calculateDefaultDateForPeriod, fieldTypeForPeriod, Period} from "../../types/Period"
+import {
+    calculateDefaultDateForPeriod,
+    calculateDefaultDateForPeriodObject,
+    fieldTypeForPeriod,
+    Period,
+} from "../../types/Period"
 import {TriggerStatsLoading} from "./TriggerStatsLoading"
 import {ParamStatRow, useTriggerParamsStatsState} from "../../storage/TriggerParamsStats"
 import {ResponsiveFunnel} from "@nivo/funnel"
 import {FunnelDatum} from "@nivo/funnel/dist/types/types"
 import {percentage_of} from "../../helpers/PercentageOf"
 import InputFieldBox from "../form/InputFieldBox"
-import {ArrowDownIcon, ArrowUpIcon} from "@radix-ui/react-icons"
 import {number_formatter} from "../../helpers/NumberFormatter"
 import {twMerge} from "../../helpers/TwMerge"
+import {getPreviousPeriodDate, getPreviousPeriodDateObject} from "../../storage/TriggerStats"
+import format from "date-fns/format"
 
 const responsiveFunnelTheme = {
     fontFamily: "var(--font-mono)",
@@ -69,6 +75,9 @@ export function TriggerFunnelStats(
     const [date, setDate] = useState<string>(defaultDate ?? calculateDefaultDateForPeriod(period))
     const [fieldDate, setFieldDate] = useState<string>()
 
+    const [currentPeriodString, setCurrentPeriodString] = useState<string>("")
+    const [previousPeriodString, setPreviousPeriodString] = useState<string>("")
+
     const dateFieldType = fieldTypeForPeriod(period)
     const setPeriodAndDate = (period: Period) => {
         const date = calculateDefaultDateForPeriod(period)
@@ -77,6 +86,18 @@ export function TriggerFunnelStats(
             fieldTypeForPeriod(period) === "month" ? date.slice(0, 7) : date,
         )
         setPeriod(period)
+
+        const currentDate = format(calculateDefaultDateForPeriodObject(period), "MMM d")
+        const startDate = format(getPreviousPeriodDateObject(period, date), "MMM d")
+        setCurrentPeriodString(
+            `${currentDate} / ${startDate}`,
+        )
+
+        const pStr = getPreviousPeriodDate(period, date)
+        const previousStartDate = format(getPreviousPeriodDateObject(period, pStr), "MMM d")
+        setPreviousPeriodString(
+            `${startDate} / ${previousStartDate}`,
+        )
     }
 
     useEffect(() => {
@@ -148,6 +169,7 @@ export function TriggerFunnelStats(
         setPreviousData(newData)
     }, [previousStats, compareWithPrevious, hasStats])
 
+    // Set Previous Description
     useEffect(() => {
         if (data.length === 0 || previousData.length === 0) {
             return
@@ -250,17 +272,21 @@ export function TriggerFunnelStats(
                             (previousData.find((pd) => pd.id === previousStep.id)?.value ?? 0) :
                             0
                         const previousStatStepRetention = percentage_of(previousStatPreviousStep, previousStat)
-                        const retentionDifference = stepRetention - previousStatStepRetention
 
                         return (
                             <li key={d.id} className="flex-1 flex flex-col gap-2 text-sm sm:text-xs">
-                                <div className="opacity-50 font-medium flex flex-row items-center justify-center">
+                                <div className="opacity-50 font-medium flex flex-row items-center">
                                     {d.label}
                                 </div>
+
                                 <div className={twMerge(
-                                    "flex flex-row gap-2 items-center justify-center",
+                                    "flex flex-row gap-2 items-center",
                                 )}>
                                     {index === 0 && <>
+                                        {compareWithPrevious && <div className="pr-3 tracking-tighter">{
+                                            currentPeriodString
+                                        }</div>}
+
                                         <div>
                                             <span className="pr-0.5">{d.value}</span>
                                         </div>
@@ -280,38 +306,37 @@ export function TriggerFunnelStats(
                                     </>}
                                 </div>
 
-                                {compareWithPrevious && <div
-                                    className="cursor-help flex flex-row gap-1 items-center justify-center"
-                                    title={`Previous period: ${previousStat} hits`}
-                                >
-                                    {previousStatStepRetention !== Infinity && <>
-                                        {retentionDifference >= 0 ?
-                                            <ArrowUpIcon className="h-4 text-green-500"/> :
-                                            <ArrowDownIcon className="h-4 text-red-500"/>
-                                        }
-                                    </>}
+                                {compareWithPrevious &&
+                                    <div className="flex flex-row gap-2 items-center opacity-60">
+                                        {index === 0 && <>
+                                            <div className="pr-3 tracking-tighter">{
+                                                previousPeriodString
+                                            }</div>
 
-                                    {
-                                        previousStatStepRetention === Infinity ?
-                                            <span className={twMerge("text-xs opacity-50 inline")}>
-                                                    {
-                                                        size === "large" ?
-                                                            "No Previous Data" :
-                                                            "No Data"
-                                                    }
+                                            <div>
+                                                <span className="pr-0.5">{previousStat}</span>
+                                            </div>
+                                            <span className="opacity-60 text-xs">hits</span>
+                                        </>}
+
+                                        {index !== 0 && (
+                                            previousStatStepRetention === Infinity ?
+                                                <span className={twMerge("text-xs opacity-50 inline")}>
+                                                    {size === "large" ? "No Previous Data" : "No Data"}
                                                 </span> :
-                                            <>
-                                                <div>
-                                                    <span className="pr-0.5">{number_formatter(retentionDifference)}</span>%
-                                                </div>
-                                                {size === "large" && <span
-                                                    className="opacity-70 cursor-help text-xs border-b border-b-dotted"
-                                                    title="Retention difference compared with previous period">
-                                                    {size === "large" ? "diff with previous" : "diff"}
-                                                </span>}
-                                            </>
-                                    }
-                                </div>}
+                                                <>
+                                                    <div>
+                                                    <span className="pr-0.5">{
+                                                        number_formatter(previousStatStepRetention)
+                                                    }</span>%
+                                                    </div>
+                                                    {size === "large" && <span className={twMerge(
+                                                        "opacity-60 text-xs hidden",
+                                                        {"inline": size === "large"},
+                                                    )}>from previous step</span>}
+                                                </>
+                                        )}
+                                    </div>}
                             </li>
                         )
                     })}

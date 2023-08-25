@@ -59,7 +59,7 @@ export const fieldTypeForPeriod = (periodValue: Period): "date" | "month" => {
     return "date"
 }
 
-export const calculateDefaultDateForPeriod = (periodValue: string): string => {
+export const calculateDefaultDateForPeriodObject = (periodValue: string): Date => {
     const period = periods.find(p => p.value === periodValue)
     let date = new Date()
 
@@ -73,7 +73,11 @@ export const calculateDefaultDateForPeriod = (periodValue: string): string => {
         date = startOfYear(subYears(new Date(), 1))
     }
 
-    return format(date, "yyyy-MM-dd")
+    return date
+}
+
+export const calculateDefaultDateForPeriod = (periodValue: string): string => {
+    return format(calculateDefaultDateForPeriodObject(periodValue), "yyyy-MM-dd")
 }
 
 export const safeApiPeriod = (period: Period): string => {

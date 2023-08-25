@@ -16,7 +16,7 @@ type StatRow = {
     score: number,
 }
 
-export const getPreviousPeriodDate = (period: Period, date: string | null): string => {
+export const getPreviousPeriodDateObject = (period: Period, date: string | null): Date => {
     let previousDate = date ? new Date(date) : new Date()
     switch (period) {
         case "day":
@@ -38,8 +38,11 @@ export const getPreviousPeriodDate = (period: Period, date: string | null): stri
             previousDate = subMonths(previousDate, 12)
             break
     }
+    return previousDate
+}
 
-    return format(previousDate, "yyyy-MM-dd")
+export const getPreviousPeriodDate = (period: Period, date: string | null): string => {
+    return format(getPreviousPeriodDateObject(period, date), "yyyy-MM-dd")
 }
 
 export function useTriggerStatsState() {
