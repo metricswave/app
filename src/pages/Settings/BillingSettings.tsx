@@ -18,7 +18,7 @@ export default function BillingSettings() {
     const [portalLoading, setPortalLoading] = useState(false)
     const [loadingPurchase, setLoadingPurchase] = useState(false)
     const {availablePrices, loaded, purchase} = useAvailablePricesState()
-    const [period, setPeriod] = useState<"monthly" | "yearly">("yearly")
+    const [period, setPeriod] = useState<"monthly" | "yearly">("monthly")
     const {userUsage} = useUserUsageState()
     const subscribedPlan = user?.subscription_plan_id && availablePrices.length > 1 ?
         availablePrices.find(p => p.id === user.subscription_plan_id)! :
@@ -78,7 +78,7 @@ export default function BillingSettings() {
                                 <div className="text-sm opacity-70 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
                                     <span>{number_formatter(1000)} events per month</span>
                                     <span className="hidden sm:inline">/</span>
-                                    <span>6 months data retention</span>
+                                    <span>Unlimited data retention</span>
                                 </div>
                             </div>
                         </div>
@@ -191,9 +191,9 @@ export default function BillingSettings() {
                                                 </div>
                                                 <div className="text-sm opacity-70 flex flex-col gap-2">
                                                     {planPrice(plan, period) > 0 &&
-                                                        <span>Paid monthly, cancel at any time.</span>}
+                                                        <span>Cancel at any time</span>}
                                                     <span>{plan.eventsLimit === null ? "Unlimited" : number_formatter(plan.eventsLimit)} events per month</span>
-                                                    <span>{plan.dataRetentionInMonths === null ? "Unlimited" : number_formatter(plan.dataRetentionInMonths)} months of data retention</span>
+                                                    <span>Unlimited data retention</span>
                                                 </div>
                                             </div>
                                         )
