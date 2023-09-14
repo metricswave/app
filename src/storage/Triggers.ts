@@ -8,7 +8,14 @@ const TRIGGER_REFRESH_KEY: string = "nw:triggers:refresh:v2"
 
 const TIME_FIELDS: string[] = ["time", "arrival_time"]
 
-export function visitSnippet(trigger: Trigger): string {
+export function visitSnippet(trigger: Trigger, formatted = false): string {
+    if (formatted) {
+        return `<script defer 
+  event-uuid="${trigger.uuid}" 
+  src="https://tracker.metricswave.com/js/visits.js"
+></script>`
+    }
+
     return `<script defer event-uuid="${trigger.uuid}" src="https://tracker.metricswave.com/js/visits.js"></script>`
 }
 

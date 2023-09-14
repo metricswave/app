@@ -13,6 +13,7 @@ import {useUserState} from "../storage/User"
 import SecondaryButton from "../components/form/SecondaryButton"
 import EventTracker from "../helpers/EventTracker"
 import {DeviceName} from "../storage/DeviceName"
+import {app} from "../config/app"
 
 
 type Step = "loading" | "add-code"
@@ -27,6 +28,7 @@ export function Welcome() {
     const [allowFinish, setAllowFinish] = useState(false)
     const [allowSkip, setAllowSkip] = useState(false)
     const [snippet, setSnippet] = useState("")
+    const [formattedSnippet, setFormattedSnippet] = useState("")
 
     useEffect(() => {
         if (userUsage.usage > 0) {
@@ -57,6 +59,7 @@ export function Welcome() {
     useEffect(() => {
         if (triggers.length > 0) {
             setSnippet(visitSnippet(triggers.pop()!))
+            setFormattedSnippet(visitSnippet(triggers.pop()!, true))
             setStep("add-code")
         }
     }, [triggers, step])
@@ -107,7 +110,7 @@ export function Welcome() {
                 <p className="sm:text-lg">Copy and paste the next code in the <code>head</code> tag of your site:</p>
 
                 <div>
-                    <pre className="bg-white dark:bg-zinc-800/25 soft-border border shadow p-5 rounded whitespace-pre-wrap break-words block max-w-full select-all text-sm">{snippet}</pre>
+                    <pre className="bg-white dark:bg-zinc-800/25 soft-border border shadow p-5 rounded whitespace-pre-wrap break-words block max-w-full select-all text-sm">{formattedSnippet}</pre>
                     <CopyButton textToCopy={snippet}
                                 className="w-full bg-transparent text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-800/25 mt-3"/>
 
@@ -125,7 +128,15 @@ export function Welcome() {
                                     <div>Waiting first event</div>
                                 </div>
 
-                                <div className="w-full text-center text-xs pb-1">
+                                <div
+                                    className="w-full text-center text-xs pb-1 pt-3 flex flex-col items-center justify-center gap-4">
+                                    <a
+                                        href={app.web + "/documentation/integrations"}
+                                        target="_blank"
+                                        className="border-b border-dotted opacity-50 hover:opacity-80 hover:text-blue-500 hover:border-blue-500 smooth-all"
+                                    >
+                                        How to add the code in different tools and frameworks?
+                                    </a>
                                     <a
                                         href="https://metricswave.com/documentation/analytics#are-you-in-localhost-or-test-environment"
                                         target="_blank"
