@@ -9,7 +9,6 @@ import {
 } from "../../types/Period"
 import {TriggerStatsLoading} from "./TriggerStatsLoading"
 import {ParamStatRow, useTriggerParamsStatsState} from "../../storage/TriggerParamsStats"
-import {ResponsiveFunnel} from "@nivo/funnel"
 import {FunnelDatum} from "@nivo/funnel/dist/types/types"
 import {percentage_of} from "../../helpers/PercentageOf"
 import InputFieldBox from "../form/InputFieldBox"
@@ -17,6 +16,7 @@ import {number_formatter} from "../../helpers/NumberFormatter"
 import {twMerge} from "../../helpers/TwMerge"
 import {getPreviousPeriodDate, getPreviousPeriodDateObject} from "../../storage/TriggerStats"
 import format from "date-fns/format"
+import {ResponsiveFunnel} from "@nivo/funnel"
 
 const responsiveFunnelTheme = {
     fontFamily: "var(--font-mono)",
@@ -67,8 +67,8 @@ export function TriggerFunnelStats(
     const [previousDescription, setPreviousDescription] = useState<string | null>(null)
 
     const {stats, previousStats, loadStats, loadPreviousStats, statsLoading} = useTriggerParamsStatsState()
+    const hasStats = stats !== undefined && stats.plot !== undefined && stats.plot[parameter] !== undefined
 
-    const [hasStats, setHasStats] = useState<boolean>(false)
     const [data, setData] = useState<FunnelDatum[]>([])
     const [previousData, setPreviousData] = useState<FunnelDatum[]>([])
     const [period, setPeriod] = useState<Period>(defaultPeriod)
@@ -100,18 +100,9 @@ export function TriggerFunnelStats(
         )
     }
 
-    useEffect(() => {
-        const hasStats = stats !== undefined && stats.plot !== undefined && stats.plot[parameter] !== undefined
-        setHasStats(hasStats)
-    }, [stats])
-
     // Set data and description
     useEffect(() => {
-        if (!hasStats) {
-            return
-        }
-
-        const paramStats: ParamStatRow[] = hasStats && stats !== undefined ?
+        const paramStats: ParamStatRow[] = stats !== undefined ?
             Object.values(stats.plot[parameter]) :
             []
         let newData = trigger.configuration.steps!
@@ -125,7 +116,7 @@ export function TriggerFunnelStats(
             })
 
         setData(newData)
-    }, [stats, hasStats])
+    }, [stats, stats?.plot, stats?.plot[parameter]])
 
     // Set description
     useEffect(() => {

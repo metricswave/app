@@ -41,16 +41,8 @@ export function useTriggerParamsStatsState() {
         date: string | null,
         publicDashboard: string | undefined,
     ) => {
-        const key = `trigger-params-stats-5-${trigger.uuid}-${period}-${date ?? ""}`
-
-        if (publicDashboard === undefined) {
-            setStatsFor(expirableLocalStorage.get(key, undefined), current)
-        }
-
-        setLoadingFor(true, current)
-
+        const key = `trigger-params-stats-v1-${trigger.uuid}-${period}-${date ?? ""}-${publicDashboard ?? ""}`
         const query = new URLSearchParams({period: safeApiPeriod(period), ...(date ? {date} : {})})
-
         const methods = {
             success: (data: ApiResponse<ParamsStats>) => {
                 if (publicDashboard === undefined) {
@@ -69,12 +61,14 @@ export function useTriggerParamsStatsState() {
             },
         }
 
-        if (publicDashboard === undefined && expirableLocalStorage.get(key, null) !== null) {
-            setStatsFor(expirableLocalStorage.get(key, undefined), current)
+        const cachedData = expirableLocalStorage.get(key, null)
+        if (publicDashboard === undefined && cachedData !== null) {
+            setStatsFor(cachedData, current)
             setLoadingFor(false, current)
             return
         }
 
+        setLoadingFor(true, current)
         if (publicDashboard !== undefined) {
             fetchApi<ParamsStats>(
                 `/dashboards/${publicDashboard}/triggers/${trigger.uuid}/parameters-graph-stats?` + query,
