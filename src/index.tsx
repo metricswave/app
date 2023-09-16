@@ -31,7 +31,7 @@ Sentry.init({
         new Sentry.Replay(),
     ],
     environment: app.env,
-    tracesSampleRate: 0.2, // Capture 100% of the transactions, reduce in production!
+    tracesSampleRate: 0.5, // Capture 100% of the transactions, reduce in production!
     replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%.
     replaysOnErrorSampleRate: 1.0, // Change the sample rate to 100% when sampling sessions where errors occur.
 })
