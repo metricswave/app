@@ -31,14 +31,14 @@ export default function App() {
                     </div>
                     <div>
                         <ul className="flex flex-row space-x-4 items-center">
-                            {user?.subscription_type === "free" && (
-                                <li>
-                                    <a href="/settings/billing"
-                                       className="border border-red-200 hover:border-red-500 dark:border-red-800/50 dark:bg-red-700/25 dark:hover:border-red-800 smooth py-1.5 rounded-sm text-red-500 bg-red-50 px-2 uppercase text-xs">
-                                        Upgrade
-                                    </a>
-                                </li>
-                            )}
+                            {/*{user?.subscription_type === "free" && (*/}
+                            {/*    <li>*/}
+                            {/*        <a href="/settings/billing"*/}
+                            {/*           className="border border-red-200 hover:border-red-500 dark:border-red-800/50 dark:bg-red-700/25 dark:hover:border-red-800 smooth py-1.5 rounded-sm text-red-500 bg-red-50 px-2 uppercase text-xs">*/}
+                            {/*            Upgrade*/}
+                            {/*        </a>*/}
+                            {/*    </li>*/}
+                            {/*)}*/}
                             <li>
                                 <a href="/settings/profile"
                                    className={[
@@ -56,7 +56,8 @@ export default function App() {
                     </div>
                 </header>
 
-                <div id="app-container" className="pt-[65px] pb-[81px] sm:pb-0">
+                <div id="app-container"
+                     className="pt-[65px] pb-[81px] sm:pb-0">
                     <Outlet/>
                 </div>
 

@@ -3,10 +3,10 @@ import {TriggerParamsStats} from "../triggers/TriggerParamsStats"
 import React from "react"
 import {useTriggersState} from "../../storage/Triggers"
 import {PeriodConfiguration} from "../../types/Period"
-import {DashboardItemType} from "../../storage/Dashboard"
 import {app} from "../../config/app"
 import {TriggerFunnelStats} from "../triggers/TriggerFunnelStats"
 import {Trigger} from "../../types/Trigger"
+import {DashboardItemType} from "../../types/Dashboard";
 
 type Props = {
     title: string,

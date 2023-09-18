@@ -2,22 +2,26 @@ import {useEffect, useState} from "react"
 import {fetchAuthApi} from "../helpers/ApiFetcher"
 import {User} from "../types/User"
 import {DAY_SECONDS, expirableLocalStorage} from "../helpers/ExpirableLocalStorage"
+import {useTeamState} from "./Team";
 
 const USER_REFRESH_KEY: string = "nw:user:refresh:v2"
 const USER_KEY: string = "nw:user"
 
 export const getUser = (): User | null => {
-    return expirableLocalStorage.get(USER_KEY, false)
+    return expirableLocalStorage.get(USER_KEY, null)
 }
 
 export function useUserState(isAuth: boolean) {
+    const [user, setUser] = useState<User | null>(getUser())
+    const {currentTeamId, setCurrentTeamId, setCurrentTeamFromTeams} = useTeamState()
     const [expired, setExpired] = useState(false)
-
     const [isFreshUser, setIsFreshUser] = useState<true | false>(
         expirableLocalStorage.get(USER_REFRESH_KEY, false),
     )
 
-    const [user, setUser] = useState<User | null>(getUser())
+    if (currentTeamId === null && user !== null) {
+        setCurrentTeamFromTeams(user.all_teams)
+    }
 
     const refreshUser = () => {
         fetchAuthApi<User>("/users", {
@@ -26,6 +30,7 @@ export function useUserState(isAuth: boolean) {
                 expirableLocalStorage.set(USER_KEY, data.data)
                 setUser(data.data)
                 setExpired(false)
+                setCurrentTeamFromTeams(data.data.all_teams)
             },
             error: (data) => setExpired(true),
             catcher: (err) => setExpired(true),
@@ -40,5 +45,5 @@ export function useUserState(isAuth: boolean) {
         refreshUser()
     }, [isAuth])
 
-    return {user, setUser, refreshUser, expired, setExpired}
+    return {user, setUser, refreshUser, expired, setExpired, currentTeamId, setCurrentTeamId}
 }

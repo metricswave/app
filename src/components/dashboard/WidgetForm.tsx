@@ -1,10 +1,10 @@
 import InputFieldBox from "../form/InputFieldBox"
 import DropDownSelectFieldBox from "../form/DropDownSelectFieldBox"
 import {Trigger} from "../../types/Trigger"
-import {DashboardItemSize, DashboardItemType} from "../../storage/Dashboard"
 import PrimaryButton from "../form/PrimaryButton"
 import {useEffect, useState} from "react"
 import {twMerge} from "../../helpers/TwMerge"
+import {DashboardItemSize, DashboardItemType} from "../../types/Dashboard";
 
 type Props = {
     addButtonSize?: string

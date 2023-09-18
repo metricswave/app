@@ -1,10 +1,10 @@
 import React from "react"
-import {Dashboard, DashboardItem} from "../../storage/Dashboard"
 import SectionContainer from "../sections/SectionContainer"
 import {EditWidgetsIcon} from "../icons/EditWidgetsIcon"
 import {AddWidget} from "./AddWidget"
 import DashboardWidget from "./DashboardWidget"
 import {PeriodConfiguration} from "../../types/Period"
+import {Dashboard, DashboardItem} from "../../types/Dashboard";
 
 export class DashboardView extends React.Component<{
     dashboards: Dashboard[],

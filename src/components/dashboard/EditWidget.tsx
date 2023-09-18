@@ -1,8 +1,8 @@
 import {useEffect, useState} from "react"
 import {Trigger} from "../../types/Trigger"
 import {useTriggersState} from "../../storage/Triggers"
-import {DashboardItem, DashboardItemSize, DashboardItemType} from "../../storage/Dashboard"
 import WidgetForm from "./WidgetForm"
+import {DashboardItem, DashboardItemSize, DashboardItemType} from "../../types/Dashboard";
 
 type Props = {
     eventUuid: string,

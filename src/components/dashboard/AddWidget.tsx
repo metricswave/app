@@ -1,10 +1,10 @@
 import {useEffect, useState} from "react"
 import {Trigger} from "../../types/Trigger"
 import {useTriggersState} from "../../storage/Triggers"
-import {DashboardItem, DashboardItemSize, DashboardItemType} from "../../storage/Dashboard"
 import WidgetForm from "./WidgetForm"
 import {Cross1Icon} from "@radix-ui/react-icons"
 import {twMerge} from "../../helpers/TwMerge"
+import {DashboardItem, DashboardItemSize, DashboardItemType} from "../../types/Dashboard";
 
 type Props = {
     addButtonSize?: string

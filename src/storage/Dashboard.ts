@@ -3,43 +3,16 @@ import {fetchAuthApi} from "../helpers/ApiFetcher"
 import {expirableLocalStorage, THIRTY_SECONDS} from "../helpers/ExpirableLocalStorage"
 import {useAuthState} from "./AuthToken"
 import {slugify} from "../helpers/Slugify"
+import {Dashboard, DashboardItem} from "../types/Dashboard";
+import {useTeamState} from "./Team";
 
-export type Dashboard = {
-    id: string
-    name: string
-    uuid: string
-    public: boolean
-    items: DashboardItem[]
-}
-
-export type DashboardItem = {
-    eventUuid: string
-    title: string
-    size: DashboardItemSize
-    parameter?: string
-} & (StatItem | ParameterItem | FunnelItem)
-
-export type DashboardItemType = "stats" | "parameter" | "funnel"
-
-export type DashboardItemSize = "base" | "large"
-
-type StatItem = {
-    type: "stats"
-}
-
-type ParameterItem = {
-    type: "parameter"
-    parameter: string
-}
-
-type FunnelItem = {
-    type: "funnel"
-}
-
-const KEY = "nw:dashboards"
 let loading = false
 
 export function useDashboardsState() {
+    const {currentTeamId} = useTeamState()
+
+    const KEY = `nw:${currentTeamId}:dashboards`
+
     const {logout} = useAuthState()
     const [dashboards, setDashboards] = useState<Dashboard[]>(
         expirableLocalStorage.get<Dashboard[]>(KEY, [], true),
@@ -61,7 +34,11 @@ export function useDashboardsState() {
 
         loading = true
 
-        fetchAuthApi<Dashboard[]>("/dashboards", {
+        if (currentTeamId === null) {
+            return
+        }
+
+        fetchAuthApi<Dashboard[]>(`/${currentTeamId}/dashboards`, {
             success: (data) => {
                 loading = false
                 expirableLocalStorage.set(KEY, data.data, THIRTY_SECONDS)
@@ -76,7 +53,7 @@ export function useDashboardsState() {
         })
     }
 
-    useEffect(reloadDashboards, [])
+    useEffect(reloadDashboards, [currentTeamId])
 
     const updateDashboard = (index: number, newDashboards: Dashboard[]) => {
         const id = newDashboards[index].id

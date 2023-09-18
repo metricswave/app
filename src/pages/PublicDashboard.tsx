@@ -2,13 +2,13 @@ import SectionContainer from "../components/sections/SectionContainer"
 import PageTitle from "../components/sections/PageTitle"
 import React, {useEffect, useState} from "react"
 import {calculateDefaultDateForPeriod, DEFAULT_PERIOD, Period, periods} from "../types/Period"
-import {Dashboard} from "../storage/Dashboard"
 import {fetchApi} from "../helpers/ApiFetcher"
 import {useParams, useSearchParams} from "react-router-dom"
 import {usePublicDashboardTriggersState} from "../storage/PublicDashboardTriggers"
 import Logo from "../components/logo/Logo"
 import {PeriodChooser} from "../components/dashboard/PeriodChooser"
 import DashboardWidget from "../components/dashboard/DashboardWidget"
+import {Dashboard} from "../types/Dashboard";
 
 export function PublicDashboard() {
     const [searchParams, setSearchParams] = useSearchParams()
@@ -61,7 +61,8 @@ export function PublicDashboard() {
                 </div>
             </header>
 
-            <div id="app-container" className="pt-[65px] pb-[81px] sm:pb-0">
+            <div id="app-container"
+                 className="pt-[65px] pb-[81px] sm:pb-0">
                 {notFound && <SectionContainer>
                     <div className="pt-14 md:pt-44 text-center flex flex-col items-center justify-center gap-10 animate-pulse">
                         <div className="text-lg pb-20">

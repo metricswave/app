@@ -1,6 +1,5 @@
 import {useEffect, useState} from "react"
 import {useParams} from "react-router-dom"
-import {Dashboard, DashboardItem, useDashboardsState} from "../../storage/Dashboard"
 import SectionContainer from "../sections/SectionContainer"
 import {
     arrayMove,
@@ -32,6 +31,8 @@ import CheckIcon from "../icons/CheckIcon"
 import {AddWidget} from "./AddWidget"
 import {LinkButton} from "../buttons/LinkButton"
 import {Toast} from "../toast/Toast"
+import {useDashboardsState} from "../../storage/Dashboard";
+import {Dashboard, DashboardItem} from "../../types/Dashboard";
 
 type SortableItem = { id: UniqueIdentifier, item: DashboardItem }
 
@@ -98,16 +99,20 @@ export function DashboardsModify() {
     }
 
     return <SectionContainer className="sm:pt-12">
-        <Toast title={"Dashboard saved"} open={toastOpen}/>
+        <Toast title={"Dashboard saved"}
+               open={toastOpen}/>
 
-        <LinkButton href={`/?dashboard=${dashboardId}`} className="sm:hidden mb-4 text-sm">
+        <LinkButton href={`/?dashboard=${dashboardId}`}
+                    className="sm:hidden mb-4 text-sm">
             ← Back to Dashboard
         </LinkButton>
 
         <PageTitle title="Configure your Dashboard"/>
 
         <div className="pt-4 grid gap-4 grid-cols-1">
-            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <DndContext sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragEnd={handleDragEnd}>
                 <SortableContext
                     items={items}
                     strategy={verticalListSortingStrategy}
@@ -133,7 +138,8 @@ export function DashboardsModify() {
                 formClassName="rounded border-solid border"
             />
 
-            <LinkButton href={`/?dashboard=${dashboardId}`} className="hidden sm:block text-sm mt-4">
+            <LinkButton href={`/?dashboard=${dashboardId}`}
+                        className="hidden sm:block text-sm mt-4">
                 ← Back to Dashboard
             </LinkButton>
         </div>
@@ -212,7 +218,8 @@ function SortableItemView(
                     </>}
 
                     {open && <>
-                        <li onClick={() => setOpen(0)} className="cursor-pointer">
+                        <li onClick={() => setOpen(0)}
+                            className="cursor-pointer">
                             <div
                                 className="text-sm smooth-all p-1.5 rounded bg-red-50/50 hover:bg-red-100"
                             >
@@ -223,7 +230,9 @@ function SortableItemView(
                 </ul>
             </div>
 
-            <AnimateHeight id={`edit-${id}`} height={open ? "auto" : 0} duration={300}>
+            <AnimateHeight id={`edit-${id}`}
+                           height={open ? "auto" : 0}
+                           duration={300}>
                 <div className="flex items-center justify-center overflow-hidden">
                     <div className="pt-5 w-full">
                         <EditWidget

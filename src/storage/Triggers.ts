@@ -2,11 +2,11 @@ import {useEffect, useState} from "react"
 import {fetchAuthApi} from "../helpers/ApiFetcher"
 import {expirableLocalStorage, THIRTY_SECONDS} from "../helpers/ExpirableLocalStorage"
 import {Trigger} from "../types/Trigger"
-
-const TRIGGER_KEY: string = "nw:triggers"
-const TRIGGER_REFRESH_KEY: string = "nw:triggers:refresh:v2"
+import {useTeamState} from "./Team";
+import {TeamId} from "../types/Team";
 
 const TIME_FIELDS: string[] = ["time", "arrival_time"]
+let loadingTeamTriggers: TeamId | false = false
 
 export function visitSnippet(trigger: Trigger, formatted = false): string {
     if (formatted) {
@@ -20,6 +20,11 @@ export function visitSnippet(trigger: Trigger, formatted = false): string {
 }
 
 export function useTriggersState() {
+    const {currentTeamId} = useTeamState()
+
+    const TRIGGER_KEY: string = `nw:${currentTeamId}:triggers`
+    const TRIGGER_REFRESH_KEY: string = `nw:${currentTeamId}:triggers:refresh:v2`
+
     const [loadedTriggers, setLoadedTriggers] = useState<boolean>(false)
     const [isFresh, setIsFresh] = useState<true | false>(
         expirableLocalStorage.get(TRIGGER_REFRESH_KEY, false),
@@ -29,12 +34,22 @@ export function useTriggersState() {
     )
 
     useEffect(() => {
+        if (currentTeamId === null) {
+            return
+        }
+
         if (triggers.length > 0 && isFresh) {
             setLoadedTriggers(true)
             return
         }
 
-        fetchAuthApi<{ triggers: Trigger[] }>("/triggers", {
+        if (loadingTeamTriggers === currentTeamId) {
+            return;
+        }
+
+        loadingTeamTriggers = currentTeamId
+
+        fetchAuthApi<{ triggers: Trigger[] }>(`/${currentTeamId}/triggers`, {
             success: (data) => {
                 const t = mapTriggers(data.data.triggers)
                 expirableLocalStorage.set(TRIGGER_REFRESH_KEY, true, THIRTY_SECONDS)
@@ -42,11 +57,18 @@ export function useTriggersState() {
                 setTriggers(t)
                 setIsFresh(true)
                 setLoadedTriggers(true)
+                loadingTeamTriggers = false
             },
-            error: (data) => setIsFresh(false),
-            catcher: (err) => setIsFresh(false),
+            error: (data) => {
+                setIsFresh(false)
+                loadingTeamTriggers = false
+            },
+            catcher: (err) => {
+                setIsFresh(false)
+                loadingTeamTriggers = false
+            },
         })
-    }, [isFresh])
+    }, [isFresh, currentTeamId])
 
     const mapTriggers = (triggers: Trigger[]) => {
         return triggers

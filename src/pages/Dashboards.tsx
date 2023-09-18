@@ -2,7 +2,7 @@ import SectionContainer from "../components/sections/SectionContainer"
 import PageTitle from "../components/sections/PageTitle"
 import React, {useEffect, useState} from "react"
 import {calculateDefaultDateForPeriod, DEFAULT_PERIOD, Period, periods} from "../types/Period"
-import {Dashboard, DashboardItem, useDashboardsState} from "../storage/Dashboard"
+import {useDashboardsState} from "../storage/Dashboard"
 import DashboardDropDownField from "../components/dashboard/DashboardDropDownField"
 import {CopyButtonIcon} from "../components/form/CopyButton"
 import CircleArrowsIcon from "../components/icons/CircleArrowsIcon"
@@ -11,6 +11,7 @@ import {fetchAuthApi} from "../helpers/ApiFetcher"
 import {PeriodChooser} from "../components/dashboard/PeriodChooser"
 import {NewDashboardDialog} from "../components/dashboard/NewDashboardDialog"
 import {DashboardView} from "../components/dashboard/DashboardView"
+import {Dashboard, DashboardItem} from "../types/Dashboard";
 
 export function Dashboards() {
     const {
