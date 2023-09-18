@@ -3,6 +3,7 @@ import {expirableLocalStorage} from "../helpers/ExpirableLocalStorage"
 import {fetchAuthApi} from "../helpers/ApiFetcher"
 
 const KEY = "nw:user-usage"
+let loading = false
 
 type UserUsage = {
     usage: number
@@ -15,6 +16,9 @@ export function useUserUsageState() {
     )
 
     const loadUsage = () => {
+        if (loading) return
+        loading = true
+
         fetchAuthApi<UserUsage>(
             `/users/usage`,
             {
@@ -22,9 +26,10 @@ export function useUserUsageState() {
                     setUserUsage(data.data)
                     setLoadedUsage(true)
                     expirableLocalStorage.set(KEY, data.data)
+                    loading = false
                 },
-                error: (err: any) => null,
-                catcher: (err: any) => null,
+                error: (err: any) => loading = false,
+                catcher: (err: any) => loading = false,
             },
         )
     }
