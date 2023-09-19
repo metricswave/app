@@ -19,6 +19,7 @@ import BillingSettings from "../pages/Settings/BillingSettings"
 import Triggers from "../pages/Triggers"
 import Impersonate from "../pages/Impersonate"
 import {DashboardsModify} from "../components/dashboard/DashboardsModify"
+import {AuthContextProvider} from "../contexts/AuthContext";
 
 const ServiceConnection = lazy(() => import("../pages/ServiceConnection"))
 const Trigger = lazy(() => import("../pages/Trigger"))
@@ -27,7 +28,7 @@ const TriggerEdit = lazy(() => import("../pages/TriggerEdit"))
 export const routes: RouteObject[] = [
     {
         path: "/",
-        element: <App/>,
+        element: <AuthContextProvider><App/></AuthContextProvider>,
         errorElement: <ErrorPage/>,
         children: [
             {
@@ -72,20 +73,22 @@ export const routes: RouteObject[] = [
     },
     {
         path: "/edit/:dashboardId",
-        element: <DashboardsModify/>,
+        element: <AuthContextProvider><DashboardsModify/></AuthContextProvider>,
         errorElement: <ErrorPage/>,
     },
     {
         path: "/auth/:driver/callback",
-        element: <Suspense fallback={<LoadingPage/>}><ServiceConnection/></Suspense>,
+        element: <Suspense fallback={<LoadingPage/>}>
+            <AuthContextProvider><ServiceConnection/></AuthContextProvider>
+        </Suspense>,
     },
     {
         path: "/welcome",
-        element: <Welcome/>,
+        element: <AuthContextProvider><Welcome/></AuthContextProvider>,
     },
     {
         path: "/auth",
-        element: <Authentication/>,
+        element: <AuthContextProvider><Authentication/></AuthContextProvider>,
         children: [
             {
                 path: "/auth/signup",

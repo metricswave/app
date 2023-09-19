@@ -4,11 +4,11 @@ import TextareaFieldBox from "../form/TextareaFieldBox"
 import {useState} from "react"
 import PrimaryButton from "../form/PrimaryButton"
 import eventTracker from "../../helpers/EventTracker"
-import {useUserState} from "../../storage/User"
+import {useAuthContext} from "../../contexts/AuthContext";
 
 
 export function FeedbackWidget() {
-    const {user} = useUserState(true)
+    const {user} = useAuthContext().userState
     const [open, setOpen] = useState(false)
     const [message, setMessage] = useState("")
     const [error, setError] = useState("")

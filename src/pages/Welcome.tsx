@@ -9,11 +9,11 @@ import CopyButton from "../components/form/CopyButton"
 import PrimaryButton from "../components/form/PrimaryButton"
 import {CheckIcon} from "@radix-ui/react-icons"
 import {FIVE_MINUTES_SECONDS, FIVE_SECONDS, TWO_SECONDS} from "../helpers/ExpirableLocalStorage"
-import {useUserState} from "../storage/User"
 import SecondaryButton from "../components/form/SecondaryButton"
 import EventTracker from "../helpers/EventTracker"
 import {DeviceName} from "../storage/DeviceName"
 import {app} from "../config/app"
+import {useAuthContext} from "../contexts/AuthContext";
 
 
 type Step = "loading" | "add-code"
@@ -21,7 +21,7 @@ type Step = "loading" | "add-code"
 export function Welcome() {
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
-    const {user} = useUserState(true)
+    const {user} = useAuthContext().userState
     const {triggers, refreshTriggers, loadedTriggers} = useTriggersState()
     const {userUsage, loadedUsage, loadUsage} = useUserUsageState()
     const [step, setStep] = useState<Step>("loading")

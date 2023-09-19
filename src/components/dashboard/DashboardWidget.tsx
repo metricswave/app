@@ -1,7 +1,6 @@
 import {TriggerStats} from "../triggers/TriggerStats"
 import {TriggerParamsStats} from "../triggers/TriggerParamsStats"
 import React from "react"
-import {useTriggersState} from "../../storage/Triggers"
 import {PeriodConfiguration} from "../../types/Period"
 import {app} from "../../config/app"
 import {TriggerFunnelStats} from "../triggers/TriggerFunnelStats"
@@ -16,8 +15,7 @@ type Props = {
     period: PeriodConfiguration,
     compareWithPrevious: boolean,
     date: string,
-    eventUuid?: string,
-    trigger?: Trigger
+    trigger: Trigger
     publicDashboard?: string | undefined,
 }
 
@@ -30,24 +28,11 @@ export default function DashboardWidget(
         period,
         compareWithPrevious,
         date,
-        eventUuid = undefined,
-        trigger = undefined,
+        trigger,
         publicDashboard = undefined,
     }: Props,
 ) {
-    const {triggerByUuid} = useTriggersState()
-
-    if (trigger === undefined && eventUuid !== undefined) {
-        trigger = triggerByUuid(eventUuid)
-    }
-
-    if (trigger === undefined && eventUuid === undefined) {
-        return null
-    }
-
-    if (trigger === undefined) {
-        return null
-    }
+    const eventUuid = trigger.uuid
 
     return (
         <div

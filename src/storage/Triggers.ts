@@ -2,8 +2,8 @@ import {useEffect, useState} from "react"
 import {fetchAuthApi} from "../helpers/ApiFetcher"
 import {expirableLocalStorage, THIRTY_SECONDS} from "../helpers/ExpirableLocalStorage"
 import {Trigger} from "../types/Trigger"
-import {useTeamState} from "./Team";
 import {TeamId} from "../types/Team";
+import {useAuthContext} from "../contexts/AuthContext";
 
 const TIME_FIELDS: string[] = ["time", "arrival_time"]
 let loadingTeamTriggers: TeamId | false = false
@@ -20,7 +20,7 @@ export function visitSnippet(trigger: Trigger, formatted = false): string {
 }
 
 export function useTriggersState() {
-    const {currentTeamId} = useTeamState()
+    const {currentTeamId} = useAuthContext().teamState
 
     const TRIGGER_KEY: string = `nw:${currentTeamId}:triggers`
     const TRIGGER_REFRESH_KEY: string = `nw:${currentTeamId}:triggers:refresh:v2`
@@ -47,7 +47,7 @@ export function useTriggersState() {
             return;
         }
 
-        loadingTeamTriggers = currentTeamId
+        loadingTeamTriggers = false
 
         fetchAuthApi<{ triggers: Trigger[] }>(`/${currentTeamId}/triggers`, {
             success: (data) => {

@@ -4,7 +4,13 @@ import {expirableLocalStorage} from "../helpers/ExpirableLocalStorage";
 
 const CURRENT_TEAM_ID_KEY: string = "nw:current_team"
 
-export function useTeamState() {
+export type TeamState = {
+    currentTeamId: TeamId | null
+    setCurrentTeamId: (teamId: TeamId | null) => void
+    setCurrentTeamFromTeams: (teams: Team[]) => void
+}
+
+export function useTeamState(): TeamState {
     const [currentTeamId, setCurrentTeamId] = useState<TeamId | null>(
         expirableLocalStorage.get(CURRENT_TEAM_ID_KEY, null, true),
     )

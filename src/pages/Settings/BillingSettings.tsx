@@ -1,7 +1,6 @@
 import format from "date-fns/format"
 import {useEffect, useState} from "react"
 import {addMonths, startOfMonth} from "date-fns"
-import {useUserState} from "../../storage/User"
 import {number_formatter} from "../../helpers/NumberFormatter"
 import {useUserUsageState} from "../../storage/UserUsage"
 import {planPrice, useAvailablePricesState} from "../../storage/AvailablePrices"
@@ -11,16 +10,18 @@ import {useLocation} from "react-router-dom"
 import {portalCheckout} from "../../helpers/PortalCheckout";
 import {NoLinkButton} from "../../components/buttons/LinkButton";
 import {price_formatter} from "../../helpers/PriceFormatter";
+import {useAuthContext} from "../../contexts/AuthContext";
 
 export default function BillingSettings() {
     const queryParams = new URLSearchParams(useLocation().search)
-    const {user, refreshUser, currentTeam} = useUserState(true)
+    const {userState, teamState} = useAuthContext()
+    const {user, refreshUser, currentTeam} = userState
     const [portalLoading, setPortalLoading] = useState(false)
     const [loadingPurchase, setLoadingPurchase] = useState(false)
     const {availablePrices, loaded, purchase} = useAvailablePricesState()
     const [period, setPeriod] = useState<"monthly" | "yearly">("monthly")
     const {userUsage} = useUserUsageState()
-    const team = currentTeam()
+    const team = currentTeam(teamState.currentTeamId!)!
     const subscriptionType = team?.subscription_type ?? "free"
     const subscribedPlan = team?.subscription_plan_id && availablePrices.length > 1 ?
         availablePrices.find(p => p.id === team.subscription_plan_id)! :
@@ -182,7 +183,7 @@ export default function BillingSettings() {
                                                         window.location.href = "mailto:sales@metricswave.com"
                                                         setLoadingPurchase(false)
                                                     } else {
-                                                        purchase(currentTeam()!.id, plan.id, period, user?.email)
+                                                        purchase(team.id, plan.id, period, user?.email)
                                                     }
                                                 }}
                                                 className={[

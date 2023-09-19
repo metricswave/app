@@ -2,8 +2,7 @@ import {useEffect, useState} from "react"
 import {fetchAuthApi} from "../helpers/ApiFetcher"
 import {User} from "../types/User"
 import {DAY_SECONDS, expirableLocalStorage} from "../helpers/ExpirableLocalStorage"
-import {useTeamState} from "./Team";
-import {Team} from "../types/Team";
+import {Team, TeamId} from "../types/Team";
 
 const USER_REFRESH_KEY: string = "nw:user:refresh:v2"
 const USER_KEY: string = "nw:user"
@@ -13,17 +12,23 @@ export const getUser = (): User | null => {
     return expirableLocalStorage.get(USER_KEY, null)
 }
 
-export function useUserState(isAuth: boolean) {
+export type UserState = {
+    user: User | null
+    setUser: (user: User | null) => void
+    setIsAuth: (isAuth: boolean) => void
+    refreshUser: () => void
+    expired: boolean
+    setExpired: (expired: boolean) => void
+    currentTeam: (id: TeamId) => Team | undefined
+}
+
+export function useUserState(): UserState {
+    const [isAuth, setIsAuth] = useState<boolean>(false)
     const [user, setUser] = useState<User | null>(getUser())
-    const {currentTeamId, setCurrentTeamId, setCurrentTeamFromTeams} = useTeamState()
     const [expired, setExpired] = useState(false)
     const [isFreshUser, setIsFreshUser] = useState<true | false>(
         expirableLocalStorage.get(USER_REFRESH_KEY, false),
     )
-
-    if (currentTeamId === null && user !== null) {
-        setCurrentTeamFromTeams(user.all_teams)
-    }
 
     const refreshUser = () => {
         if (loading) return
@@ -35,7 +40,6 @@ export function useUserState(isAuth: boolean) {
                 expirableLocalStorage.set(USER_KEY, data.data)
                 setUser(data.data)
                 setExpired(false)
-                setCurrentTeamFromTeams(data.data.all_teams)
                 loading = false
             },
             error: (data) => {
@@ -57,12 +61,13 @@ export function useUserState(isAuth: boolean) {
     return {
         user,
         setUser,
+        setIsAuth,
         refreshUser,
         expired,
         setExpired,
-        currentTeam: (): Team | undefined => {
+        currentTeam: (id: TeamId): Team | undefined => {
             if (user === null) return undefined
-            return user.all_teams.find(t => t.id === currentTeamId)
+            return user.all_teams.find(t => t.id === id)
         }
     }
 }

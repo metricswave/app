@@ -4,12 +4,14 @@ import {expirableLocalStorage, THIRTY_SECONDS} from "../helpers/ExpirableLocalSt
 import {useAuthState} from "./AuthToken"
 import {slugify} from "../helpers/Slugify"
 import {Dashboard, DashboardItem} from "../types/Dashboard";
-import {useTeamState} from "./Team";
+import {useAuthContext} from "../contexts/AuthContext";
 
 let loading = false
 
 export function useDashboardsState() {
-    const {currentTeamId} = useTeamState()
+    const {userState, teamState} = useAuthContext()
+    const {currentTeamId} = teamState
+    const {user} = userState
 
     const KEY = `nw:${currentTeamId}:dashboards`
 

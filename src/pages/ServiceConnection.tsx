@@ -4,13 +4,13 @@ import {fetchApi} from "../helpers/ApiFetcher"
 import {DeviceName} from "../storage/DeviceName"
 import {useAuthState} from "../storage/AuthToken"
 import {Tokens} from "../types/Token"
-import {useUserState} from "../storage/User"
 import EventTracker from "../helpers/EventTracker"
 import LoadingPage from "./LoadingPage"
+import {useAuthContext} from "../contexts/AuthContext";
 
 export default function ServiceConnection() {
     const {isAuth} = useAuthState()
-    const {user, refreshUser} = useUserState(isAuth)
+    const {user, refreshUser} = useAuthContext().userState
     const {driver} = useParams()
     const [searchParams] = useSearchParams()
     const [userCreated, setUserCreated] = useState(false)

@@ -1,15 +1,19 @@
 import {useLocation} from "react-router-dom"
-import { useUserState } from "./User"
-import { useAuthState } from "./AuthToken"
-import { app } from "../config/app"
-import { useEffect, useState } from "react"
+import {useAuthState} from "./AuthToken"
+import {app} from "../config/app"
+import {useEffect, useState} from "react"
+import {useAuthContext} from "../contexts/AuthContext";
 
 export const TrackVisit = function () {
     const {isAuth} = useAuthState()
-    const {user} = useUserState(isAuth)
+    const {user, setIsAuth} = useAuthContext().userState
     const location = useLocation()
     const [previousLocation, setPreviousLocation] = useState<string>("")
     const fullLocation = location.pathname + location.search
+
+    useEffect(() => {
+        setIsAuth(isAuth)
+    }, [isAuth]);
 
     useEffect(() => {
         const params = {
