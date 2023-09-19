@@ -1,4 +1,4 @@
-import {useTriggersState, visitSnippet} from "../storage/Triggers"
+import {useTriggersState, visitGoogleTagManagerSnippet, visitSnippet} from "../storage/Triggers"
 import {useEffect, useState} from "react"
 import {useNavigate, useSearchParams} from "react-router-dom"
 import CircleArrowsIcon from "../components/icons/CircleArrowsIcon"
@@ -12,16 +12,19 @@ import {FIVE_MINUTES_SECONDS, FIVE_SECONDS, TWO_SECONDS} from "../helpers/Expira
 import SecondaryButton from "../components/form/SecondaryButton"
 import EventTracker from "../helpers/EventTracker"
 import {DeviceName} from "../storage/DeviceName"
-import {app} from "../config/app"
 import {useAuthContext} from "../contexts/AuthContext";
+import {WelcomeDomainStep} from "./WelcomeDomainStep";
+import DropDownSelectFieldBox from "../components/form/DropDownSelectFieldBox";
 
 
-type Step = "loading" | "add-code"
+type Step = "loading" | "domain" | "add-code"
 
 export function Welcome() {
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
-    const {user} = useAuthContext().userState
+    const context = useAuthContext()
+    const user = context.userState.user
+    const currentTeam = context.userState.currentTeam(context.teamState.currentTeamId)
     const {triggers, refreshTriggers, loadedTriggers} = useTriggersState()
     const {userUsage, loadedUsage, loadUsage} = useUserUsageState()
     const [step, setStep] = useState<Step>("loading")
@@ -29,11 +32,42 @@ export function Welcome() {
     const [allowSkip, setAllowSkip] = useState(false)
     const [snippet, setSnippet] = useState("")
     const [formattedSnippet, setFormattedSnippet] = useState("")
+    const platforms = [
+        {label: "Common Webpage", value: "Common Webpage"},
+        {label: "Google Tag Manager", value: "Google Tag Manager"},
+        {label: "WordPress", value: "WordPress"},
+        {label: "React", value: "React"},
+        {label: "Next.js", value: "Next.js"},
+        {label: "Svelte", value: "Svelte"},
+        {label: "FlutterFlow", value: "FlutterFlow"},
+        {label: "Other", value: "Other"},
+    ]
+    const [selectedPlatform, setSelectedPlatform] = useState<string | string[]>("HTML & Javascript")
+
+    let documentationLink = "https://metricswave.com/documentation/integrations/html-and-javascript"
+    switch (selectedPlatform) {
+        case "Google Tag Manager":
+            documentationLink = "https://metricswave.com/documentation/integrations/google-tag-manager"
+            break
+        case "WordPress":
+            documentationLink = "https://metricswave.com/documentation/integrations/wordpress"
+            break
+        case "React":
+            documentationLink = "https://metricswave.com/documentation/integrations/react"
+            break
+        case "Next.js":
+            documentationLink = "https://metricswave.com/documentation/integrations/next-js"
+            break
+        case "Svelte":
+            documentationLink = "https://metricswave.com/documentation/integrations/svelte"
+            break
+        case "FlutterFlow":
+            documentationLink = "https://metricswave.com/documentation/integrations/flutterflow"
+            break
+    }
 
     useEffect(() => {
-        if (userUsage.usage > 0) {
-            setAllowFinish(true)
-        }
+        if (userUsage.usage > 0) setAllowFinish(true)
     }, [userUsage])
 
     useEffect(() => {
@@ -49,6 +83,7 @@ export function Welcome() {
         fetchAuthApi("/users/defaults", {
             method: "POST",
             success: (data) => {
+                context.userState.refreshUser()
                 refreshTriggers()
             },
             error: (error) => null,
@@ -57,12 +92,23 @@ export function Welcome() {
     }, [loadedTriggers, loadedUsage])
 
     useEffect(() => {
-        if (triggers.length > 0) {
-            setSnippet(visitSnippet(triggers.pop()!))
-            setFormattedSnippet(visitSnippet(triggers.pop()!, true))
-            setStep("add-code")
+        const trigger = triggers[0]
+        if (trigger !== undefined) {
+            if (selectedPlatform !== "Google Tag Manager") {
+                setSnippet(visitSnippet(trigger))
+                setFormattedSnippet(visitSnippet(trigger, true))
+            } else {
+                setSnippet(visitGoogleTagManagerSnippet(trigger))
+                setFormattedSnippet(visitGoogleTagManagerSnippet(trigger, true))
+            }
+
+            if (step === "loading") {
+                setStep(
+                    currentTeam?.domain !== "my-team.dev" ? "add-code" : "domain"
+                )
+            }
         }
-    }, [triggers, step])
+    }, [triggers, step, selectedPlatform])
 
     useEffect(() => {
         if (allowFinish) {
@@ -94,6 +140,13 @@ export function Welcome() {
         )
     }
 
+    if (step === "domain") {
+        return (<WelcomeDomainStep onFinish={() => {
+            context.userState.refreshUser()
+            setStep("add-code")
+        }}/>)
+    }
+
     return (
         <div className="max-w-[600px] px-4 py-12 mx-auto flex flex-col space-y-14">
             <Logo/>
@@ -104,15 +157,38 @@ export function Welcome() {
                 </h2>
 
                 <p className="sm:text-lg pt-3">
-                    You are now ready to start using the app, but first you need to add the javascript snippet.
+                    One last step to start tracking your metrics.
                 </p>
 
-                <p className="sm:text-lg">Copy and paste the next code in the <code>head</code> tag of your site:</p>
+                <p className="sm:text-lg">Integrate the tracking code on your site. There are different guides for each
+                    platform:</p>
 
-                <div>
-                    <pre className="bg-white dark:bg-zinc-800/25 soft-border border shadow p-5 rounded whitespace-pre-wrap break-words block max-w-full select-all text-sm">{formattedSnippet}</pre>
-                    <CopyButton textToCopy={snippet}
-                                className="w-full bg-transparent text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-800/25 mt-3"/>
+                <div className="flex flex-col gap-2 pt-4">
+                    <div>
+                        <DropDownSelectFieldBox
+                            value={selectedPlatform}
+                            options={platforms}
+                            setValue={setSelectedPlatform}
+                            label="Platform"
+                            name="platform"
+                        />
+                    </div>
+
+                    <div className="bg-white dark:bg-zinc-800/25 soft-border border shadow p-4 rounded whitespace-pre-wrap break-words max-w-full text-xs flex flex-col gap-6">
+                        <pre className="select-all">{formattedSnippet}</pre>
+
+                        <small className="text-blue-500 hover:underline transition-all duration-300 text-center">
+                            <a target="_blank"
+                               href={documentationLink}>
+                                Documentation about {selectedPlatform}
+                            </a>
+                        </small>
+                    </div>
+
+                    <CopyButton
+                        textToCopy={snippet}
+                        className="w-full bg-transparent text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-800/25"
+                    />
 
                     <div className="text-sm mt-3">
                         {(userUsage.usage > 0) && (
@@ -130,13 +206,6 @@ export function Welcome() {
 
                                 <div
                                     className="w-full text-center text-xs pb-1 pt-3 flex flex-col items-center justify-center gap-4">
-                                    <a
-                                        href={app.web + "/documentation/integrations"}
-                                        target="_blank"
-                                        className="border-b border-dotted opacity-50 hover:opacity-80 hover:text-blue-500 hover:border-blue-500 smooth-all"
-                                    >
-                                        How to add the code in different tools and frameworks?
-                                    </a>
                                     <a
                                         href="https://metricswave.com/documentation/analytics#are-you-in-localhost-or-test-environment"
                                         target="_blank"

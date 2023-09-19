@@ -4,10 +4,9 @@ import {fetchAuthApi} from "../helpers/ApiFetcher";
 import {useAuthContext} from "../contexts/AuthContext";
 import {TeamChannel} from "../types/TeamChannels";
 
-const TEAM_CHANNELS_KEY: string = "nw:team-channels"
-
 export function useTeamChannelsState() {
     const {currentTeamId} = useAuthContext().teamState
+    const TEAM_CHANNELS_KEY: string = `nw:${currentTeamId}:team-channels`
     const [teamChannels, setTeamChannels] = useState<TeamChannel[]>(
         expirableLocalStorage.get(TEAM_CHANNELS_KEY, [], true),
     )

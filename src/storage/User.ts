@@ -19,7 +19,7 @@ export type UserState = {
     refreshUser: () => void
     expired: boolean
     setExpired: (expired: boolean) => void
-    currentTeam: (id: TeamId) => Team | undefined
+    currentTeam: (id: TeamId | null) => Team | undefined
 }
 
 export function useUserState(): UserState {
@@ -65,8 +65,8 @@ export function useUserState(): UserState {
         refreshUser,
         expired,
         setExpired,
-        currentTeam: (id: TeamId): Team | undefined => {
-            if (user === null) return undefined
+        currentTeam: (id: null | TeamId): Team | undefined => {
+            if (user === null || id === null) return undefined
             return user.all_teams.find(t => t.id === id)
         }
     }

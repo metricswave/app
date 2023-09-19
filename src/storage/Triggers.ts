@@ -19,6 +19,29 @@ export function visitSnippet(trigger: Trigger, formatted = false): string {
     return `<script defer event-uuid="${trigger.uuid}" src="https://tracker.metricswave.com/js/visits.js"></script>`
 }
 
+export function visitGoogleTagManagerSnippet(trigger: Trigger, formatted = false): string {
+    if (formatted) {
+        return `<script>
+  var script = document.createElement('script');
+  script.defer = true;
+  script.setAttribute(
+      'event-uuid', 
+      '${trigger.uuid}'
+  )
+  script.src = "https://tracker.metricswave.com/js/visits.js";
+  document.getElementsByTagName('head')[0].appendChild(script);
+</script>`
+    }
+
+    return `<script>
+  var script = document.createElement('script');
+  script.defer = true;
+  script.setAttribute('event-uuid', '${trigger.uuid}')
+  script.src = "https://tracker.metricswave.com/js/visits.js";
+  document.getElementsByTagName('head')[0].appendChild(script);
+</script>`
+}
+
 export function useTriggersState() {
     const {currentTeamId} = useAuthContext().teamState
 
