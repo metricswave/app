@@ -48,7 +48,7 @@ export function DashboardView(props: {
                     compareWithPrevious={props.compareWithPrevious}
                     date={props.date}
                     parameter={parameter}
-                    key={index}
+                    key={index + eventUuid + parameter}
                 />)
             })}
 

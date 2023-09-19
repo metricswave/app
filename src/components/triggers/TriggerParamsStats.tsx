@@ -184,7 +184,8 @@ export function TriggerParamsStats(
                                                     const p = barPercentage < 1 ? 0 : Math.min(barPercentage, 23)
 
                                                     return (
-                                                        <div key={i} className="h-1 rounded bg-blue-500"
+                                                        <div key={i}
+                                                             className="h-1 rounded bg-blue-500"
                                                              style={{width: `${p}%`}}>
                                                         </div>
                                                     )
@@ -198,7 +199,8 @@ export function TriggerParamsStats(
                                                         const p = barPercentage < 1 ? 0 : Math.min(barPercentage, 23)
 
                                                         return (
-                                                            <div key={i} className="h-1 rounded bg-slate-500"
+                                                            <div key={i}
+                                                                 className="h-1 rounded bg-slate-500"
                                                                  style={{width: `${p}%`}}>
                                                             </div>
                                                         )
