@@ -7,31 +7,33 @@ import PrimaryButton from "../form/PrimaryButton"
 import {LinkButton} from "../buttons/LinkButton"
 import {fetchAuthApi} from "../../helpers/ApiFetcher"
 import {app} from "../../config/app"
+import {useAuthContext} from "../../contexts/AuthContext";
 
 type Props = {
-    service: FormService,
+    channel: FormService,
     onCreated: () => void,
 }
 
-export default function ServiceFormConnection({service, onCreated: created}: Props) {
+export default function ServiceFormConnection({channel, onCreated: created}: Props) {
     const [loading, setLoading] = useState(false)
+    const {currentTeamId} = useAuthContext().teamState
     const [values, setValues] = useState<{ [key: string]: string }>(
-            service.configuration.form.fields.reduce((acc, field) => {
-                acc[field.name] = ""
-                return acc
-            }, {} as { [key: string]: string }),
+        channel.configuration.form.fields.reduce((acc, field) => {
+            acc[field.name] = ""
+            return acc
+        }, {} as { [key: string]: string }),
     )
     const [errors, setErrors] = useState<{ [key: string]: string }>(
-            service.configuration.form.fields.reduce((acc, field) => {
-                acc[field.name] = ""
-                return acc
-            }, {} as { [key: string]: string }),
+        channel.configuration.form.fields.reduce((acc, field) => {
+            acc[field.name] = ""
+            return acc
+        }, {} as { [key: string]: string }),
     )
 
     const isValid = (): boolean => {
         let errors: { [key: string]: string } = {}
 
-        service.configuration.form.fields.forEach((field) => {
+        channel.configuration.form.fields.forEach((field) => {
             if (field.required && values[field.name] === "") {
                 errors[field.name] = "This field is required"
                 return
@@ -50,8 +52,8 @@ export default function ServiceFormConnection({service, onCreated: created}: Pro
 
                 if (field.validation.max_value !== undefined && Number(values[field.name]) > field.validation.max_value) {
                     errors[field.name] = field.validation.max_value === 0 ?
-                            "This field should be negative" :
-                            "This field should be at most " + field.validation.max_value
+                        "This field should be negative" :
+                        "This field should be at most " + field.validation.max_value
                     return
                 }
             }
@@ -67,10 +69,10 @@ export default function ServiceFormConnection({service, onCreated: created}: Pro
 
         setLoading(true)
 
-        fetchAuthApi("/users/services", {
+        fetchAuthApi(`/teams/${currentTeamId}/channels`, {
             method: "POST",
             body: {
-                service_id: service.id,
+                channel_id: channel.id,
                 fields: values,
             },
             success: () => {
@@ -84,54 +86,54 @@ export default function ServiceFormConnection({service, onCreated: created}: Pro
 
     const renderDynamicField = (field: FormServiceField, index: number = 0) => {
         return (
-                <InputFieldBox
-                        key={index}
-                        focus={index === 0}
-                        value={values[field.name]}
-                        setValue={(value) => {
-                            setValues({...values, [field.name]: value})
-                        }}
-                        error={errors[field.name]}
-                        label={field.label}
-                        name={field.name}
-                        placeholder={field.placeholder}
-                        autoComplete="off"
-                />
+            <InputFieldBox
+                key={index}
+                focus={index === 0}
+                value={values[field.name]}
+                setValue={(value) => {
+                    setValues({...values, [field.name]: value})
+                }}
+                error={errors[field.name]}
+                label={field.label}
+                name={field.name}
+                placeholder={field.placeholder}
+                autoComplete="off"
+            />
         )
     }
 
     return (
-            <div>
-                <DialogHeader/>
+        <div>
+            <DialogHeader/>
 
-                <div className="mt-8 mb-4">
-                    <Dialog.Title className="font-bold m-0 text-xl">
-                        {service.configuration.form.title}
-                    </Dialog.Title>
+            <div className="mt-8 mb-4">
+                <Dialog.Title className="font-bold m-0 text-xl">
+                    {channel.configuration.form.title}
+                </Dialog.Title>
 
-                    <Dialog.Description className="mt-2 mb-6 opacity-70">
-                        {service.configuration.form.description}
-                    </Dialog.Description>
-                </div>
-
-                <div className="flex flex-col space-y-4">
-                    <div>
-                        <LinkButton href={`${app.web}${service.configuration.form.help.href}`}
-                                    text={service.configuration.form.help.title}
-                                    target="_blank"/>
-                    </div>
-
-                    {service.configuration.form.fields.map((field, index) => {
-                        return renderDynamicField(field, index)
-                    })}
-
-                    <PrimaryButton
-                            loading={loading}
-                            text="Create Service"
-                            onClick={handleSubmit}
-                    />
-                </div>
-
+                <Dialog.Description className="mt-2 mb-6 opacity-70">
+                    {channel.configuration.form.description}
+                </Dialog.Description>
             </div>
+
+            <div className="flex flex-col space-y-4">
+                <div>
+                    <LinkButton href={`${app.web}${channel.configuration.form.help.href}`}
+                                text={channel.configuration.form.help.title}
+                                target="_blank"/>
+                </div>
+
+                {channel.configuration.form.fields.map((field, index) => {
+                    return renderDynamicField(field, index)
+                })}
+
+                <PrimaryButton
+                    loading={loading}
+                    text="Create Service"
+                    onClick={handleSubmit}
+                />
+            </div>
+
+        </div>
     )
 }

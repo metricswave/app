@@ -10,7 +10,7 @@ import SignUp from "../pages/SignUp"
 import Login from "../pages/Login"
 import ForgotPassword from "../pages/ForgotPassword"
 import ResetPassword from "../pages/ResetPassword"
-import Services from "../pages/Services"
+import Channels from "../pages/Channels"
 import ErrorPage from "../pages/ErrorPage"
 import Notifications from "../pages/Notifications"
 import Settings from "../pages/Settings/Settings"
@@ -37,7 +37,7 @@ export const routes: RouteObject[] = [
             },
             {
                 path: "/services",
-                element: <Services/>,
+                element: <Channels/>,
             },
             {
                 path: "/events",
