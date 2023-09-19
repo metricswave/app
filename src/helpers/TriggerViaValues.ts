@@ -1,13 +1,13 @@
 import {Trigger, TriggerVia} from "../types/Trigger"
-import {TelegramUserService, UserService, UserServiceType} from "../types/UserService"
+import {TeamChannel, TeamChannelType, TelegramTeamChannel} from "../types/TeamChannels";
 
-export const mergeDefaultWithTriggerViaValues = (userServices: UserService[], trigger: Trigger | undefined) => {
-    const telegramChannelsVia = userServices
-        .filter((service) => service.service_id === UserServiceType.Telegram)
-        .map((service) => {
+export const mergeDefaultWithTriggerViaValues = (teamChannels: TeamChannel[], trigger: Trigger | undefined) => {
+    const telegramChannelsVia = teamChannels
+        .filter((c) => c.channel_id === TeamChannelType.Telegram)
+        .map((c) => {
             return ({
-                id: (service as TelegramUserService).id,
-                label: `Telegram: ${(service as TelegramUserService).service_data.configuration.channel_name}`,
+                id: (c as TelegramTeamChannel).id,
+                label: `Telegram: ${(c as TelegramTeamChannel).data.configuration.channel_name}`,
                 checked: false,
                 type: "telegram",
             })
