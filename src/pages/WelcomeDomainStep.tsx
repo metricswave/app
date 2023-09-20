@@ -66,7 +66,8 @@ export function WelcomeDomainStep(
                             fetchAuthApi(`/teams/${currentTeamId}`, {
                                 method: "PUT",
                                 body: {
-                                    domain
+                                    domain,
+                                    change_dashboard_name: true,
                                 },
                                 success: onFinish,
                                 error: (e) => {
