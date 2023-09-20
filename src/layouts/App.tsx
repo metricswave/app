@@ -9,6 +9,7 @@ import {TrackVisit} from "../storage/VisitTracker"
 import {FeedbackWidget} from "../components/feedback/FeedbackWidget"
 import {useAuthContext} from "../contexts/AuthContext";
 import CircleArrowsIcon from "../components/icons/CircleArrowsIcon";
+import {TeamChooser} from "../components/team-selector/TeamChooser";
 
 export default function App() {
     const {isAuth} = useAuthState()
@@ -51,6 +52,9 @@ export default function App() {
                         {/*        </a>*/}
                         {/*    </li>*/}
                         {/*)}*/}
+                        <li>
+                            <TeamChooser/>
+                        </li>
                         <li>
                             <a href="/settings/profile"
                                className={[

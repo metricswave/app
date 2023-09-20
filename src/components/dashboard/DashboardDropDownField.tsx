@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from "react"
 import * as Popover from "@radix-ui/react-popover"
 import {CheckIcon, ChevronDownIcon, Cross2Icon, MixerHorizontalIcon} from "@radix-ui/react-icons"
-import {useDashboardsState} from "../../storage/Dashboard"
 import PrimaryButton from "../form/PrimaryButton"
 import Switch from "../switch/Switch"
 import {CopyButtonIcon} from "../form/CopyButton"
@@ -9,6 +8,7 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import SecondaryButton from "../form/SecondaryButton"
 import DeleteButton from "../form/DeleteButton"
 import {Dashboard} from "../../types/Dashboard";
+import {publicDashboardPath} from "../../storage/Dashboard";
 
 type Props = {
     value: string | string[],
@@ -36,7 +36,6 @@ export default function DashboardDropDownField(
 ) {
     return (
         <>
-
             <div className={[
                 "flex flex-row gap-4 p-2 items-center border transition-all border-zinc-200/60 hover:border-zinc-200 focus-within:hover:border-zinc-300 focus-within:border-zinc-300 duration-300 dark:border-zinc-700/60 rounded-sm hover:dark:border-zinc-700 group focus-within:dark:border-zinc-600 hover:focus-within:dark:border-zinc-600",
                 className,
@@ -94,10 +93,10 @@ export default function DashboardDropDownField(
                         deleteable={value !== "0"}
                         dashboard={activeDashboard}
                         deleteDashboard={async () => {
-                            await deleteDashboard(activeDashboard)
+                            // deleteDashboard(activeDashboard)
                         }}
                         onUpdate={(title, isPublic) => {
-                            updateDashboard(activeDashboard, title, isPublic)
+                            // updateDashboard(activeDashboard, title, isPublic)
                         }}
                     />
                 </div>
@@ -113,7 +112,6 @@ const DashboardPopOver = ({dashboard, onUpdate: update, deleteDashboard, deletea
     deleteDashboard: () => Promise<void>,
     onUpdate: (title: string, isPublic: boolean) => void,
 }) => {
-    const {publicDashboardPath} = useDashboardsState()
     const [open, setOpen] = useState(false)
     const [name, setName] = useState(dashboard.name)
     const [isPublic, setIsPublic] = useState(dashboard.public)

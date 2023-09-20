@@ -8,29 +8,35 @@ import {useAuthContext} from "../contexts/AuthContext";
 
 let loading = false
 
-export function useDashboardsState() {
-    const {userState, teamState} = useAuthContext()
-    const {currentTeamId} = teamState
-    const {user} = userState
+export const publicDashboardPath = (dashboard: Dashboard) => {
+    const n = slugify(dashboard.name)
+    return `https://app.metricswave.com/${dashboard.uuid}/${n}`
+}
 
-    const KEY = `nw:${currentTeamId}:dashboards`
+
+export function useDashboardsState() {
+    const {teamState} = useAuthContext()
+    const {currentTeamId} = teamState
+    const KEY = () => `nw:${currentTeamId}:dashboards`
 
     const {logout} = useAuthState()
-    const [dashboards, setDashboards] = useState<Dashboard[]>(
-        expirableLocalStorage.get<Dashboard[]>(KEY, [], true),
-    )
+    const [dashboards, setDashboards] = useState<Dashboard[]>([
+        expirableLocalStorage.get(KEY(), [], true),
+    ])
 
     const reloadDashboards = (force: boolean = false) => {
         if (loading) {
             return
         }
 
+        const cachesDashboardsForTeam = expirableLocalStorage.get<Dashboard[] | null>(KEY(), null)
         if (
-            expirableLocalStorage.get(KEY, null) !== null
+            cachesDashboardsForTeam !== null
             && dashboards !== undefined
             && dashboards.length > 0
             && !force
         ) {
+            setDashboards(cachesDashboardsForTeam);
             return
         }
 
@@ -43,7 +49,7 @@ export function useDashboardsState() {
         fetchAuthApi<Dashboard[]>(`/${currentTeamId}/dashboards`, {
             success: (data) => {
                 loading = false
-                expirableLocalStorage.set(KEY, data.data, THIRTY_SECONDS)
+                expirableLocalStorage.set(KEY(), data.data, THIRTY_SECONDS)
                 setDashboards(data.data)
             },
             error: (err) => {
@@ -64,7 +70,7 @@ export function useDashboardsState() {
             method: "PUT",
             body: newDashboards[index],
             success: (data) => {
-                expirableLocalStorage.set(KEY, newDashboards, THIRTY_SECONDS)
+                expirableLocalStorage.set(KEY(), newDashboards, THIRTY_SECONDS)
                 reloadDashboards(true)
             },
             error: (err: any) => null,
@@ -115,9 +121,5 @@ export function useDashboardsState() {
         removeWidgetFromDashboard,
         updateDashboard: updateDashboardFields,
         reloadDashboards,
-        publicDashboardPath: (dashboard: Dashboard) => {
-            const n = slugify(dashboard.name)
-            return `https://app.metricswave.com/${dashboard.uuid}/${n}`
-        },
     }
 }

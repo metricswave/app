@@ -29,7 +29,9 @@ export function DashboardView(props: {
             </a>
         </div>
 
-        <div className="-mx-2.5 pb-64 grid gap-4 grid-cols-1 md:grid-cols-2 ">
+        {props.dashboards[props.dashboardIndex].items !== undefined && <div
+            className="-mx-2.5 pb-64 grid gap-4 grid-cols-1 md:grid-cols-2 "
+        >
             {props.dashboards[props.dashboardIndex].items.map((
                 {eventUuid, title, size, type, parameter}, index,
             ) => {
@@ -61,6 +63,6 @@ export function DashboardView(props: {
                 addButtonSize={props.addButtonSize}
                 addWidgetToDashboard={props.addWidgetToDashboard}
             />
-        </div>
+        </div>}
     </SectionContainer>
 }

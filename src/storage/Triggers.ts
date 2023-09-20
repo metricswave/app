@@ -43,25 +43,26 @@ export function visitGoogleTagManagerSnippet(trigger: Trigger, formatted = false
 }
 
 export function useTriggersState() {
-    const {currentTeamId} = useAuthContext().teamState
+    const {teamState} = useAuthContext()
+    const {currentTeamId} = teamState
 
-    const TRIGGER_KEY: string = `nw:${currentTeamId}:triggers`
-    const TRIGGER_REFRESH_KEY: string = `nw:${currentTeamId}:triggers:refresh:v2`
+    const TRIGGER_KEY = () => `nw:${currentTeamId}:triggers`
 
     const [loadedTriggers, setLoadedTriggers] = useState<boolean>(false)
-    const [isFresh, setIsFresh] = useState<true | false>(
-        expirableLocalStorage.get(TRIGGER_REFRESH_KEY, false),
-    )
     const [triggers, setTriggers] = useState<Trigger[]>(
-        expirableLocalStorage.get(TRIGGER_KEY, []),
+        expirableLocalStorage.get(TRIGGER_KEY(), [], true),
     )
 
-    useEffect(() => {
+    const reloadTriggers = (force: boolean = false) => {
         if (currentTeamId === null) {
             return
         }
 
-        if (triggers.length > 0 && isFresh) {
+        setTriggers(expirableLocalStorage.get(TRIGGER_KEY(), [], true))
+
+        const isFresh = expirableLocalStorage.get(TRIGGER_KEY(), false)
+        if (triggers.length > 0 && isFresh !== false) {
+            setTriggers(isFresh)
             setLoadedTriggers(true)
             return
         }
@@ -70,28 +71,26 @@ export function useTriggersState() {
             return;
         }
 
-        loadingTeamTriggers = false
+        loadingTeamTriggers = currentTeamId
 
         fetchAuthApi<{ triggers: Trigger[] }>(`/${currentTeamId}/triggers`, {
             success: (data) => {
                 const t = mapTriggers(data.data.triggers)
-                expirableLocalStorage.set(TRIGGER_REFRESH_KEY, true, THIRTY_SECONDS)
-                expirableLocalStorage.set(TRIGGER_KEY, t)
+                expirableLocalStorage.set(TRIGGER_KEY(), t, THIRTY_SECONDS)
                 setTriggers(t)
-                setIsFresh(true)
                 setLoadedTriggers(true)
                 loadingTeamTriggers = false
             },
             error: (data) => {
-                setIsFresh(false)
                 loadingTeamTriggers = false
             },
             catcher: (err) => {
-                setIsFresh(false)
                 loadingTeamTriggers = false
             },
         })
-    }, [isFresh, currentTeamId])
+    }
+
+    useEffect(() => reloadTriggers(), [currentTeamId])
 
     const mapTriggers = (triggers: Trigger[]) => {
         return triggers
@@ -124,8 +123,7 @@ export function useTriggersState() {
         triggers,
         loadedTriggers,
         refreshTriggers: () => {
-            expirableLocalStorage.delete(TRIGGER_REFRESH_KEY)
-            setIsFresh(false)
+            reloadTriggers(true)
         },
         triggerByUuid: (uuid: string) => triggers.find(t => t.uuid === uuid),
     }

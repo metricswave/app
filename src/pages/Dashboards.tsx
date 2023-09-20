@@ -1,22 +1,22 @@
-import SectionContainer from "../components/sections/SectionContainer"
-import PageTitle from "../components/sections/PageTitle"
 import React, {useEffect, useState} from "react"
 import {calculateDefaultDateForPeriod, DEFAULT_PERIOD, Period, periods} from "../types/Period"
-import {useDashboardsState} from "../storage/Dashboard"
-import DashboardDropDownField from "../components/dashboard/DashboardDropDownField"
-import {CopyButtonIcon} from "../components/form/CopyButton"
+import {publicDashboardPath, useDashboardsState} from "../storage/Dashboard"
 import CircleArrowsIcon from "../components/icons/CircleArrowsIcon"
 import {useSearchParams} from "react-router-dom"
 import {fetchAuthApi} from "../helpers/ApiFetcher"
-import {PeriodChooser} from "../components/dashboard/PeriodChooser"
-import {NewDashboardDialog} from "../components/dashboard/NewDashboardDialog"
-import {DashboardView} from "../components/dashboard/DashboardView"
 import {Dashboard, DashboardItem} from "../types/Dashboard";
+import {useAuthContext} from "../contexts/AuthContext";
+import {NewDashboardDialog} from "../components/dashboard/NewDashboardDialog";
+import PageTitle from "../components/sections/PageTitle";
+import SectionContainer from "../components/sections/SectionContainer";
+import {PeriodChooser} from "../components/dashboard/PeriodChooser";
+import {CopyButtonIcon} from "../components/form/CopyButton";
+import DashboardDropDownField from "../components/dashboard/DashboardDropDownField";
+import {DashboardView} from "../components/dashboard/DashboardView";
 
 export function Dashboards() {
-    const {
-        dashboards, addWidgetToDashboard, updateDashboard, reloadDashboards, publicDashboardPath,
-    } = useDashboardsState()
+    const {teamState} = useAuthContext()
+    const {dashboards, addWidgetToDashboard, updateDashboard, reloadDashboards} = useDashboardsState()
     const [searchParams, setSearchParams] = useSearchParams()
     const [period, setPeriod] = useState<Period>(searchParams.get("period") as Period ?? DEFAULT_PERIOD)
     const periodConfiguration = periods.find(p => p.value === period)!
@@ -36,7 +36,7 @@ export function Dashboards() {
     let addButtonSize = "md:col-span-2"
     const dashboardsHasLoad = dashboards !== undefined && dashboards.length > 0
         && dashboards[dashboardIndex] !== undefined
-    if (dashboardsHasLoad) {
+    if (dashboardsHasLoad && dashboards[dashboardIndex].items) {
         addButtonSize = dashboards[dashboardIndex].items.reduce((acc, item) => {
             return acc + (item.size === "base" ? 1 : 2)
         }, 0) % 2 === 0 ? "md:col-span-2" : "md:col-span-1"
