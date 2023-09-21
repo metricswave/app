@@ -6,6 +6,7 @@ import {app} from "../../config/app"
 import {TriggerFunnelStats} from "../triggers/TriggerFunnelStats"
 import {Trigger} from "../../types/Trigger"
 import {DashboardItemType} from "../../types/Dashboard";
+import {twMerge} from "../../helpers/TwMerge";
 
 type Props = {
     title: string,
@@ -36,11 +37,11 @@ export default function DashboardWidget(
 
     return (
         <div
-            className={[
+            className={twMerge(
                 "relative group bg-white dark:bg-zinc-800/40 rounded-sm p-5 pb-4 shadow",
                 (size === "base" ? "" : "md:col-span-2"),
-                !app.isProduction && `event-${eventUuid} type-${type} size-${size} parameter-${parameter}`,
-            ].join(" ")}
+                (!app.isProduction ? `event-${eventUuid} type-${type} size-${size} parameter-${parameter}` : ''),
+            )}
         >
             {type === "funnel" && <TriggerFunnelStats
                 title={title}

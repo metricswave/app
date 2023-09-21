@@ -1,18 +1,20 @@
 import React, {InputHTMLAttributes} from "react"
 import InputLabel from "./InputLabel"
+import {twMerge} from "../../helpers/TwMerge";
 
 type Props = InputHTMLAttributes<any> & {
     value: string,
     disabled?: boolean,
     setValue: (value: string) => void,
     error?: false | string,
-    label: string,
+    label?: string,
     focus?: boolean,
     required?: boolean,
     showRequired?: boolean,
     name: string,
     type?: string,
     placeholder: string
+    inputClassName?: string,
 }
 
 export default function InputFieldBox(
@@ -20,7 +22,7 @@ export default function InputFieldBox(
         value,
         setValue,
         error,
-        label,
+        label = "",
         name,
         type = "text",
         disabled = false,
@@ -29,6 +31,7 @@ export default function InputFieldBox(
         showRequired = false,
         placeholder,
         className = "",
+        inputClassName = "",
         ...props
     }: Props,
 ) {
@@ -39,9 +42,20 @@ export default function InputFieldBox(
                 className,
             ].join(" ")}>
 
-                <InputLabel name={name} label={label} required={required} showRequired={showRequired}/>
+                {label?.length > 0 && <InputLabel
+                    name={name}
+                    label={label}
+                    required={required}
+                    showRequired={showRequired}
+                />}
 
-                <input className={`pt-1 px-4 bg-transparent outline-none placeholder:opacity-70 ` + (type === "time" || error ? "pb-2" : "pb-4")}
+                <input className={twMerge(
+                    'pt-1 px-4 bg-transparent outline-none placeholder:opacity-70',
+                    {'pt-4': label?.length === 0},
+                    {"pb-2": type === "time" || error},
+                    {"pb-4": !(type === "time" || error)},
+                    inputClassName,
+                )}
                        value={value}
                        onChange={e => setValue(e.target.value)}
                        type={type}

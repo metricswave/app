@@ -16,7 +16,7 @@ export type UserState = {
     user: User | null
     setUser: (user: User | null) => void
     setIsAuth: (isAuth: boolean) => void
-    refreshUser: () => void
+    refreshUser: (force?: boolean) => void
     expired: boolean
     setExpired: (expired: boolean) => void
     currentTeam: (id: TeamId | null) => Team | undefined
@@ -30,15 +30,20 @@ export function useUserState(): UserState {
         expirableLocalStorage.get(USER_REFRESH_KEY, false),
     )
 
-    const refreshUser = () => {
+    const refreshUser = (force = false) => {
         if (loading) return
         loading = true
+
+        if (isFreshUser && !force) {
+            return
+        }
 
         fetchAuthApi<User>("/users", {
             success: (data) => {
                 expirableLocalStorage.set(USER_REFRESH_KEY, true, DAY_SECONDS)
                 expirableLocalStorage.set(USER_KEY, data.data)
                 setUser(data.data)
+                setIsFreshUser(true)
                 setExpired(false)
                 loading = false
             },

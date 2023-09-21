@@ -70,11 +70,7 @@ export function WelcomeDomainStep(
                                     change_dashboard_name: true,
                                 },
                                 success: onFinish,
-                                error: (e) => {
-                                    setLoading(false)
-                                    setDomainError(e.message)
-                                },
-                                catcher: (e) => {
+                                finally: (e) => {
                                     setLoading(false)
                                     setDomainError(e.message)
                                 },

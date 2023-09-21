@@ -9,7 +9,7 @@ import {TrackVisit} from "../storage/VisitTracker"
 import {FeedbackWidget} from "../components/feedback/FeedbackWidget"
 import {useAuthContext} from "../contexts/AuthContext";
 import CircleArrowsIcon from "../components/icons/CircleArrowsIcon";
-import {TeamChooser} from "../components/team-selector/TeamChooser";
+import {TeamChooser} from "../components/team/TeamChooser";
 
 export default function App() {
     const {isAuth} = useAuthState()
@@ -44,14 +44,6 @@ export default function App() {
                 </div>
                 <div>
                     <ul className="flex flex-row space-x-4 items-center">
-                        {/*{user?.subscription_type === "free" && (*/}
-                        {/*    <li>*/}
-                        {/*        <a href="/settings/billing"*/}
-                        {/*           className="border border-red-200 hover:border-red-500 dark:border-red-800/50 dark:bg-red-700/25 dark:hover:border-red-800 smooth py-1.5 rounded-sm text-red-500 bg-red-50 px-2 uppercase text-xs">*/}
-                        {/*            Upgrade*/}
-                        {/*        </a>*/}
-                        {/*    </li>*/}
-                        {/*)}*/}
                         <li>
                             <TeamChooser/>
                         </li>

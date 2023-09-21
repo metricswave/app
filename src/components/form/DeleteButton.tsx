@@ -1,5 +1,6 @@
 import React from "react"
 import {CheckIcon, TrashIcon} from "@radix-ui/react-icons"
+import {twMerge} from "../../helpers/TwMerge";
 
 type Props = {
     text?: string,
@@ -24,15 +25,13 @@ export default function DeleteButton(
     return (
         <button
             {...props}
-            className={[
+            className={twMerge(
                 `smooth rounded-sm p-3 border shadow`,
-                (loading ? "animate-pulse bg-zinc-500 cursor-not-allowed" : (
-                    !confirmed ?
-                        "text-red-500 border-red-500 hover:text-white hover:bg-red-500 hover:shadow" :
-                        "text-white border-red-500 bg-red-500 hover:bg-red-600"
-                )),
-                props.className ?? "",
-            ].join(" ")}
+                {"animate-pulse bg-zinc-500 cursor-not-allowed": loading},
+                {"text-white border-red-500 bg-red-500 hover:bg-red-600": !loading && confirmed},
+                {"text-red-500 border-red-500 hover:text-white hover:bg-red-500 hover:shadow": !loading && !confirmed},
+                props.className,
+            )}
             onClick={async () => {
                 if (confirmed) {
                     setLoading(true)

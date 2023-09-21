@@ -11,6 +11,7 @@ import {portalCheckout} from "../../helpers/PortalCheckout";
 import {NoLinkButton} from "../../components/buttons/LinkButton";
 import {price_formatter} from "../../helpers/PriceFormatter";
 import {useAuthContext} from "../../contexts/AuthContext";
+import SectionContainer from "../../components/sections/SectionContainer";
 
 export default function BillingSettings() {
     const queryParams = new URLSearchParams(useLocation().search)
@@ -51,7 +52,10 @@ export default function BillingSettings() {
         return <LoadingPage/>
     }
 
-    return (
+    return (<SectionContainer
+        size={"big"}
+        align={"left"}
+    >
         <div className="flex flex-col space-y-14">
             <h1 className="font-bold">Billing</h1>
 
@@ -214,6 +218,6 @@ export default function BillingSettings() {
                 </div>
             )}
         </div>
-    )
+    </SectionContainer>)
 }
 

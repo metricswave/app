@@ -1,14 +1,18 @@
 import {useAuthContext} from "../../contexts/AuthContext"
 import {useState} from "react"
+import {useAuthState} from "../../storage/AuthToken";
 
 export default function ProfileSettings() {
     const userState = useAuthContext().userState
     const user = userState.user!
+    const {logout} = useAuthState()
     const [deleteAccount, setDeleteAccount] = useState(false)
 
     const handleAccountDeletion = () => {
-        alert("This will work in the future")
+        // todo: implement
+        logout()
     }
+
 
     return (
         <div className="flex flex-col space-y-6">

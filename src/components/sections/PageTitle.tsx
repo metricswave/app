@@ -1,9 +1,28 @@
 import React from "react"
+import {twMerge} from "../../helpers/TwMerge";
 
-export default function PageTitle({title, description, ...props}: { title: string, description?: string }) {
+type Props = {
+    title: string,
+    description?: string,
+    className?: string,
+    titleClassName?: string,
+}
+
+export default function PageTitle({title, description, titleClassName, className, ...props}: Props) {
     return (
-        <div className="flex flex-col space-y-2 mb-4k" {...props}>
-            <h1 className="text-lg font-bold">{title}</h1>
+        <div
+            className={twMerge(
+                "flex flex-col space-y-2 mb-4k",
+                className,
+            )}
+            {...props}
+        >
+            <h1
+                className={twMerge(
+                    "text-lg font-bold",
+                    titleClassName,
+                )}
+            >{title}</h1>
             {description && <p className="text-sm opacity-70">{description}</p>}
         </div>
     )

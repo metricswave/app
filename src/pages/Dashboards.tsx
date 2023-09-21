@@ -13,9 +13,9 @@ import {PeriodChooser} from "../components/dashboard/PeriodChooser";
 import {CopyButtonIcon} from "../components/form/CopyButton";
 import DashboardDropDownField from "../components/dashboard/DashboardDropDownField";
 import {DashboardView} from "../components/dashboard/DashboardView";
+import {TeamSetUp} from "../components/team/TeamSetUp";
 
 export function Dashboards() {
-    const {teamState} = useAuthContext()
     const {dashboards, addWidgetToDashboard, updateDashboard, reloadDashboards} = useDashboardsState()
     const [searchParams, setSearchParams] = useSearchParams()
     const [period, setPeriod] = useState<Period>(searchParams.get("period") as Period ?? DEFAULT_PERIOD)
@@ -32,6 +32,9 @@ export function Dashboards() {
     }
     const [newDashboardDialogOpen, setNewDashboardDialogOpen] = useState<boolean>(false)
     const [changedToPublic, setChangedToPublic] = useState<boolean>(false)
+
+    const context = useAuthContext()
+    const currentTeam = context.userState.currentTeam(context.teamState.currentTeamId)
 
     let addButtonSize = "md:col-span-2"
     const dashboardsHasLoad = dashboards !== undefined && dashboards.length > 0
@@ -79,12 +82,18 @@ export function Dashboards() {
         }
     }, [dashboards])
 
-    if (!dashboardsHasLoad) {
+    if (!dashboardsHasLoad || currentTeam === undefined) {
         return <>
             <div className="flex flex-col gap-4 items-center animate-pulse justify-center pt-20 sm:pt-44 md:pt-64">
                 <CircleArrowsIcon className="animate-spin h-6"/>
                 <div>Loading…</div>
             </div>
+        </>
+    }
+
+    if (currentTeam?.initiated === false) {
+        return <>
+            <TeamSetUp/>
         </>
     }
 

@@ -12,7 +12,7 @@ import ForgotPassword from "../pages/ForgotPassword"
 import ResetPassword from "../pages/ResetPassword"
 import Channels from "../pages/Channels"
 import ErrorPage from "../pages/ErrorPage"
-import Notifications from "../pages/Notifications"
+import HistorySettings from "../pages/HistorySettings"
 import Settings from "../pages/Settings/Settings"
 import ProfileSettings from "../pages/Settings/ProfileSettings"
 import BillingSettings from "../pages/Settings/BillingSettings"
@@ -20,8 +20,10 @@ import Triggers from "../pages/Triggers"
 import Impersonate from "../pages/Impersonate"
 import {DashboardsModify} from "../components/dashboard/DashboardsModify"
 import {AuthContextProvider} from "../contexts/AuthContext";
+import TeamSettings from "../pages/Settings/TeamSettings";
 
 const ServiceConnection = lazy(() => import("../pages/ServiceConnection"))
+const InviteAccept = lazy(() => import("../pages/InviteAccept"))
 const Trigger = lazy(() => import("../pages/Trigger"))
 const TriggerEdit = lazy(() => import("../pages/TriggerEdit"))
 
@@ -52,10 +54,6 @@ export const routes: RouteObject[] = [
                 element: <Suspense fallback={<LoadingPage/>}><TriggerEdit/></Suspense>,
             },
             {
-                path: "/history",
-                element: <Notifications/>,
-            },
-            {
                 path: "/settings",
                 element: <Settings/>,
                 children: [
@@ -64,8 +62,16 @@ export const routes: RouteObject[] = [
                         element: <ProfileSettings/>,
                     },
                     {
+                        path: "/settings/team",
+                        element: <TeamSettings/>,
+                    },
+                    {
                         path: "/settings/billing",
                         element: <BillingSettings/>,
+                    },
+                    {
+                        path: "/settings/realtime",
+                        element: <HistorySettings/>,
                     },
                 ],
             },
@@ -75,6 +81,12 @@ export const routes: RouteObject[] = [
         path: "/edit/:dashboardId",
         element: <AuthContextProvider><DashboardsModify/></AuthContextProvider>,
         errorElement: <ErrorPage/>,
+    },
+    {
+        path: "/invite/accept",
+        element: <Suspense fallback={<LoadingPage/>}>
+            <AuthContextProvider><InviteAccept/></AuthContextProvider>
+        </Suspense>,
     },
     {
         path: "/auth/:driver/callback",
