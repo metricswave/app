@@ -93,10 +93,10 @@ export default function DashboardDropDownField(
                         deleteable={value !== "0"}
                         dashboard={activeDashboard}
                         deleteDashboard={async () => {
-                            // deleteDashboard(activeDashboard)
+                            deleteDashboard(activeDashboard)
                         }}
                         onUpdate={(title, isPublic) => {
-                            // updateDashboard(activeDashboard, title, isPublic)
+                            updateDashboard(activeDashboard, title, isPublic)
                         }}
                     />
                 </div>

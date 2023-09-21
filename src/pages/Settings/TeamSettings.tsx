@@ -19,11 +19,20 @@ export default function TeamSettings() {
     const [teamDomain, setTeamDomain] = useState<string>(team?.domain || "")
     const [error, setError] = useState<string>("")
     const [changingTeamDomain, setChangingTeamDomain] = useState<boolean>(false)
-    const domainChanged = teamDomain !== team?.domain
+    const [domainChanged, setDomainChanged] = useState<boolean>(false)
+
+    useEffect(() => {
+        setTeamDomain(team?.domain || "")
+    }, [currentTeamId]);
+
+    useEffect(() => {
+        setDomainChanged(teamDomain !== team?.domain)
+    }, [teamDomain]);
 
     useEffect(() => {
         if (changingTeamDomain) setChangingTeamDomain(false)
     }, [teams]);
+
     useEffect(() => loadTeams(), []);
 
     if (teams.length === 0 || team === undefined) {

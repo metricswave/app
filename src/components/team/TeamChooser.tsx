@@ -51,7 +51,7 @@ export function TeamChooser() {
                         }
                     }),
                     {
-                        label: "Create a new team",
+                        label: "Create a New Team",
                         value: "create",
                     }
                 ]}
