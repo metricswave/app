@@ -4,6 +4,7 @@ export type TeamId = number
 
 export type Team = {
     id: TeamId
+    owner_id: number
     initiated: boolean
     domain: string
     subscription_status: boolean

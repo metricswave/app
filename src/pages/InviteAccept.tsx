@@ -4,15 +4,20 @@ import LoadingPage from "./LoadingPage"
 import {fetchApi} from "../helpers/ApiFetcher";
 import CircleArrowsIcon from "../components/icons/CircleArrowsIcon";
 
-export default function ServiceConnection() {
+export default function InviteAccept() {
     const [searchParams] = useSearchParams()
     const navigate = useNavigate()
     const token = searchParams.get("token")
     const teamId = searchParams.get("team")
     const [status, setStatus] = useState<"loading" | "accepted" | "error">("loading")
     const [error, setError] = useState<string | null>(null)
+    const [fetching, setFetching] = useState<boolean>(false)
 
     useEffect(() => {
+        if (fetching) {
+            return
+        }
+        setFetching(true)
         fetchApi(`/teams/${teamId}/invites/${token}/accept`, {
             method: "POST",
             success: () => {
@@ -25,6 +30,8 @@ export default function ServiceConnection() {
                 }
             },
             finally: () => {
+                if (status === "accepted") return
+
                 setStatus("error")
             }
         })

@@ -13,6 +13,7 @@ import SectionContainer from "../../components/sections/SectionContainer";
 
 export default function TeamSettings() {
     const context = useAuthContext()
+    const {user, refreshUser} = context.userState
     const {teams, currentTeamId, loadTeams} = context.teamState
     const {invites, loadInvites} = useTeamInvitesState()
     const team = teams.find(team => team.id === currentTeamId)
@@ -30,8 +31,11 @@ export default function TeamSettings() {
     }, [teamDomain]);
 
     useEffect(() => {
-        if (changingTeamDomain) setChangingTeamDomain(false)
-    }, [teams]);
+        if (changingTeamDomain) {
+            setDomainChanged(false)
+            setChangingTeamDomain(false)
+        }
+    }, [teams, user]);
 
     useEffect(() => loadTeams(), []);
 
@@ -79,7 +83,10 @@ export default function TeamSettings() {
                                 fetchAuthApi(`/teams/${currentTeamId}`, {
                                     method: "PUT",
                                     body: {domain: teamDomain},
-                                    success: () => loadTeams(true),
+                                    success: () => {
+                                        loadTeams(true)
+                                        refreshUser(true)
+                                    },
                                 })
                             }}
                         />
