@@ -85,14 +85,17 @@ export default function Login() {
         <Authentication footer={
             <>
                 <p className="text-sm">
-                    Forgot your password? <LinkButton href="/auth/forgot-password" text="Reset Password →"/>
+                    Forgot your password? <LinkButton href="/auth/forgot-password"
+                                                      text="Reset Password →"/>
                 </p>
                 <p className="text-sm">
-                    Do not have an account? <LinkButton href="/auth/signup" text="Sign Up →"/>
+                    Do not have an account? <LinkButton href="/auth/signup"
+                                                        text="Sign Up →"/>
                 </p>
             </>
         }>
-            <form onSubmit={handleSubmit} className="mt-8">
+            <form onSubmit={handleSubmit}
+                  className="mt-8">
                 <div className="pb-10 leading-relaxed flex flex-col space-y-2">
                     <p className="font-bold">Log In</p>
                     <p className="text-sm">Access into your account with social networks or with your email and
@@ -120,6 +123,7 @@ export default function Login() {
                                            label="Email"
                                            name="email"
                                            placeholder="john-doe@email.com"
+                                           autoComplete={"email"}
                                            type="email"/>
 
                             <InputFieldBox value={password}
@@ -131,7 +135,8 @@ export default function Login() {
 
                             <FormErrorMessage error={formError}/>
 
-                            <PrimaryButton text="Log In" loading={loading}/>
+                            <PrimaryButton text="Log In"
+                                           loading={loading}/>
 
                             <NoLinkButton text="Back"
                                           className="w-full text-center text-sm pt-4"

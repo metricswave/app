@@ -6,7 +6,6 @@ import {TeamId} from "../types/Team";
 import {useAuthContext} from "../contexts/AuthContext";
 
 const TIME_FIELDS: string[] = ["time", "arrival_time"]
-let loadingTeamTriggers: TeamId | false = false
 
 export function visitSnippet(trigger: Trigger, formatted = false): string {
     if (formatted) {
@@ -45,6 +44,7 @@ export function visitGoogleTagManagerSnippet(trigger: Trigger, formatted = false
 export function useTriggersState() {
     const {teamState} = useAuthContext()
     const {currentTeamId} = teamState
+    const [loadingTeamTriggers, setLoadingTeamTriggers] = useState<TeamId | false>(false)
 
     const TRIGGER_KEY = () => `nw:${currentTeamId}:triggers`
 
@@ -71,7 +71,7 @@ export function useTriggersState() {
             return;
         }
 
-        loadingTeamTriggers = currentTeamId
+        setLoadingTeamTriggers(currentTeamId)
 
         fetchAuthApi<{ triggers: Trigger[] }>(`/${currentTeamId}/triggers`, {
             success: (data) => {
@@ -79,14 +79,11 @@ export function useTriggersState() {
                 expirableLocalStorage.set(TRIGGER_KEY(), t, THIRTY_SECONDS)
                 setTriggers(t)
                 setLoadedTriggers(true)
-                loadingTeamTriggers = false
+                setLoadingTeamTriggers(false)
             },
-            error: (data) => {
-                loadingTeamTriggers = false
-            },
-            catcher: (err) => {
-                loadingTeamTriggers = false
-            },
+            finally: () => {
+                setLoadingTeamTriggers(false)
+            }
         })
     }
 

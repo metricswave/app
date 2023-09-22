@@ -29,7 +29,7 @@ export function useAuthContext() {
             return
         }
 
-        context.teamState.setCurrentTeamFromTeams(context.userState.user.all_teams || [])
+        context.teamState.setCurrentTeamFromTeams(context.userState.user, context.userState.user.all_teams)
     }, [context.userState.user])
 
     return context

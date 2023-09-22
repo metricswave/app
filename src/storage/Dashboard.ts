@@ -6,17 +6,15 @@ import {slugify} from "../helpers/Slugify"
 import {Dashboard, DashboardItem} from "../types/Dashboard";
 import {useAuthContext} from "../contexts/AuthContext";
 
-let loading = false
-
 export const publicDashboardPath = (dashboard: Dashboard) => {
     const n = slugify(dashboard.name)
     return `https://app.metricswave.com/${dashboard.uuid}/${n}`
 }
 
-
 export function useDashboardsState() {
     const {teamState} = useAuthContext()
     const {currentTeamId} = teamState
+    const [loading, setLoading] = useState(false)
     const KEY = () => `nw:${currentTeamId}:dashboards`
 
     const {logout} = useAuthState()
@@ -25,11 +23,10 @@ export function useDashboardsState() {
     ])
 
     const reloadDashboards = (force: boolean = false) => {
-        if (loading) {
-            return
-        }
+        if (loading) return
 
         const cachesDashboardsForTeam = expirableLocalStorage.get<Dashboard[] | null>(KEY(), null)
+
         if (
             cachesDashboardsForTeam !== null
             && dashboards !== undefined
@@ -40,15 +37,14 @@ export function useDashboardsState() {
             return
         }
 
-        loading = true
-
         if (currentTeamId === null) {
             return
         }
 
+        setLoading(true)
         fetchAuthApi<Dashboard[]>(`/${currentTeamId}/dashboards`, {
             success: (data) => {
-                loading = false
+                setLoading(false)
                 expirableLocalStorage.set(KEY(), data.data, THIRTY_SECONDS)
                 setDashboards(data.data)
             },
@@ -57,7 +53,9 @@ export function useDashboardsState() {
                     logout()
                 }
             },
-            catcher: (err: any) => loading = false,
+            finally: () => {
+                setLoading(false)
+            }
         })
     }
 

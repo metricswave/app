@@ -6,7 +6,6 @@ import {Team, TeamId} from "../types/Team";
 
 const USER_REFRESH_KEY: string = "nw:user:refresh:v2"
 const USER_KEY: string = "nw:user"
-let loading: boolean = false
 
 export const getUser = (): User | null => {
     return expirableLocalStorage.get(USER_KEY, null)
@@ -31,12 +30,7 @@ export function useUserState(): UserState {
     )
 
     const refreshUser = (force = false) => {
-        if (loading) return
-        loading = true
-
-        if (isFreshUser && !force) {
-            return
-        }
+        if (isFreshUser && !force) return
 
         fetchAuthApi<User>("/users", {
             success: (data) => {
@@ -45,15 +39,12 @@ export function useUserState(): UserState {
                 setUser(data.data)
                 setIsFreshUser(true)
                 setExpired(false)
-                loading = false
             },
             error: (data) => {
                 setExpired(true)
-                loading = false
             },
             catcher: (err) => {
                 setExpired(true)
-                loading = false
             },
         })
     }

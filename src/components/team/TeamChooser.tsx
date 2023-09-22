@@ -98,7 +98,7 @@ export function TeamChooser() {
                 <div className="flex flex-row space-x-10 mt-5 sm:mt-0 mb-2 justify-between items-start">
                     <div>
                         <Dialog.Title className="font-bold m-0">
-                            Create a new team
+                            Create a new site
                         </Dialog.Title>
 
                         <Dialog.Description className="mt-2 mb-6 opacity-70 text-sm">
@@ -109,10 +109,10 @@ export function TeamChooser() {
 
                 <div className="flex flex-col gap-2">
                     <InputFieldBox
-                        placeholder={"Team domain"}
+                        placeholder={"domain.com"}
                         name="teamDomain"
                         setValue={setTeamDomain}
-                        label="Team domain"
+                        label="Domain"
                         value={teamDomain}
                         error={error}
                         focus
@@ -120,7 +120,7 @@ export function TeamChooser() {
 
                     <PrimaryButton
                         className="w-full"
-                        text={"Save"}
+                        text={"Create site"}
                         loading={loading}
                         onClick={() => {
                             if (teamDomain === "") {

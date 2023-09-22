@@ -15,6 +15,7 @@ type Props = InputHTMLAttributes<any> & {
     type?: string,
     placeholder: string
     inputClassName?: string,
+    autoComplete?: string,
 }
 
 export default function InputFieldBox(
@@ -32,6 +33,7 @@ export default function InputFieldBox(
         placeholder,
         className = "",
         inputClassName = "",
+        autoComplete = undefined,
         ...props
     }: Props,
 ) {
@@ -65,6 +67,7 @@ export default function InputFieldBox(
                        id={name}
                        required={required}
                        placeholder={placeholder}
+                       autoComplete={autoComplete ?? "off"}
                        {...props}
                 />
 

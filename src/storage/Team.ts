@@ -2,6 +2,7 @@ import {useState} from "react";
 import {Team, TeamId} from "../types/Team";
 import {expirableLocalStorage, FIVE_SECONDS} from "../helpers/ExpirableLocalStorage";
 import {fetchAuthApi} from "../helpers/ApiFetcher";
+import {User} from "../types/User";
 
 const CURRENT_TEAM_ID_KEY: string = "nw:current_team"
 
@@ -10,7 +11,7 @@ export type TeamState = {
     loadTeams: (force?: boolean) => void
     currentTeamId: TeamId | null
     setCurrentTeamId: (teamId: TeamId | null) => void
-    setCurrentTeamFromTeams: (teams: Team[]) => void
+    setCurrentTeamFromTeams: (user: User, teams: Team[]) => void
 }
 
 export function useTeamState(): TeamState {
@@ -42,9 +43,10 @@ export function useTeamState(): TeamState {
         setCurrentTeamId(teamId)
     }
 
-    const setCurrentTeamFromTeams = (teams: Team[]) => {
+    const setCurrentTeamFromTeams = (user: User, teams: Team[]) => {
         if (currentTeamId === null && teams.length > 0) {
-            setCurrentTeamIdAndSave(teams[0].id)
+            const firstOwnedTeam = teams.sort(a => a.owner_id === user.id ? -1 : 1)[0]
+            setCurrentTeamIdAndSave(firstOwnedTeam.id)
         }
 
         if (currentTeamId !== null && teams.length > 0) {
