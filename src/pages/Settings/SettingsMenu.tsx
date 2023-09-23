@@ -11,7 +11,7 @@ const panelItems = [
         path: "/settings/profile",
     },
     {
-        name: "Team",
+        name: "Site",
         path: "/settings/team",
     },
     {

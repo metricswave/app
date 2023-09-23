@@ -48,15 +48,15 @@ export default function TeamSettings() {
         size={"big"}
     >
         <div className="flex flex-col space-y-6 max-w-content">
-            <h1 className="font-bold">Team: {team.domain}</h1>
+            <h1 className="font-bold">Site: {team.domain}</h1>
 
             <div className="flex flex-col gap-6 md:gap-10">
                 <div className="flex flex-col gap-2">
                     <InputFieldBox
-                        placeholder={"Team domain"}
+                        placeholder={"Site domain"}
                         name="teamDomain"
                         setValue={setTeamDomain}
-                        label="Team domain"
+                        label="Site domain"
                         value={teamDomain}
                         error={error}
                     />

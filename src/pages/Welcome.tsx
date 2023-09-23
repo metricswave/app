@@ -34,7 +34,7 @@ export function Welcome() {
     }, [userUsage])
 
     useEffect(() => {
-        if (!loadedTriggers || !loadedUsage) {
+        if (!loadedUsage) {
             return
         }
 
@@ -47,12 +47,19 @@ export function Welcome() {
             method: "POST",
             success: (data) => {
                 context.userState.refreshUser(true)
-                refreshTriggers()
             },
             error: (error) => null,
             catcher: (e) => null,
         })
-    }, [loadedTriggers, loadedUsage])
+    }, [loadedUsage])
+
+    useEffect(() => {
+        if (context.userState.user === null) {
+            return
+        }
+
+        context.teamState.setCurrentTeamFromTeams(context.userState.user, context.userState.user?.all_teams)
+    }, [context.userState.user])
 
     useEffect(() => {
         const trigger = triggers[0]
