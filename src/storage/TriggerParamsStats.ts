@@ -25,7 +25,6 @@ export function useTriggerParamsStatsState() {
             setPreviousStats(stats)
         }
     }
-
     const setLoadingFor = (loading: boolean, current: boolean) => {
         if (current) {
             setStatsLoading(loading)
@@ -41,7 +40,8 @@ export function useTriggerParamsStatsState() {
         date: string | null,
         publicDashboard: string | undefined,
     ) => {
-        const key = `trigger-params-stats-v1-${trigger.uuid}-${period}-${date ?? ""}-${publicDashboard ?? ""}`
+        const key = `trigger-params-stats-v1-${current ? 'current' : 'previous'}`
+            + `-${trigger.uuid}-${period}-${date ?? ""}-${publicDashboard ?? "private"}`
         const query = new URLSearchParams({period: safeApiPeriod(period), ...(date ? {date} : {})})
         const methods = {
             success: (data: ApiResponse<ParamsStats>) => {
@@ -69,6 +69,7 @@ export function useTriggerParamsStatsState() {
         }
 
         setLoadingFor(true, current)
+
         if (publicDashboard !== undefined) {
             fetchApi<ParamsStats>(
                 `/dashboards/${publicDashboard}/triggers/${trigger.uuid}/parameters-graph-stats?` + query,

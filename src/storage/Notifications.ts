@@ -2,45 +2,45 @@ import {useEffect, useState} from "react"
 import {fetchAuthApi} from "../helpers/ApiFetcher"
 import {expirableLocalStorage, FIVE_SECONDS} from "../helpers/ExpirableLocalStorage"
 import {Notification} from "../types/Notification"
-
-const NOTIFICATIONS_KEY: string = "nw:notifications"
-const NOTIFICATIONS_REFRESH_KEY: string = "nw:notifications:refresh"
+import {useAuthContext} from "../contexts/AuthContext";
 
 export function useNotificationsStage() {
-    const [isFresh, setIsFresh] = useState<true | false>(
-        expirableLocalStorage.get(NOTIFICATIONS_REFRESH_KEY, false),
-    )
+    const {currentTeamId} = useAuthContext().teamState
+    const NOTIFICATIONS_KEY = () => `nw:${currentTeamId}:notifications`
     const [notifications, setNotifications] = useState<Notification[]>(
-        expirableLocalStorage.get(NOTIFICATIONS_KEY, []),
+        expirableLocalStorage.get(NOTIFICATIONS_KEY(), [], true),
     )
 
-    const reloadNotifications = () => {
-        if (notifications.length > 0 && isFresh) {
+    const reloadNotifications = (force = false) => {
+        const cached = expirableLocalStorage.get(NOTIFICATIONS_KEY(), false)
+        if (cached !== false && notifications.length > 0 && !force) {
+            setNotifications(cached)
             return
         }
 
-        fetchAuthApi<Notification[]>("/notifications", {
+        fetchAuthApi<Notification[]>(`/teams/${currentTeamId}/notifications`, {
             success: (data) => {
                 const t = data.data
-                expirableLocalStorage.set(NOTIFICATIONS_REFRESH_KEY, true, FIVE_SECONDS)
-                expirableLocalStorage.set(NOTIFICATIONS_KEY, t)
+                expirableLocalStorage.set(NOTIFICATIONS_KEY(), t)
                 setNotifications(t)
-                setIsFresh(true)
             },
-            error: (data) => setIsFresh(false),
-            catcher: (err) => setIsFresh(false),
         })
     }
 
-    useEffect(reloadNotifications, [isFresh])
+    useEffect(() => reloadNotifications(true), [currentTeamId])
+    useEffect(() => {
+        setNotifications(
+            expirableLocalStorage.get(NOTIFICATIONS_KEY(), [], true),
+        )
+    }, [currentTeamId])
 
     useEffect(() => {
-        const interval = setInterval(reloadNotifications, FIVE_SECONDS * 1000)
+        const interval = setInterval(() => reloadNotifications(true), FIVE_SECONDS * 1000)
         return () => clearInterval(interval)
     }, [])
 
     return {
         notifications,
-        refreshNotifications: () => setIsFresh(false),
+        refreshNotifications: () => reloadNotifications(true),
     }
 }

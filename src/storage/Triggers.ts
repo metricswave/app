@@ -2,9 +2,8 @@ import {useEffect, useState} from "react"
 import {fetchAuthApi} from "../helpers/ApiFetcher"
 import {expirableLocalStorage, THIRTY_SECONDS} from "../helpers/ExpirableLocalStorage"
 import {Trigger} from "../types/Trigger"
-
-const TRIGGER_KEY: string = "nw:triggers"
-const TRIGGER_REFRESH_KEY: string = "nw:triggers:refresh:v2"
+import {TeamId} from "../types/Team";
+import {useAuthContext} from "../contexts/AuthContext";
 
 const TIME_FIELDS: string[] = ["time", "arrival_time"]
 
@@ -19,34 +18,76 @@ export function visitSnippet(trigger: Trigger, formatted = false): string {
     return `<script defer event-uuid="${trigger.uuid}" src="https://tracker.metricswave.com/js/visits.js"></script>`
 }
 
+export function visitGoogleTagManagerSnippet(trigger: Trigger, formatted = false): string {
+    if (formatted) {
+        return `<script>
+  var script = document.createElement('script');
+  script.defer = true;
+  script.setAttribute(
+      'event-uuid', 
+      '${trigger.uuid}'
+  )
+  script.src = "https://tracker.metricswave.com/js/visits.js";
+  document.getElementsByTagName('head')[0].appendChild(script);
+</script>`
+    }
+
+    return `<script>
+  var script = document.createElement('script');
+  script.defer = true;
+  script.setAttribute('event-uuid', '${trigger.uuid}')
+  script.src = "https://tracker.metricswave.com/js/visits.js";
+  document.getElementsByTagName('head')[0].appendChild(script);
+</script>`
+}
+
 export function useTriggersState() {
+    const {teamState} = useAuthContext()
+    const {currentTeamId} = teamState
+    const [loadingTeamTriggers, setLoadingTeamTriggers] = useState<TeamId | false>(false)
+
+    const TRIGGER_KEY = () => `nw:${currentTeamId}:triggers`
+
     const [loadedTriggers, setLoadedTriggers] = useState<boolean>(false)
-    const [isFresh, setIsFresh] = useState<true | false>(
-        expirableLocalStorage.get(TRIGGER_REFRESH_KEY, false),
-    )
     const [triggers, setTriggers] = useState<Trigger[]>(
-        expirableLocalStorage.get(TRIGGER_KEY, []),
+        expirableLocalStorage.get(TRIGGER_KEY(), [], true),
     )
 
-    useEffect(() => {
-        if (triggers.length > 0 && isFresh) {
+    const reloadTriggers = (force: boolean = false) => {
+        if (currentTeamId === null) {
+            return
+        }
+
+        setTriggers(expirableLocalStorage.get(TRIGGER_KEY(), [], true))
+
+        const isFresh = expirableLocalStorage.get(TRIGGER_KEY(), false)
+        if (triggers.length > 0 && isFresh !== false) {
+            setTriggers(isFresh)
             setLoadedTriggers(true)
             return
         }
 
-        fetchAuthApi<{ triggers: Trigger[] }>("/triggers", {
+        if (loadingTeamTriggers === currentTeamId) {
+            return;
+        }
+
+        setLoadingTeamTriggers(currentTeamId)
+
+        fetchAuthApi<{ triggers: Trigger[] }>(`/${currentTeamId}/triggers`, {
             success: (data) => {
                 const t = mapTriggers(data.data.triggers)
-                expirableLocalStorage.set(TRIGGER_REFRESH_KEY, true, THIRTY_SECONDS)
-                expirableLocalStorage.set(TRIGGER_KEY, t)
+                expirableLocalStorage.set(TRIGGER_KEY(), t, THIRTY_SECONDS)
                 setTriggers(t)
-                setIsFresh(true)
                 setLoadedTriggers(true)
+                setLoadingTeamTriggers(false)
             },
-            error: (data) => setIsFresh(false),
-            catcher: (err) => setIsFresh(false),
+            finally: () => {
+                setLoadingTeamTriggers(false)
+            }
         })
-    }, [isFresh])
+    }
+
+    useEffect(() => reloadTriggers(), [currentTeamId])
 
     const mapTriggers = (triggers: Trigger[]) => {
         return triggers
@@ -79,8 +120,7 @@ export function useTriggersState() {
         triggers,
         loadedTriggers,
         refreshTriggers: () => {
-            expirableLocalStorage.delete(TRIGGER_REFRESH_KEY)
-            setIsFresh(false)
+            reloadTriggers(true)
         },
         triggerByUuid: (uuid: string) => triggers.find(t => t.uuid === uuid),
     }

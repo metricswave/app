@@ -1,12 +1,12 @@
 import {TriggerStats} from "../triggers/TriggerStats"
 import {TriggerParamsStats} from "../triggers/TriggerParamsStats"
 import React from "react"
-import {useTriggersState} from "../../storage/Triggers"
 import {PeriodConfiguration} from "../../types/Period"
-import {DashboardItemType} from "../../storage/Dashboard"
 import {app} from "../../config/app"
 import {TriggerFunnelStats} from "../triggers/TriggerFunnelStats"
 import {Trigger} from "../../types/Trigger"
+import {DashboardItemType} from "../../types/Dashboard";
+import {twMerge} from "../../helpers/TwMerge";
 
 type Props = {
     title: string,
@@ -16,8 +16,7 @@ type Props = {
     period: PeriodConfiguration,
     compareWithPrevious: boolean,
     date: string,
-    eventUuid?: string,
-    trigger?: Trigger
+    trigger: Trigger
     publicDashboard?: string | undefined,
 }
 
@@ -30,32 +29,19 @@ export default function DashboardWidget(
         period,
         compareWithPrevious,
         date,
-        eventUuid = undefined,
-        trigger = undefined,
+        trigger,
         publicDashboard = undefined,
     }: Props,
 ) {
-    const {triggerByUuid} = useTriggersState()
-
-    if (trigger === undefined && eventUuid !== undefined) {
-        trigger = triggerByUuid(eventUuid)
-    }
-
-    if (trigger === undefined && eventUuid === undefined) {
-        return null
-    }
-
-    if (trigger === undefined) {
-        return null
-    }
+    const eventUuid = trigger.uuid
 
     return (
         <div
-            className={[
+            className={twMerge(
                 "relative group bg-white dark:bg-zinc-800/40 rounded-sm p-5 pb-4 shadow",
                 (size === "base" ? "" : "md:col-span-2"),
-                !app.isProduction && `event-${eventUuid} type-${type} size-${size} parameter-${parameter}`,
-            ].join(" ")}
+                (!app.isProduction ? `event-${eventUuid} type-${type} size-${size} parameter-${parameter}` : ''),
+            )}
         >
             {type === "funnel" && <TriggerFunnelStats
                 title={title}

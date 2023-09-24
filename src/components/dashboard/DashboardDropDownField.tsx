@@ -1,13 +1,14 @@
 import React, {useEffect, useState} from "react"
 import * as Popover from "@radix-ui/react-popover"
 import {CheckIcon, ChevronDownIcon, Cross2Icon, MixerHorizontalIcon} from "@radix-ui/react-icons"
-import {Dashboard, useDashboardsState} from "../../storage/Dashboard"
 import PrimaryButton from "../form/PrimaryButton"
 import Switch from "../switch/Switch"
 import {CopyButtonIcon} from "../form/CopyButton"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import SecondaryButton from "../form/SecondaryButton"
 import DeleteButton from "../form/DeleteButton"
+import {Dashboard} from "../../types/Dashboard";
+import {publicDashboardPath} from "../../storage/Dashboard";
 
 type Props = {
     value: string | string[],
@@ -35,7 +36,6 @@ export default function DashboardDropDownField(
 ) {
     return (
         <>
-
             <div className={[
                 "flex flex-row gap-4 p-2 items-center border transition-all border-zinc-200/60 hover:border-zinc-200 focus-within:hover:border-zinc-300 focus-within:border-zinc-300 duration-300 dark:border-zinc-700/60 rounded-sm hover:dark:border-zinc-700 group focus-within:dark:border-zinc-600 hover:focus-within:dark:border-zinc-600",
                 className,
@@ -93,7 +93,7 @@ export default function DashboardDropDownField(
                         deleteable={value !== "0"}
                         dashboard={activeDashboard}
                         deleteDashboard={async () => {
-                            await deleteDashboard(activeDashboard)
+                            deleteDashboard(activeDashboard)
                         }}
                         onUpdate={(title, isPublic) => {
                             updateDashboard(activeDashboard, title, isPublic)
@@ -112,7 +112,6 @@ const DashboardPopOver = ({dashboard, onUpdate: update, deleteDashboard, deletea
     deleteDashboard: () => Promise<void>,
     onUpdate: (title: string, isPublic: boolean) => void,
 }) => {
-    const {publicDashboardPath} = useDashboardsState()
     const [open, setOpen] = useState(false)
     const [name, setName] = useState(dashboard.name)
     const [isPublic, setIsPublic] = useState(dashboard.public)
@@ -129,7 +128,8 @@ const DashboardPopOver = ({dashboard, onUpdate: update, deleteDashboard, deletea
         setIsPublic(dashboard.public)
     }, [open, dashboard])
 
-    return <Popover.Root open={open} onOpenChange={setOpen}>
+    return <Popover.Root open={open}
+                         onOpenChange={setOpen}>
         <Popover.Trigger asChild>
             <button
                 className="rounded-full w-[35px] h-[35px] inline-flex items-center justify-center focus:shadow-[0_0_0_2px] focus:shadow-black cursor-default outline-none"
@@ -146,7 +146,8 @@ const DashboardPopOver = ({dashboard, onUpdate: update, deleteDashboard, deletea
                 {view === "edit" && <div className="flex flex-col gap-2.5">
                     <p className="text-mauve12 text-sm leading-[19px] font-bold mb-2.5">Configuration</p>
                     <fieldset className="flex gap-1 flex-col items-start">
-                        <label className="text-sm text-violet11 w-[75px]" htmlFor="width">
+                        <label className="text-sm text-violet11 w-[75px]"
+                               htmlFor="width">
                             Domain
                         </label>
                         <input
@@ -162,10 +163,12 @@ const DashboardPopOver = ({dashboard, onUpdate: update, deleteDashboard, deletea
                         />
                     </fieldset>
                     <fieldset className="flex gap-5 py-1 justify-between items-center">
-                        <label className="text-sm text-violet11 w-[75px]" htmlFor="maxHeight">
+                        <label className="text-sm text-violet11 w-[75px]"
+                               htmlFor="maxHeight">
                             Public
                         </label>
-                        <Switch value={isPublic} onChange={setIsPublic}/>
+                        <Switch value={isPublic}
+                                onChange={setIsPublic}/>
                     </fieldset>
 
                     {dashboard.public && <div>
@@ -200,7 +203,9 @@ const DashboardPopOver = ({dashboard, onUpdate: update, deleteDashboard, deletea
                         This action cannot be undone.
                     </p>
                     <div className="flex flex-col gap-2">
-                        <SecondaryButton className="flex-grow" text={"Cancel"} onClick={() => setView("edit")}/>
+                        <SecondaryButton className="flex-grow"
+                                         text={"Cancel"}
+                                         onClick={() => setView("edit")}/>
                         <DeleteButton
                             alreadyConfirmed
                             className="flex-grow"

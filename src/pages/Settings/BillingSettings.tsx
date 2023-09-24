@@ -1,28 +1,34 @@
 import format from "date-fns/format"
 import {useEffect, useState} from "react"
 import {addMonths, startOfMonth} from "date-fns"
-import {useUserState} from "../../storage/User"
 import {number_formatter} from "../../helpers/NumberFormatter"
-import {NoLinkButton} from "../../components/buttons/LinkButton"
-import {portalCheckout} from "../../helpers/PortalCheckout"
 import {useUserUsageState} from "../../storage/UserUsage"
 import {planPrice, useAvailablePricesState} from "../../storage/AvailablePrices"
-import {price_formatter} from "../../helpers/PriceFormatter"
 import LoadingPage from "../LoadingPage"
 import eventTracker from "../../helpers/EventTracker"
 import {useLocation} from "react-router-dom"
+import {portalCheckout} from "../../helpers/PortalCheckout";
+import {NoLinkButton} from "../../components/buttons/LinkButton";
+import {price_formatter} from "../../helpers/PriceFormatter";
+import {useAuthContext} from "../../contexts/AuthContext";
+import SectionContainer from "../../components/sections/SectionContainer";
 
 export default function BillingSettings() {
     const queryParams = new URLSearchParams(useLocation().search)
-    const {user} = useUserState(true)
+    const {userState, teamState} = useAuthContext()
+    const {user, refreshUser, currentTeam} = userState
     const [portalLoading, setPortalLoading] = useState(false)
     const [loadingPurchase, setLoadingPurchase] = useState(false)
     const {availablePrices, loaded, purchase} = useAvailablePricesState()
     const [period, setPeriod] = useState<"monthly" | "yearly">("monthly")
     const {userUsage} = useUserUsageState()
-    const subscribedPlan = user?.subscription_plan_id && availablePrices.length > 1 ?
-        availablePrices.find(p => p.id === user.subscription_plan_id)! :
+    const team = currentTeam(teamState.currentTeamId!)!
+    const subscriptionType = team?.subscription_type ?? "free"
+    const subscribedPlan = team?.subscription_plan_id && availablePrices.length > 1 ?
+        availablePrices.find(p => p.id === team.subscription_plan_id)! :
         availablePrices.find(p => p.id === 1)!
+
+    useEffect(refreshUser, [])
 
     useEffect(() => {
         if (queryParams.get("fromBillingPortal") === "true" && queryParams.get("success") === "true") {
@@ -46,7 +52,10 @@ export default function BillingSettings() {
         return <LoadingPage/>
     }
 
-    return (
+    return (<SectionContainer
+        size={"big"}
+        align={"left"}
+    >
         <div className="flex flex-col space-y-14">
             <h1 className="font-bold">Billing</h1>
 
@@ -58,9 +67,10 @@ export default function BillingSettings() {
                 </div>
 
                 <div className="rounded-sm bg-blue-100 dark:bg-zinc-500/20 h-8 w-full">
-                    <div className={["rounded-sm bg-blue-500 h-8 max-w-full w-10 shadow"].join(" ")} style={{
-                        width: `${(userUsage.usage / (subscribedPlan.eventsLimit ?? 9999999)) * 100}%`,
-                    }}></div>
+                    <div className={["rounded-sm bg-blue-500 h-8 max-w-full w-10 shadow"].join(" ")}
+                         style={{
+                             width: `${(userUsage.usage / (subscribedPlan.eventsLimit ?? 9999999)) * 100}%`,
+                         }}></div>
                 </div>
 
                 <div className="flex flex-col text-sm mt-4 space-y-2 opacity-70">
@@ -71,7 +81,7 @@ export default function BillingSettings() {
             <div className="flex flex-col space-y-4">
                 <h2 className="font-bold">Current Plan</h2>
                 <div>
-                    {user?.subscription_type === "free" && (
+                    {subscriptionType === "free" && (
                         <div className="flex flex-row space-x-4">
                             <div className="flex flex-col space-y-3 bg-blue-100/25 dark:bg-blue-900/10 border border-blue-500/50 dark:border-blue-700 rounded-sm p-4 w-full">
                                 <div className="font-bold text-zinc-800 dark:text-zinc-100">Free Plan</div>
@@ -84,7 +94,7 @@ export default function BillingSettings() {
                         </div>
                     )}
 
-                    {user?.subscription_type === "lifetime" && (
+                    {subscriptionType === "lifetime" && (
                         <div className="flex flex-row space-x-4">
                             <div className="flex flex-col space-y-3 bg-blue-100/25 dark:bg-blue-900/10 border border-blue-500/50 dark:border-blue-700 rounded-sm p-4 w-full">
                                 <div className="font-bold text-zinc-800 dark:text-zinc-100">
@@ -107,11 +117,12 @@ export default function BillingSettings() {
                         </div>
                     )}
 
-                    {user?.subscription_type === "monthly" && (
-                        <div className="flex flex-row space-x-4" onClick={() => {
-                            setPortalLoading(true)
-                            portalCheckout("/settings/billing")
-                        }}>
+                    {subscriptionType === "monthly" && (
+                        <div className="flex flex-row space-x-4"
+                             onClick={() => {
+                                 setPortalLoading(true)
+                                 portalCheckout("/settings/billing")
+                             }}>
                             <div className="flex flex-col space-y-3 bg-blue-100/25 dark:bg-blue-900/10 border border-blue-500/50 dark:border-blue-700 rounded-sm p-4 w-full">
                                 <div className="font-bold text-zinc-800 dark:text-zinc-100">
                                     {subscribedPlan.name} Plan
@@ -138,7 +149,7 @@ export default function BillingSettings() {
                 </div>
             </div>
 
-            {(user?.subscription_type === "free") && (
+            {(subscriptionType === "free") && (
                 <div className="flex flex-col space-y-4">
                     <div>
                         <h3 className="font-bold mb-2">Upgrade Plan</h3>
@@ -176,7 +187,7 @@ export default function BillingSettings() {
                                                         window.location.href = "mailto:sales@metricswave.com"
                                                         setLoadingPurchase(false)
                                                     } else {
-                                                        purchase(plan.id, period, user?.email)
+                                                        purchase(team.id, plan.id, period, user?.email)
                                                     }
                                                 }}
                                                 className={[
@@ -207,6 +218,6 @@ export default function BillingSettings() {
                 </div>
             )}
         </div>
-    )
+    </SectionContainer>)
 }
 

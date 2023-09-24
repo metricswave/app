@@ -1,7 +1,8 @@
+import {Team} from "./Team";
+
 export type User = {
+    id: number
     name: string
     email: string
-    subscription_status: boolean
-    subscription_type: string
-    subscription_plan_id: number
+    all_teams: Team[]
 }

@@ -49,9 +49,10 @@ export function useAuthState() {
             error: () => null,
             catcher: () => null,
         })
+        navigate("/auth/login")
         localStorage.clear()
         set(null)
-        navigate("/auth/login")
+        setTimeout(() => localStorage.clear(), 150)
     }
 
     const refreshTokenIfNeeded = () => {

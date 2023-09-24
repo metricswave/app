@@ -15,8 +15,9 @@ type ApiFetcherParams<T> = {
     body?: object
     refreshToken?: boolean
     success: (data: ApiResponse<T>, status: number) => void
-    error: (data: ApiErrorResponse) => void
-    catcher: (err: Error) => void
+    error?: (data: ApiErrorResponse, stats?: number) => void
+    catcher?: (err: Error) => void
+    finally?: (err: Error | ApiErrorResponse) => void
 }
 
 const defaultHeaders = {
@@ -53,9 +54,13 @@ export function fetchAuthApi<T>(path: string, {
             }
 
             const err = await res.json()
-            params.error(err)
+            if (params.error !== undefined) params.error(err, res.status)
+            if (params.finally !== undefined) params.finally(err)
         })
-        .catch(params.catcher)
+        .catch((err) => {
+            if (params.catcher !== undefined) params.catcher(err)
+            if (params.finally !== undefined) params.finally(err)
+        })
 }
 
 export function fetchApi<T>(path: string, {method = "GET", ...params}: ApiFetcherParams<T>) {
@@ -74,7 +79,11 @@ export function fetchApi<T>(path: string, {method = "GET", ...params}: ApiFetche
             }
 
             const err = await res.json()
-            params.error(err)
+            if (params.error !== undefined) params.error(err, res.status)
+            if (params.finally !== undefined) params.finally(err)
         })
-        .catch(params.catcher)
+        .catch((err) => {
+            if (params.catcher !== undefined) params.catcher(err)
+            if (params.finally !== undefined) params.finally(err)
+        })
 }

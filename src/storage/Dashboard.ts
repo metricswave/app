@@ -3,68 +3,49 @@ import {fetchAuthApi} from "../helpers/ApiFetcher"
 import {expirableLocalStorage, THIRTY_SECONDS} from "../helpers/ExpirableLocalStorage"
 import {useAuthState} from "./AuthToken"
 import {slugify} from "../helpers/Slugify"
+import {Dashboard, DashboardItem} from "../types/Dashboard";
+import {useAuthContext} from "../contexts/AuthContext";
 
-export type Dashboard = {
-    id: string
-    name: string
-    uuid: string
-    public: boolean
-    items: DashboardItem[]
+export const publicDashboardPath = (dashboard: Dashboard) => {
+    const n = slugify(dashboard.name)
+    return `https://app.metricswave.com/${dashboard.uuid}/${n}`
 }
-
-export type DashboardItem = {
-    eventUuid: string
-    title: string
-    size: DashboardItemSize
-    parameter?: string
-} & (StatItem | ParameterItem | FunnelItem)
-
-export type DashboardItemType = "stats" | "parameter" | "funnel"
-
-export type DashboardItemSize = "base" | "large"
-
-type StatItem = {
-    type: "stats"
-}
-
-type ParameterItem = {
-    type: "parameter"
-    parameter: string
-}
-
-type FunnelItem = {
-    type: "funnel"
-}
-
-const KEY = "nw:dashboards"
-let loading = false
 
 export function useDashboardsState() {
+    const {teamState} = useAuthContext()
+    const {currentTeamId} = teamState
+    const [loading, setLoading] = useState(false)
+    const KEY = () => `nw:${currentTeamId}:dashboards`
+
     const {logout} = useAuthState()
-    const [dashboards, setDashboards] = useState<Dashboard[]>(
-        expirableLocalStorage.get<Dashboard[]>(KEY, [], true),
-    )
+    const [dashboards, setDashboards] = useState<Dashboard[]>([
+        expirableLocalStorage.get(KEY(), [], true),
+    ])
 
     const reloadDashboards = (force: boolean = false) => {
-        if (loading) {
-            return
-        }
+        if (loading) return
+
+        const cachesDashboardsForTeam = expirableLocalStorage.get<Dashboard[] | null>(KEY(), null)
 
         if (
-            expirableLocalStorage.get(KEY, null) !== null
+            cachesDashboardsForTeam !== null
             && dashboards !== undefined
             && dashboards.length > 0
             && !force
         ) {
+            setDashboards(cachesDashboardsForTeam);
             return
         }
 
-        loading = true
+        if (currentTeamId === null) {
+            return
+        }
 
-        fetchAuthApi<Dashboard[]>("/dashboards", {
+        setLoading(true)
+        fetchAuthApi<Dashboard[]>(`/${currentTeamId}/dashboards`, {
             success: (data) => {
-                loading = false
-                expirableLocalStorage.set(KEY, data.data, THIRTY_SECONDS)
+                setLoading(false)
+                expirableLocalStorage.set(KEY(), data.data, THIRTY_SECONDS)
                 setDashboards(data.data)
             },
             error: (err) => {
@@ -72,11 +53,13 @@ export function useDashboardsState() {
                     logout()
                 }
             },
-            catcher: (err: any) => loading = false,
+            finally: () => {
+                setLoading(false)
+            }
         })
     }
 
-    useEffect(reloadDashboards, [])
+    useEffect(reloadDashboards, [currentTeamId])
 
     const updateDashboard = (index: number, newDashboards: Dashboard[]) => {
         const id = newDashboards[index].id
@@ -85,7 +68,7 @@ export function useDashboardsState() {
             method: "PUT",
             body: newDashboards[index],
             success: (data) => {
-                expirableLocalStorage.set(KEY, newDashboards, THIRTY_SECONDS)
+                expirableLocalStorage.set(KEY(), newDashboards, THIRTY_SECONDS)
                 reloadDashboards(true)
             },
             error: (err: any) => null,
@@ -136,9 +119,5 @@ export function useDashboardsState() {
         removeWidgetFromDashboard,
         updateDashboard: updateDashboardFields,
         reloadDashboards,
-        publicDashboardPath: (dashboard: Dashboard) => {
-            const n = slugify(dashboard.name)
-            return `https://app.metricswave.com/${dashboard.uuid}/${n}`
-        },
     }
 }

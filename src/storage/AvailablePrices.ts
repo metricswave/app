@@ -2,8 +2,10 @@ import {useEffect, useState} from "react"
 import {expirableLocalStorage} from "../helpers/ExpirableLocalStorage"
 import {fetchAuthApi} from "../helpers/ApiFetcher"
 import eventTracker from "../helpers/EventTracker"
+import {TeamId} from "../types/Team";
 
 const KEY = "nw:available-plans"
+let loading = false
 
 type AvailablePrices = Plan[]
 
@@ -43,6 +45,9 @@ export function useAvailablePricesState() {
     const [loaded, setLoaded] = useState(cachedPrices !== null)
 
     useEffect(() => {
+        if (loading) return
+        loading = true
+
         fetchAuthApi<AvailablePrices>(
             `/checkout/plans`,
             {
@@ -50,9 +55,10 @@ export function useAvailablePricesState() {
                     setLoaded(true)
                     setAvailablePrices(data.data)
                     expirableLocalStorage.set(KEY, data.data)
+                    loading = false
                 },
-                error: (err: any) => null,
-                catcher: (err: any) => null,
+                error: (err: any) => loading = false,
+                catcher: (err: any) => loading = false,
             },
         )
     }, [])
@@ -60,9 +66,9 @@ export function useAvailablePricesState() {
     return {
         availablePrices,
         loaded,
-        purchase: (planId: number, period: string, email?: string) => {
+        purchase: (teamId: TeamId, planId: number, period: string, email?: string) => {
             fetchAuthApi<{ path: string }>(
-                `/checkout/plan/${planId}/${period}`,
+                `/${teamId}/checkout/plan/${planId}/${period}`,
                 {
                     success: (data) => {
                         eventTracker.track(

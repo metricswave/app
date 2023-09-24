@@ -11,8 +11,16 @@ const panelItems = [
         path: "/settings/profile",
     },
     {
+        name: "Site",
+        path: "/settings/team",
+    },
+    {
         name: "Billing",
         path: "/settings/billing",
+    },
+    {
+        name: "Realtime",
+        path: "/settings/realtime",
     },
 ]
 
@@ -35,7 +43,8 @@ export default function SettingsMenu() {
         <>
             {/* Mobile menu */}
             <div className="sm:hidden px-8 pt-8 pb-2">
-                <Select.Root value={currentItem.path} onValueChange={setMenuValue}>
+                <Select.Root value={currentItem.path}
+                             onValueChange={setMenuValue}>
                     <Select.Trigger
                         className="w-full inline-flex items-center justify-start rounded leading-none p-3 bg-[var(--form-select-background)] shadow focus:outline-blue-500 focus:outline data-[placeholder]:text-zinc-500 outline-none space-x-4">
                         <Select.Icon className="">
@@ -109,7 +118,8 @@ export default function SettingsMenu() {
                             <li key={item.path}>
                                 <a className={[
                                     current ? "opacity-100" : "opacity-50 hover:opacity-80",
-                                ].join(" ")} href={item.path}>{item.name}</a>
+                                ].join(" ")}
+                                   href={item.path}>{item.name}</a>
                             </li>
                         )
                     })}
@@ -117,10 +127,12 @@ export default function SettingsMenu() {
 
                 <ul className="flex flex-col space-y-2">
                     <li>
-                        <a href="/" className="opacity-50 hover:text-red-500 hover:opacity-80" onClick={(e) => {
-                            e.preventDefault()
-                            logout()
-                        }}>Log out →</a>
+                        <a href="/"
+                           className="opacity-50 hover:text-red-500 hover:opacity-80"
+                           onClick={(e) => {
+                               e.preventDefault()
+                               logout()
+                           }}>Log out →</a>
                     </li>
                 </ul>
             </div>

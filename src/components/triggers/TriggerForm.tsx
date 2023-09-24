@@ -7,13 +7,13 @@ import {BellEmoji, Emoji, emojiFromNative, FunnelEmoji, VisitsEmoji} from "../..
 import ParametersFieldBox from "../form/ParametersFieldBox"
 import {TriggerType, TriggerTypeField, WebhookTriggerType} from "../../types/TriggerType"
 import CheckboxInputGroup, {CheckboxGroupValue} from "../form/CheckboxInputGroup"
-import {useUserServicesState} from "../../storage/UserServices"
 import {mergeDefaultWithTriggerViaValues} from "../../helpers/TriggerViaValues"
 import {LocationValue} from "../form/LocationFieldBox"
 import AutocompleteTextareaFieldBox from "../form/AutocompleteTextareaFieldBox"
 import InputLabel from "../form/InputLabel"
 import {LinkButton} from "../buttons/LinkButton"
 import TextareaFieldBox from "../form/TextareaFieldBox"
+import {useTeamChannelsState} from "../../storage/TeamChannels";
 
 type Props = {
     onSubmit: TriggerFormSubmit,
@@ -126,7 +126,7 @@ export default function TriggerForm(
     }: Props,
 ) {
     const [loading, setLoading] = useState<boolean>(false)
-    const {userServices} = useUserServicesState()
+    const {teamChannels} = useTeamChannelsState()
     const [minimalFormFields] = useState<boolean>(webhookTriggerType !== "custom")
 
     const [emoji, setEmoji] = useState<Emoji>(trigger ?
@@ -147,7 +147,7 @@ export default function TriggerForm(
     )
     const [errors, setErrors] = useState<{ [key: string]: string[] }>({})
     const [viaValues, setViaValues] = useState<Array<TriggerVia>>(
-        mergeDefaultWithTriggerViaValues(userServices, trigger),
+        mergeDefaultWithTriggerViaValues(teamChannels, trigger),
     )
 
     const [steps, setSteps] = useState<string>(
@@ -220,10 +220,12 @@ export default function TriggerForm(
     }, [autoCreate])
 
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
+        <form onSubmit={handleSubmit}
+              className="flex flex-col space-y-4">
 
             <div className="flex flex-row space-x-4 justify-center w-full">
-                <EmojiInputFieldBox value={emoji} setValue={setEmoji}/>
+                <EmojiInputFieldBox value={emoji}
+                                    setValue={setEmoji}/>
 
                 <InputFieldBox
                     value={title}
@@ -255,7 +257,10 @@ export default function TriggerForm(
                 {viaValues.length === 0 ? (<>
                     <div className="flex flex-col border transition-all border-zinc-200/60 hover:border-zinc-200 focus-within:hover:border-zinc-300 focus-within:border-zinc-300 duration-300 dark:border-zinc-700/60 rounded-sm hover:dark:border-zinc-700 group focus-within:dark:border-zinc-600 hover:focus-within:dark:border-zinc-600">
 
-                        <InputLabel name={"via"} label={"Notification Channels"} required={false} showRequired={false}/>
+                        <InputLabel name={"via"}
+                                    label={"Notification Channels"}
+                                    required={false}
+                                    showRequired={false}/>
 
                         <div className="pt-3 px-4 text-sm opacity-80 pb-4">
                             To share this event on a channel you need to create it before. You can do it in
@@ -310,7 +315,8 @@ export default function TriggerForm(
                 Object.keys(errors).length > 0
                 && errors["configuration"] !== undefined
                 && errors["configuration"].map((error, i) => (
-                    <p key={i} className="text-red-500 text-xs mb-4 mx-4">{error}</p>
+                    <p key={i}
+                       className="text-red-500 text-xs mb-4 mx-4">{error}</p>
                 ))
             }
 

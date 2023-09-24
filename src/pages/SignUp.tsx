@@ -105,7 +105,10 @@ export default function SignUp() {
         if (!withEmail) {
             EventTracker.track("675c40d3-d5c8-44df-bcb5-7882d1959e45", {step: "Init", user_id: DeviceName.name()})
         } else {
-            EventTracker.track("675c40d3-d5c8-44df-bcb5-7882d1959e45", {step: "oAuth / Form", user_id: DeviceName.name()})
+            EventTracker.track("675c40d3-d5c8-44df-bcb5-7882d1959e45", {
+                step: "oAuth / Form",
+                user_id: DeviceName.name()
+            })
         }
     }, [withEmail])
 
@@ -113,10 +116,12 @@ export default function SignUp() {
         <Authentication
             footer={
                 <p className="text-sm">
-                    Already have an account? <LinkButton href="/auth/login" text="Log In →"/>
+                    Already have an account? <LinkButton href="/auth/login"
+                                                         text="Log In →"/>
                 </p>
             }>
-            <form onSubmit={handleSubmit} className="mt-8">
+            <form onSubmit={handleSubmit}
+                  className="mt-8">
                 <div className="flex flex-col space-y-4">
                     <div className="pb-6 leading-relaxed flex flex-col space-y-2">
                         <p className="font-bold">Sign Up</p>
@@ -151,6 +156,7 @@ export default function SignUp() {
                                            error={errors.email}
                                            type="email"
                                            name="email"
+                                           autoComplete={"email"}
                                            placeholder="john-doe@email.com"
                                            label="Email"/>
 
@@ -172,7 +178,8 @@ export default function SignUp() {
 
                             <FormErrorMessage error={formError}/>
 
-                            <PrimaryButton text="Sign Up" loading={loading}/>
+                            <PrimaryButton text="Sign Up"
+                                           loading={loading}/>
 
                             <NoLinkButton className="w-full text-center text-sm pt-4"
                                           text="Back"

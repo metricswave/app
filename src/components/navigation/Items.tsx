@@ -1,5 +1,5 @@
-import {DashboardIcon, LightningBoltIcon, ListBulletIcon, PaperPlaneIcon} from "@radix-ui/react-icons"
-import React, {ForwardRefExoticComponent, RefAttributes} from "react"
+import {DashboardIcon, LightningBoltIcon, PaperPlaneIcon} from "@radix-ui/react-icons"
+import {ForwardRefExoticComponent, RefAttributes} from "react"
 import {IconProps} from "@radix-ui/react-icons/dist/types"
 
 type NavItem = {
@@ -14,11 +14,11 @@ export const items: Array<NavItem> = [
         label: "Dashboards",
         path: "/",
     },
-    {
-        icon: ListBulletIcon,
-        label: "History",
-        path: "/history",
-    },
+    // {
+    //     icon: ListBulletIcon,
+    //     label: "History",
+    //     path: "/history",
+    // },
     {
         icon: LightningBoltIcon,
         label: "Events",
