@@ -19,6 +19,7 @@ export default function App() {
 
     useEffect(() => {
         context.userState.setIsAuth(isAuth)
+        context.userState.refreshUser()
     }, [isAuth])
 
     if (context.userState.expired || !isAuth) {

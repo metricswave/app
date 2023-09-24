@@ -28,13 +28,10 @@ export function useUserState(): UserState {
     const [isFreshUser, setIsFreshUser] = useState<true | false>(
         expirableLocalStorage.get(USER_REFRESH_KEY, false),
     )
-    const [loading, setLoading] = useState<boolean>(false)
 
     const refreshUser = (force = false) => {
-        if (loading) return
         if (isFreshUser && !force) return
 
-        setLoading(true)
         fetchAuthApi<User>("/users", {
             success: (data) => {
                 expirableLocalStorage.set(USER_REFRESH_KEY, true, THIRTY_SECONDS)
@@ -42,11 +39,9 @@ export function useUserState(): UserState {
                 setUser(data.data)
                 setIsFreshUser(true)
                 setExpired(false)
-                setLoading(false)
             },
             finally: () => {
                 setExpired(true)
-                setLoading(false)
             },
         })
     }
