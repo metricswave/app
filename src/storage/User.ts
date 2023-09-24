@@ -4,8 +4,8 @@ import {User} from "../types/User"
 import {expirableLocalStorage, THIRTY_SECONDS} from "../helpers/ExpirableLocalStorage"
 import {Team, TeamId} from "../types/Team";
 
-const USER_REFRESH_KEY: string = "nw:user:refresh:v3"
-const USER_KEY: string = "nw:user"
+const USER_REFRESH_KEY: string = "nw:user:refresh:v4"
+const USER_KEY: string = "nw:user:v4"
 
 export const getUser = (): User | null => {
     return expirableLocalStorage.get(USER_KEY, null)
