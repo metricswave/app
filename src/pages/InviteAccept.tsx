@@ -3,6 +3,7 @@ import {useEffect, useState} from "react"
 import LoadingPage from "./LoadingPage"
 import {fetchApi} from "../helpers/ApiFetcher";
 import CircleArrowsIcon from "../components/icons/CircleArrowsIcon";
+import {useAuthContext} from "../contexts/AuthContext";
 
 export default function InviteAccept() {
     const [searchParams] = useSearchParams()
@@ -12,6 +13,7 @@ export default function InviteAccept() {
     const [status, setStatus] = useState<"loading" | "accepted" | "error">("loading")
     const [error, setError] = useState<string | null>(null)
     const [fetching, setFetching] = useState<boolean>(false)
+    const context = useAuthContext()
 
     useEffect(() => {
         if (fetching) {
@@ -22,6 +24,7 @@ export default function InviteAccept() {
             method: "POST",
             success: () => {
                 setStatus("accepted")
+                context.userState.refreshUser(true)
                 setTimeout(() => navigate("/"), 2000)
             },
             error: (err, status) => {
