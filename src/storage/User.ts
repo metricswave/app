@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react"
 import {fetchAuthApi} from "../helpers/ApiFetcher"
 import {User} from "../types/User"
-import {DAY_SECONDS, expirableLocalStorage} from "../helpers/ExpirableLocalStorage"
+import {expirableLocalStorage, THIRTY_SECONDS} from "../helpers/ExpirableLocalStorage"
 import {Team, TeamId} from "../types/Team";
 
 const USER_REFRESH_KEY: string = "nw:user:refresh:v2"
@@ -28,23 +28,25 @@ export function useUserState(): UserState {
     const [isFreshUser, setIsFreshUser] = useState<true | false>(
         expirableLocalStorage.get(USER_REFRESH_KEY, false),
     )
+    const [loading, setLoading] = useState<boolean>(false)
 
     const refreshUser = (force = false) => {
+        if (loading) return
         if (isFreshUser && !force) return
 
+        setLoading(true)
         fetchAuthApi<User>("/users", {
             success: (data) => {
-                expirableLocalStorage.set(USER_REFRESH_KEY, true, DAY_SECONDS)
+                expirableLocalStorage.set(USER_REFRESH_KEY, true, THIRTY_SECONDS)
                 expirableLocalStorage.set(USER_KEY, data.data)
                 setUser(data.data)
                 setIsFreshUser(true)
                 setExpired(false)
+                setLoading(false)
             },
-            error: (data) => {
+            finally: () => {
                 setExpired(true)
-            },
-            catcher: (err) => {
-                setExpired(true)
+                setLoading(false)
             },
         })
     }
