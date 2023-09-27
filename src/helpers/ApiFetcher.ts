@@ -73,7 +73,8 @@ export function fetchApi<T>(path: string, {method = "GET", ...params}: ApiFetche
     })
         .then(async res => {
             if (res.status >= 200 && res.status < 300) {
-                const data = await res.json()
+                const data = res.status === 204 ? null : await res.json()
+                await params.success(data, res.status)
                 params.success(data, res.status)
                 return
             }

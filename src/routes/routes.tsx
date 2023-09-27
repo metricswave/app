@@ -24,6 +24,7 @@ import TeamSettings from "../pages/Settings/TeamSettings";
 
 const ServiceConnection = lazy(() => import("../pages/ServiceConnection"))
 const InviteAccept = lazy(() => import("../pages/InviteAccept"))
+const Unsubscribe = lazy(() => import("../pages/Unsubscribe"))
 const Trigger = lazy(() => import("../pages/Trigger"))
 const TriggerEdit = lazy(() => import("../pages/TriggerEdit"))
 
@@ -86,6 +87,12 @@ export const routes: RouteObject[] = [
         path: "/invite/accept",
         element: <Suspense fallback={<LoadingPage/>}>
             <AuthContextProvider><InviteAccept/></AuthContextProvider>
+        </Suspense>,
+    },
+    {
+        path: "/unsubscribe",
+        element: <Suspense fallback={<LoadingPage/>}>
+            <AuthContextProvider><Unsubscribe/></AuthContextProvider>
         </Suspense>,
     },
     {
