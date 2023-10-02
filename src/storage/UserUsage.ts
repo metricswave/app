@@ -1,7 +1,6 @@
 import {useEffect, useState} from "react"
 import {expirableLocalStorage} from "../helpers/ExpirableLocalStorage"
 import {fetchAuthApi} from "../helpers/ApiFetcher"
-import {Simulate} from "react-dom/test-utils";
 import {useAuthContext} from "../contexts/AuthContext";
 
 const KEY = "nw:user-usage"
@@ -39,7 +38,7 @@ export function useUserUsageState() {
         )
     }
 
-    useEffect(loadUsage, [])
+    useEffect(loadUsage, [currentTeamId])
 
     return {
         userUsage,

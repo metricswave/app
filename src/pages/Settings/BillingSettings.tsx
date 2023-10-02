@@ -12,6 +12,7 @@ import {NoLinkButton} from "../../components/buttons/LinkButton";
 import {price_formatter} from "../../helpers/PriceFormatter";
 import {useAuthContext} from "../../contexts/AuthContext";
 import SectionContainer from "../../components/sections/SectionContainer";
+import {twMerge} from "../../helpers/TwMerge";
 
 export default function BillingSettings() {
     const queryParams = new URLSearchParams(useLocation().search)
@@ -66,14 +67,22 @@ export default function BillingSettings() {
                         until {format(startOfMonth(addMonths(new Date(), 1)), "PPP")}.</p>
                 </div>
 
-                <div className="rounded-sm bg-blue-100 dark:bg-zinc-500/20 h-8 w-full">
-                    <div className={["rounded-sm bg-blue-500 h-8 max-w-full w-10 shadow"].join(" ")}
+                <div className={twMerge("rounded-sm bg-blue-100 dark:bg-zinc-500/20 h-8 w-full")}>
+                    <div className={twMerge(
+                        "rounded-sm bg-blue-500 h-8 max-w-full w-10 shadow transition-all",
+                        {"bg-red-500 dark:bg-red-500/80 animate-pulse": userUsage.usage > (subscribedPlan.eventsLimit ?? 9999999)},
+                    )}
                          style={{
-                             width: `${(userUsage.usage / (subscribedPlan.eventsLimit ?? 9999999)) * 100}%`,
+                             width: `${Math.min(
+                                 100,
+                                 (userUsage.usage / (subscribedPlan.eventsLimit ?? 9999999)) * 100
+                             )}%`,
                          }}></div>
                 </div>
 
-                <div className="flex flex-col text-sm mt-4 space-y-2 opacity-70">
+                <div className={twMerge(
+                    "flex flex-col text-sm mt-4 space-y-2 opacity-70",
+                    {"text-red-500 dark:text-red-500/80 animate-pulse": userUsage.usage > (subscribedPlan.eventsLimit ?? 9999999)})}>
                     <span>{number_formatter(userUsage.usage)} / {subscribedPlan.eventsLimit === null ? "Unlimited" : number_formatter(subscribedPlan.eventsLimit)} events sent.</span>
                 </div>
             </div>
