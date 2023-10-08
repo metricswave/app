@@ -31,26 +31,30 @@ import CheckIcon from "../icons/CheckIcon"
 import {AddWidget} from "./AddWidget"
 import {LinkButton} from "../buttons/LinkButton"
 import {Toast} from "../toast/Toast"
-import {useDashboardsState} from "../../storage/Dashboard";
-import {Dashboard, DashboardItem} from "../../types/Dashboard";
+import {useDashboardsState} from "../../storage/Dashboard"
+import {Dashboard, DashboardItem} from "../../types/Dashboard"
 
 type SortableItem = { id: UniqueIdentifier, item: DashboardItem }
 
 export function DashboardsModify() {
     const {dashboards, updateDashboard: updateAndSaveDashboard} = useDashboardsState()
     const [dashboardId] = useState<number>(parseInt(useParams().dashboardId as string))
-    const [currentDashboard] = useState<Dashboard | undefined>(dashboards[dashboardId])
+    const currentDashboard = dashboards[dashboardId] as Dashboard | undefined
     const [items, setItems] = useState<SortableItem[]>(
-        currentDashboard?.items.map((item, index) => ({id: index + 1, item})) ?? [],
+        (currentDashboard?.items ?? []).map((item, index) => ({id: index + 1, item})) ?? [],
     )
     const [toastOpen, setToastOpen] = useState<boolean>(false)
     const [open, setOpen] = useState<UniqueIdentifier>(0)
 
     useEffect(() => {
-        if (toastOpen) {
-            setTimeout(() => setToastOpen(false), 3000)
-        }
+        if (!toastOpen) return
+        setTimeout(() => setToastOpen(false), 3000)
     }, [toastOpen])
+
+    useEffect(() => {
+        if (currentDashboard === undefined || currentDashboard.items === undefined) return
+        setItems(currentDashboard.items.map((item, index) => ({id: index + 1, item})))
+    }, [currentDashboard])
 
     const sensors = useSensors(
         useSensor(PointerSensor),
