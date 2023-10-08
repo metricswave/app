@@ -1,16 +1,16 @@
-import React, {useEffect, useState} from "react";
-import {useAuthContext} from "../../contexts/AuthContext";
-import {Team} from "../../types/Team";
-import {DialogComponent} from "../dialog/DialogComponent";
-import {DialogHeader} from "../dialog/DialogHeader";
+import React, {useEffect, useState} from "react"
+import {useAuthContext} from "../../contexts/AuthContext"
+import {Team} from "../../types/Team"
+import {DialogComponent} from "../dialog/DialogComponent"
+import {DialogHeader} from "../dialog/DialogHeader"
 import * as Dialog from "@radix-ui/react-dialog"
-import InputFieldBox from "../form/InputFieldBox";
-import PrimaryButton from "../form/PrimaryButton";
-import {fetchAuthApi} from "../../helpers/ApiFetcher";
+import InputFieldBox from "../form/InputFieldBox"
+import PrimaryButton from "../form/PrimaryButton"
+import {fetchAuthApi} from "../../helpers/ApiFetcher"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
-import {User} from "../../types/User";
-import {ChevronDownIcon} from "@radix-ui/react-icons";
-import CheckIcon from "../icons/CheckIcon";
+import {User} from "../../types/User"
+import {ChevronDownIcon} from "@radix-ui/react-icons"
+import CheckIcon from "../icons/CheckIcon"
 
 export function TeamChooser() {
     const context = useAuthContext()
@@ -28,13 +28,13 @@ export function TeamChooser() {
         if (teamsCount === context.userState.user?.all_teams.length) return
 
         setTimeout(() => {
-            const newTeam = context.userState.user?.all_teams[context.userState.user?.all_teams.length - 1]
+            const newTeam = context.userState.user?.all_teams.sort((a, b) => b.id - a.id)[0]
             context.teamState.setCurrentTeamId(newTeam?.id || 0)
             setCreatingTeam(false)
             setTeamDomain("")
             setLoading(false)
         }, 500)
-    }, [created, context.userState.user?.all_teams.length]);
+    }, [created, context.userState.user?.all_teams.length])
 
     if (currentTeam === undefined || user === null) {
         return <></>
