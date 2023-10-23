@@ -25,11 +25,12 @@ export default function Triggers() {
                 if (status) {
                     eventTracker.track("0555d93b-350a-41b4-800c-8741b9566bb0", {step: 1})
                 }
-            }} button={
-                <div className="border soft-border rounded-sm p-4 flex flex-col space-y-4 items-center hover:bg-[var(--background-50-color)] smooth cursor-pointer">
-                    <NoLinkButton text="Add trigger"/>
-                </div>
-            }>
+            }}
+                             button={
+                                 <div className="border soft-border rounded-sm p-4 flex flex-col space-y-4 items-center hover:bg-[var(--background-50-color)] smooth cursor-pointer">
+                                     <NoLinkButton text="Add trigger"/>
+                                 </div>
+                             }>
                 <TriggersAdd onLastStep={() => {
                     refreshTriggers()
                     eventTracker.track("0555d93b-350a-41b4-800c-8741b9566bb0", {step: 2})
@@ -47,11 +48,12 @@ export default function Triggers() {
                 if (status) {
                     eventTracker.track("0555d93b-350a-41b4-800c-8741b9566bb0", {step: 1})
                 }
-            }} button={
-                <div className="border soft-border rounded-sm p-4 flex flex-col space-y-4 items-center hover:bg-[var(--background-50-color)] smooth cursor-pointer">
-                    <NoLinkButton text="Add Event"/>
-                </div>
-            }>
+            }}
+                             button={
+                                 <div className="border soft-border rounded-sm p-4 flex flex-col space-y-4 items-center hover:bg-[var(--background-50-color)] smooth cursor-pointer">
+                                     <NoLinkButton text="Add Event"/>
+                                 </div>
+                             }>
                 <TriggersAdd onLastStep={() => {
                     eventTracker.track("0555d93b-350a-41b4-800c-8741b9566bb0", {step: 2})
                     refreshTriggers()
@@ -59,7 +61,7 @@ export default function Triggers() {
             </DialogComponent>
 
             <div className="flex flex-col space-y-6">
-                {triggers.map((trigger) => (
+                {[...triggers].map((trigger) => (
                     <TriggerBlock
                         trigger={trigger}
                         triggerType={getTriggerTypeById(trigger.trigger_type_id)}

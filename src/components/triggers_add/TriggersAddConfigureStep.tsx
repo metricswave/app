@@ -4,6 +4,7 @@ import {fetchAuthApi} from "../../helpers/ApiFetcher"
 import {generateUuid} from "../../helpers/UuidGenerator"
 import TriggerForm, {TriggerFormSubmit} from "../triggers/TriggerForm"
 import {useTriggerTypesState} from "../../storage/TriggerTypes"
+import {useAuthContext} from "../../contexts/AuthContext";
 
 type Props = {
     webhookTriggerType: WebhookTriggerType
@@ -11,6 +12,7 @@ type Props = {
 }
 
 export const TriggersAddConfigureStep = ({webhookTriggerType, onTriggerCreated: triggerCreated}: Props) => {
+    const {teamState} = useAuthContext()
     const triggerType: TriggerType = useTriggerTypesState().defaultTriggerType!
     const handleSubmit: TriggerFormSubmit = async (
         {emoji, title, content, values, via, type, steps},
@@ -18,7 +20,7 @@ export const TriggersAddConfigureStep = ({webhookTriggerType, onTriggerCreated: 
     ) => {
         const uuid = generateUuid()
 
-        fetchAuthApi("/triggers", {
+        fetchAuthApi(`/${teamState.currentTeamId}/triggers`, {
             method: "POST",
             body: {
                 uuid,

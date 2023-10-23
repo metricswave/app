@@ -61,14 +61,20 @@ export function useTriggersState() {
         setTriggers(expirableLocalStorage.get(TRIGGER_KEY(), [], true))
 
         const isFresh = expirableLocalStorage.get(TRIGGER_KEY(), false)
-        if (triggers.length > 0 && isFresh !== false) {
+        if (triggers.length > 0 && isFresh !== false && !force) {
             setTriggers(isFresh)
             setLoadedTriggers(true)
             return
         }
 
-        if (loadingTeamTriggers === currentTeamId) {
+        if (loadingTeamTriggers === currentTeamId && !force) {
             return;
+        }
+
+        if (force) {
+            setLoadedTriggers(false)
+            expirableLocalStorage.set(TRIGGER_KEY(), [], THIRTY_SECONDS)
+            setTriggers([])
         }
 
         setLoadingTeamTriggers(currentTeamId)
