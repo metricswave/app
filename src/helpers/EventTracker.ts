@@ -7,7 +7,7 @@ export default {
             return
         }
 
-        fetch(`https://notifywave.com/webhooks/${eventUuid}`, {
+        fetch(`https://metricswave.com/webhooks/${eventUuid}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
