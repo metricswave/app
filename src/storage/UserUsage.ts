@@ -18,8 +18,12 @@ export function useUserUsageState() {
     )
 
     const loadUsage = () => {
-        if (currentTeamId === null) return
         if (loading) return
+
+        if (currentTeamId === null) {
+            setLoadedUsage(true)
+            return
+        }
 
         loading = true
 
