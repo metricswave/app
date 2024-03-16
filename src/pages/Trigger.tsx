@@ -37,7 +37,6 @@ export default function Trigger() {
             </SectionContainer>
 
             <TriggerAutomaticGraph trigger={trigger}/>
-
         </div>
     )
 }

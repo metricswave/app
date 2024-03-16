@@ -34,9 +34,7 @@ export function Welcome() {
     }, [userUsage])
 
     useEffect(() => {
-        if (!loadedUsage) {
-            return
-        }
+        if (!loadedUsage) return
 
         if (userUsage.usage > 0 && searchParams.get("force") !== "true") {
             navigate("/")
@@ -47,6 +45,8 @@ export function Welcome() {
             method: "POST",
             success: (data) => {
                 context.userState.refreshUser(true)
+                context.teamState.loadTeams(true)
+                setStep("domain")
             },
             error: (error) => null,
             catcher: (e) => null,
