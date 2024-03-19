@@ -74,7 +74,7 @@ export default function TriggerAutomaticGraph({trigger}: { trigger: Trigger }) {
                         defaultPeriod={periodConfiguration.period}
                         defaultDate={date}
                         compareWithPrevious={compareWithPrevious}
-                        hideFilters
+                        hidePeriodFilter
                     />
                 </div>
             </SectionContainer>

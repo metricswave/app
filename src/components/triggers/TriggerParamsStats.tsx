@@ -18,6 +18,8 @@ type Props = {
     defaultPeriod?: Period
     defaultDate?: string
     hideFilters?: boolean
+    hidePeriodFilter?: boolean
+    hideParameterChooser?: boolean
     compareWithPrevious?: boolean
 }
 
@@ -30,6 +32,8 @@ export function TriggerParamsStats(
         publicDashboard,
         defaultPeriod = "day",
         hideFilters = false,
+        hidePeriodFilter = false,
+        hideParameterChooser = false,
         compareWithPrevious = false,
     }: Props,
 ) {
@@ -86,51 +90,59 @@ export function TriggerParamsStats(
 
             {!hideFilters &&
                 <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0justify-between pt-4 pb-10">
-                    <div className="w-full sm:w-1/3">
-                        <InputFieldBox
-                            setValue={setFieldDate}
-                            label="Date"
-                            type={dateFieldType}
-                            name="date"
-                            placeholder={"Date"}
-                            value={fieldDate as string}
-                        />
-                    </div>
+                    {!hidePeriodFilter &&
+                        <div className="w-full sm:w-1/3">
+                            <InputFieldBox
+                                setValue={setFieldDate}
+                                label="Date"
+                                type={dateFieldType}
+                                name="date"
+                                placeholder={"Date"}
+                                value={fieldDate as string}
+                            />
+                        </div>
+                    }
 
-                    <div className="flex flex-col sm:flex-row flex-grow sm:items-center justify-end space-y-3 sm:space-y-0 sm:space-x-3">
-                        <DropDownSelectFieldBox
-                            value={parameter}
-                            options={params.map((param) => ({value: param, label: param}))}
-                            setValue={(value) => {
-                                setParameter(value as string)
-                            }}
-                            className="w-full sm:w-1/3"
-                            label="Parameter"
-                            name="parameter"
-                        />
+                    {( !hideParameterChooser || !hidePeriodFilter ) &&
+                        <div className="flex flex-col sm:flex-row flex-grow sm:items-center justify-end space-y-3 sm:space-y-0 sm:space-x-3">
+                            {!hideParameterChooser &&
+                                <DropDownSelectFieldBox
+                                    value={parameter}
+                                    options={params.map((param) => ({value: param, label: param}))}
+                                    setValue={(value) => {
+                                        setParameter(value as string)
+                                    }}
+                                    className="w-full sm:w-1/3"
+                                    label="Parameter"
+                                    name="parameter"
+                                />
+                            }
 
-                        <DropDownSelectFieldBox
-                            className="w-full sm:w-1/3"
-                            value={period}
-                            options={[
-                                {
-                                    value: "day",
-                                    label: "Daily",
-                                },
-                                {
-                                    value: "month",
-                                    label: "Monthly",
-                                },
-                            ]}
-                            setValue={(value) => {
-                                setPeriodAndDate(value as Period)
-                            }}
-                            label="Period"
-                            name="period"
-                        />
-
-                    </div>
-                </div>}
+                            {!hidePeriodFilter &&
+                                <DropDownSelectFieldBox
+                                    className="w-full sm:w-1/3"
+                                    value={period}
+                                    options={[
+                                        {
+                                            value: "day",
+                                            label: "Daily",
+                                        },
+                                        {
+                                            value: "month",
+                                            label: "Monthly",
+                                        },
+                                    ]}
+                                    setValue={(value) => {
+                                        setPeriodAndDate(value as Period)
+                                    }}
+                                    label="Period"
+                                    name="period"
+                                />
+                            }
+                        </div>
+                    }
+                </div>
+            }
 
             {statsLoading && (
                 <div className="">
