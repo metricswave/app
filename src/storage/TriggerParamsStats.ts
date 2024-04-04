@@ -39,9 +39,10 @@ export function useTriggerParamsStatsState() {
         period: Period,
         date: string | null,
         publicDashboard: string | undefined,
+        parameter: string | null | undefined,
     ) => {
         const key = `trigger-params-stats-v1-${current ? 'current' : 'previous'}`
-            + `-${trigger.uuid}-${period}-${date ?? ""}-${publicDashboard ?? "private"}`
+            + `-${trigger.uuid}-${period}-${date ?? ""}-${publicDashboard ?? "private"}-${parameter ?? "all"}`
         const query = new URLSearchParams({period: safeApiPeriod(period), ...(date ? {date} : {})})
         const methods = {
             success: (data: ApiResponse<ParamsStats>) => {
@@ -72,7 +73,7 @@ export function useTriggerParamsStatsState() {
 
         if (publicDashboard !== undefined) {
             fetchApi<ParamsStats>(
-                `/dashboards/${publicDashboard}/triggers/${trigger.uuid}/parameters-graph-stats?` + query,
+                `/dashboards/${publicDashboard}/triggers/${trigger.uuid}/parameters-graph-stats/${parameter ?? ''}?` + query,
                 methods,
             )
         } else {
@@ -88,8 +89,9 @@ export function useTriggerParamsStatsState() {
         period: Period,
         date: string | null,
         publicDashboard: string | undefined,
+        parameter: string | null | undefined = undefined,
     ) => {
-        loadStatsFor(true, trigger, period, date, publicDashboard)
+        loadStatsFor(true, trigger, period, date, publicDashboard, parameter)
     }
 
     const loadPreviousStats = (
@@ -97,8 +99,9 @@ export function useTriggerParamsStatsState() {
         period: Period,
         date: string | null,
         publicDashboard: string | undefined,
+        parameter: string | null | undefined = undefined,
     ) => {
-        loadStatsFor(false, trigger, period, getPreviousPeriodDate(period, date), publicDashboard)
+        loadStatsFor(false, trigger, period, getPreviousPeriodDate(period, date), publicDashboard, parameter)
     }
 
     return {stats, previousStats, loadStats, loadPreviousStats, statsLoading: statsLoading || previousStatsLoading}
