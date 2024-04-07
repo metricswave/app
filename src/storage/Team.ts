@@ -12,6 +12,7 @@ export type TeamState = {
     currentTeamId: TeamId | null
     setCurrentTeamId: (teamId: TeamId | null) => void
     setCurrentTeamFromTeams: (user: User, teams: Team[]) => void
+    deleteTeam: (teamId: TeamId) => Promise<void>
 }
 
 export function useTeamState(): TeamState {
@@ -59,11 +60,27 @@ export function useTeamState(): TeamState {
         }
     }
 
+    const deleteTeam = async (teamId: TeamId): Promise<void> => {
+        await fetchAuthApi(`/teams/${teamId}`, {
+            method: "DELETE",
+            success: () => {
+                const newTeams = teams.filter(t => t.id !== teamId)
+
+                setTeams(newTeams)
+                expirableLocalStorage.set(CACHE_KEY, newTeams, FIVE_SECONDS)
+                setCurrentTeamId(newTeams.length > 0 ? newTeams[0].id : null)
+            },
+        });
+
+        return;
+    }
+
     return {
         currentTeamId,
         teams,
         loadTeams,
         setCurrentTeamId: setCurrentTeamIdAndSave,
         setCurrentTeamFromTeams,
+        deleteTeam,
     }
 }

@@ -2,11 +2,11 @@ import React, {useContext, useEffect} from "react"
 import {UserState, useUserState} from "../storage/User";
 import {TeamState, useTeamState} from "../storage/Team";
 
-type AuthContextType = null | {
+export type AuthContextType = null | DefinedAuthContextType
+export type DefinedAuthContextType = {
     userState: UserState,
     teamState: TeamState
 }
-
 export const AuthContext = React.createContext<AuthContextType>(null)
 
 export function AuthContextProvider({children}: { children: React.ReactNode }) {

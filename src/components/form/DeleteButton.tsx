@@ -37,6 +37,7 @@ export default function DeleteButton(
                     setLoading(true)
                     await clicked()
                     setLoading(false)
+                    setConfirmed(false)
                     return
                 }
 
