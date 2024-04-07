@@ -1,7 +1,7 @@
-import {useAuthContext} from "../../contexts/AuthContext"
+import {AuthContextType, DefinedAuthContextType, useAuthContext} from "../../contexts/AuthContext"
 import LoadingPage from "../LoadingPage";
 import InputFieldBox from "../../components/form/InputFieldBox";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {User} from "../../types/User";
 import DeleteButton from "../../components/form/DeleteButton";
 import PrimaryButton from "../../components/form/PrimaryButton";
@@ -10,6 +10,10 @@ import {fetchAuthApi} from "../../helpers/ApiFetcher";
 import {useTeamInvitesState} from "../../storage/TeamInvites";
 import {TeamInvite} from "../../types/Team";
 import SectionContainer from "../../components/sections/SectionContainer";
+import {TeamState, useTeamState} from "../../storage/Team";
+import {Toast} from "../../components/toast/Toast";
+import {useNavigate} from "react-router-dom";
+import {isInaccessible} from "@testing-library/react";
 
 export default function TeamSettings() {
     const context = useAuthContext()
@@ -93,37 +97,68 @@ export default function TeamSettings() {
                     </AnimateHeight>
                 </div>
 
-                <div className="flex flex-col gap-2">
-                    <div className="font-bold">
-                        Users
+                <div className="flex flex-col gap-10">
+                    <div className="flex flex-col gap-2">
+                        <div className="font-bold">
+                            Users
+                        </div>
+
+                        <UserRow
+                            key={"owner"}
+                            user={team.owner}
+                            role={"owner"}
+                            teamId={team.id}
+                        />
+
+                        {team.users.map(user => (<UserRow
+                            user={user}
+                            role={"member"}
+                            key={user.id}
+                            teamId={team.id}
+                            onDeleted={() => loadTeams(true)}
+                        />))}
+
+                        {invites.map(invite => (<InviteRow
+                            key={invite.id + invite.email}
+                            invite={invite}
+                            onRevoked={() => loadInvites(true)}
+                        />))}
                     </div>
 
-                    <UserRow
-                        key={"owner"}
-                        user={team.owner}
-                        role={"owner"}
-                        teamId={team.id}
-                    />
-
-                    {team.users.map(user => (<UserRow
-                        user={user}
-                        role={"member"}
-                        key={user.id}
-                        teamId={team.id}
-                        onDeleted={() => loadTeams(true)}
-                    />))}
-
-                    {invites.map(invite => (<InviteRow
-                        key={invite.id + invite.email}
-                        invite={invite}
-                        onRevoked={() => loadInvites(true)}
-                    />))}
+                    <NewInviteRow onInvite={() => loadInvites(true)} />
                 </div>
 
-                <NewInviteRow onInvite={() => loadInvites(true)}/>
+                {team.owner.id === context.userState.user?.id &&
+                    <DeleteContainer teamId={team.id} context={context} />
+                }
             </div>
         </div>
     </SectionContainer>)
+}
+
+function DeleteContainer({teamId, context}: { teamId: number, context: DefinedAuthContextType }) {
+    const navigate = useNavigate()
+
+    return <>
+        <div className='flex flex-col gap-4 border soft-border p-4'>
+            <div className="flex flex-col gap-1">
+                <p><strong>You can't not undo this action.</strong></p>
+                <p className="text-sm">All the team information, statistic, triggers, etc will be gone for ever.</p>
+            </div>
+
+            <DeleteButton
+                onClick={async () => {
+                    context.teamState.deleteTeam(teamId)
+                        .then(() => {
+                            context.userState.refreshUser(true)
+                            navigate('/')
+                        })
+                }}
+                text="Delete team"
+                className="w-full"
+            />
+        </div>
+    </>
 }
 
 function UserRow({user, teamId, role, onDeleted}: {
@@ -200,13 +235,15 @@ function NewInviteRow({onInvite}: { onInvite?: () => void }) {
     const [email, setEmail] = useState<string>("")
 
     return (
-        <div className="flex flex-col gap-2">
-            <p className="font-bold">Invite new user</p>
-            <p className="text-sm opacity-70">
-                Share current team dashboards, triggers, and channels with an other user. This user will be able to
-                access all the data that belongs to this current team. You can revoke the invitation or remove the user
-                from the group at any moment.
-            </p>
+        <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+                <p className="font-bold">Invite new user</p>
+                <p className="text-sm opacity-70">
+                    Share current team dashboards, triggers, and channels with an other user. This user will be able to
+                    access all the data that belongs to this current team. You can revoke the invitation or remove the
+                    user from the group at any moment.
+                </p>
+            </div>
 
             <div className="flex flex-row gap-2 p-3 rounded-sm border soft-border">
                 <InputFieldBox
