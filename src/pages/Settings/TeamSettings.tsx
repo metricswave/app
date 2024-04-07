@@ -162,7 +162,7 @@ function DeleteContainer({teamId, context}: { teamId: number, context: DefinedAu
                             navigate('/')
                         })
                 }}
-                text="Delete team"
+                text="Delete Site"
                 className="w-full"
             />
         </div>
