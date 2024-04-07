@@ -17,6 +17,7 @@ import {isInaccessible} from "@testing-library/react";
 
 export default function TeamSettings() {
     const context = useAuthContext()
+    const navigate = useNavigate()
     const {user, refreshUser} = context.userState
     const {teams, currentTeamId, loadTeams} = context.teamState
     const {invites, loadInvites} = useTeamInvitesState()
@@ -115,7 +116,14 @@ export default function TeamSettings() {
                             role={"member"}
                             key={user.id}
                             teamId={team.id}
-                            onDeleted={() => loadTeams(true)}
+                            onDeleted={() => {
+                                if (user.id === context.userState.user?.id) {
+                                    context.userState.refreshUser(true)
+                                    navigate('/')
+                                } else {
+                                    loadTeams(true)
+                                }
+                            }}
                         />))}
 
                         {invites.map(invite => (<InviteRow
@@ -154,7 +162,7 @@ function DeleteContainer({teamId, context}: { teamId: number, context: DefinedAu
                             navigate('/')
                         })
                 }}
-                text="Delete team"
+                text="Delete Site"
                 className="w-full"
             />
         </div>
@@ -184,7 +192,8 @@ function UserRow({user, teamId, role, onDeleted}: {
             </div>
 
             <div>
-                {currentUser?.id !== user.id && role !== "owner" && <DeleteButton
+                {role !== "owner" && <DeleteButton
+                    text={currentUser?.id === user.id ? "Leave Site" : "Remove"}
                     className="text-sm py-1 px-1.5 border-none shadow-none"
                     onClick={async () => {
                         fetchAuthApi(`/teams/${teamId}/users/${user.id}`, {
