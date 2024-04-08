@@ -95,7 +95,7 @@ export default function BillingSettings() {
                             <div className="flex flex-col space-y-3 bg-blue-100/25 dark:bg-blue-900/10 border border-blue-500/50 dark:border-blue-700 rounded-sm p-4 w-full">
                                 <div className="font-bold text-zinc-800 dark:text-zinc-100">Free Plan</div>
                                 <div className="text-sm opacity-70 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-                                    <span>{number_formatter(1000)} events per month</span>
+                                    <span>{number_formatter(1000)} visits per month</span>
                                     <span className="hidden sm:inline">/</span>
                                     <span>Unlimited data retention</span>
                                 </div>
@@ -111,9 +111,9 @@ export default function BillingSettings() {
                                 </div>
                                 <div className="text-sm opacity-70 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
                                     {subscribedPlan.eventsLimit === null ? (
-                                        <span>Unlimited events per month</span>
+                                        <span>Unlimited visits per month</span>
                                     ) : (
-                                        <span>{number_formatter(subscribedPlan.eventsLimit)} events per month</span>
+                                        <span>{number_formatter(subscribedPlan.eventsLimit)} visits per month</span>
                                     )}
                                     <span className="hidden sm:inline">/</span>
                                     {subscribedPlan.dataRetentionInMonths === null ? (
@@ -138,9 +138,9 @@ export default function BillingSettings() {
                                 </div>
                                 <div className="text-sm opacity-70 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
                                     {subscribedPlan.eventsLimit === null ? (
-                                        <span>Unlimited events per month</span>
+                                        <span>Unlimited visits per month</span>
                                     ) : (
-                                        <span>{number_formatter(subscribedPlan.eventsLimit)} events per month</span>
+                                        <span>{number_formatter(subscribedPlan.eventsLimit)} visits per month</span>
                                     )}
                                     <span className="hidden sm:inline">/</span>
                                     {subscribedPlan.dataRetentionInMonths === null ? (
@@ -162,7 +162,7 @@ export default function BillingSettings() {
                 <div className="flex flex-col space-y-4">
                     <div>
                         <h3 className="font-bold mb-2">Upgrade Plan</h3>
-                        <p className="opacity-70 text-sm">Upgrade your account to get more events per month.</p>
+                        <p className="opacity-70 text-sm">Upgrade your account to get more visits per month.</p>
                     </div>
 
                     <div>
@@ -212,7 +212,7 @@ export default function BillingSettings() {
                                                 <div className="text-sm opacity-70 flex flex-col gap-2">
                                                     {planPrice(plan, period) > 0 &&
                                                         <span>Cancel at any time</span>}
-                                                    <span>{plan.eventsLimit === null ? "Unlimited" : number_formatter(plan.eventsLimit)} events per month</span>
+                                                    <span>{plan.eventsLimit === null ? "Unlimited" : number_formatter(plan.eventsLimit)} visits per month</span>
                                                     <span>Unlimited data retention</span>
                                                 </div>
                                             </div>
