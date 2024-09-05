@@ -55,6 +55,8 @@ export function PeriodChooser(
                                     className="h-[1px] bg-zinc-400/20 dark:bg-zinc-700 m-[5px]"
                                 />
                             )
+                        } else if ("type" in p && p.type === 'customSelector') {
+                            return (<p>Hola</p>)
                         }
 
                         return (<></>)

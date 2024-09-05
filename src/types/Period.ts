@@ -7,6 +7,10 @@ export const DEFAULT_PERIOD: Period = "30d"
 
 export type PeriodConfiguration = { value: string, label: string, period: Period, date: number }
 
+type PeriodSelectorOptions = { separator: true }
+  | PeriodConfiguration
+  | { type: 'customSelector', periodSelector: 'daily'}
+
 export const periods: (PeriodConfiguration)[] = [
     {value: "7d", label: "7 days", period: "7d", date: 0},
     {value: "30d", label: "30 days", period: "30d", date: 0},
@@ -27,26 +31,27 @@ export const periods: (PeriodConfiguration)[] = [
     },
 ]
 
-export const periodsWithSeparators: ({ separator: true } | PeriodConfiguration)[] = [
+export const periodsWithSeparators: (PeriodSelectorOptions)[] = [
     {value: "7d", label: "7 days", period: "7d", date: 0},
     {value: "30d", label: "30 days", period: "30d", date: 0},
     {value: "12m", label: "12 months", period: "12m", date: 0},
     {separator: true},
-    {value: "month", label: "Month to date", period: "month", date: 0},
-    {
-        value: "previous-month",
-        label: "Previous month",
-        period: "previous-month",
-        date: -1,
-    },
-    {separator: true},
-    {value: "year", label: "Year to date", period: "year", date: 0},
-    {
-        value: "previous-year",
-        label: "Previous year",
-        period: "previous-year",
-        date: -1,
-    },
+    {type: 'customSelector', periodSelector: 'daily'},
+    // {value: "month", label: "Month to date", period: "month", date: 0},
+    // {
+    //     value: "previous-month",
+    //     label: "Previous month",
+    //     period: "previous-month",
+    //     date: -1,
+    // },
+    // {separator: true},
+    // {value: "year", label: "Year to date", period: "year", date: 0},
+    // {
+    //     value: "previous-year",
+    //     label: "Previous year",
+    //     period: "previous-year",
+    //     date: -1,
+    // },
 ]
 
 export const fieldTypeForPeriod = (periodValue: Period): "date" | "month" => {
