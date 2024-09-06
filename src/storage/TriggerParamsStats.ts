@@ -4,6 +4,8 @@ import { ApiResponse, fetchApi, fetchAuthApi } from "../helpers/ApiFetcher";
 import { Period, safeApiPeriod } from "../types/Period";
 import { expirableLocalStorage, FIVE_SECONDS } from "../helpers/ExpirableLocalStorage";
 import { getPreviousPeriodDate } from "./TriggerStats";
+import { subDays } from "date-fns";
+import format from "date-fns/format";
 
 export type ParamsStats = { plot: { [key: string]: ParamStatRow[] } };
 
@@ -107,6 +109,17 @@ export function useTriggerParamsStatsState() {
         parameter: string | null | undefined = undefined,
         fromDate: string | null | undefined = undefined,
     ) => {
+        if (period === "c_daily") {
+            const d = date ? new Date(date) : new Date();
+            const fd = fromDate ? new Date(fromDate) : new Date();
+            const daysBetween = Math.abs(d.getTime() - fd.getTime()) / (1000 * 60 * 60 * 24) + 1;
+            const prevDate = format(subDays(d, daysBetween), "yyyy-MM-dd");
+            const prevFromDate = format(subDays(fd, daysBetween), "yyyy-MM-dd");
+
+            loadStatsFor(false, trigger, period, prevDate, publicDashboard, parameter, prevFromDate);
+            return;
+        }
+
         loadStatsFor(false, trigger, period, getPreviousPeriodDate(period, date), publicDashboard, parameter, fromDate);
     };
 

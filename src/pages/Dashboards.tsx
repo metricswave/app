@@ -21,7 +21,6 @@ export function Dashboards() {
     const [period, setPeriod] = useState<Period>((searchParams.get("period") as Period) ?? DEFAULT_PERIOD);
     const periodConfiguration = periods.find((p) => p.value === period)!;
     const [date, setDate] = useState<string>(new Date().toISOString().split("T")[0]);
-    // 7 days ago by default
     const [fromDate, setFromDate] = useState<string | undefined>(
         new Date(new Date().setDate(new Date().getDate() - 7)).toISOString().split("T")[0],
     );

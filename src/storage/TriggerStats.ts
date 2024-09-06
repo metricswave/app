@@ -124,8 +124,20 @@ export function useTriggerStatsState() {
         publicDashboard: string | undefined,
         fromDate: string | undefined,
     ) => {
+        if (period === "c_daily") {
+            const d = date ? new Date(date) : new Date();
+            const fd = fromDate ? new Date(fromDate) : new Date();
+            const daysBetween = Math.abs(d.getTime() - fd.getTime()) / (1000 * 60 * 60 * 24) + 1;
+            const prevDate = format(subDays(d, daysBetween), "yyyy-MM-dd");
+            const prevFromDate = format(subDays(fd, daysBetween), "yyyy-MM-dd");
+
+            loadStatsFor(false, trigger, period, prevDate, publicDashboard, prevFromDate);
+            return;
+        }
+
         loadStatsFor(false, trigger, period, getPreviousPeriodDate(period, date), publicDashboard, fromDate);
     };
+
     return {
         stats,
         previousPeriodStats,
