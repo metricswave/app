@@ -5,7 +5,7 @@ export type Period = "day" | "7d" | "month" | "previous-month" | "30d" | "year" 
 
 export type PeriodRange = { from: Date | undefined; to: Date | undefined };
 
-export const DEFAULT_PERIOD: Period = "30d";
+export const DEFAULT_PERIOD: Period = "7d";
 
 export type PeriodConfiguration = { value: string; label: string; period: Period; date: number };
 
