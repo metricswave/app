@@ -69,7 +69,8 @@ export function TriggerParamsStats({
     useEffect(() => setPeriodAndDate(defaultPeriod), [defaultPeriod]);
     useEffect(() => setDate(defaultDate!), [defaultDate]);
 
-    const param = hideFilters || hideParameterChooser ? defaultParameter : null;
+    const param = hideFilters || hideParameterChooser ? (defaultParameter ?? params[0]) : null;
+
     useEffect(
         () => loadStats(trigger, period, date, publicDashboard, param, defaultFromDate),
         [trigger.id, period, date, publicDashboard, defaultFromDate],
