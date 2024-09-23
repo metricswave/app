@@ -86,7 +86,10 @@ export function useTriggerParamsStatsState() {
                 methods,
             );
         } else {
-            fetchAuthApi<ParamsStats>(`/triggers/${trigger.uuid}/parameters-graph-stats?` + query, methods);
+            fetchAuthApi<ParamsStats>(
+                `/triggers/${trigger.uuid}/parameters-graph-stats/${parameter ?? ""}?` + query,
+                methods,
+            );
         }
     };
 
