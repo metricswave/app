@@ -7,12 +7,12 @@ import {planPrice, useAvailablePricesState} from "../../storage/AvailablePrices"
 import LoadingPage from "../LoadingPage"
 import eventTracker from "../../helpers/EventTracker"
 import {useLocation} from "react-router-dom"
-import {portalCheckout} from "../../helpers/PortalCheckout";
-import {NoLinkButton} from "../../components/buttons/LinkButton";
-import {price_formatter} from "../../helpers/PriceFormatter";
-import {useAuthContext} from "../../contexts/AuthContext";
-import SectionContainer from "../../components/sections/SectionContainer";
-import {twMerge} from "../../helpers/TwMerge";
+import {portalCheckout} from "../../helpers/PortalCheckout"
+import {NoLinkButton} from "../../components/buttons/LinkButton"
+import {price_formatter} from "../../helpers/PriceFormatter"
+import {useAuthContext} from "../../contexts/AuthContext"
+import SectionContainer from "../../components/sections/SectionContainer"
+import {twMerge} from "../../helpers/TwMerge"
 
 export default function BillingSettings() {
     const queryParams = new URLSearchParams(useLocation().search)
@@ -206,7 +206,7 @@ export default function BillingSettings() {
                                                 ].join(" ")}>
                                                 <div className="font-bold text-blue-500">
                                                     {plan.name} Plan &mdash; {planPrice(plan, period) === null ? "Contact Us" : price_formatter(planPrice(plan, period)) + "/" + (period === "monthly" ? "month" : "year")}
-                                                    {period === "yearly" && (plan.name === "Business" || plan.name === "Starter") &&
+                                                    {period === "yearly" && (plan.name === "Business" || plan.name === "Starter" || plan.name === "Corporate") &&
                                                         <span className="ml-2 text-sm">(2 months free)</span>}
                                                 </div>
                                                 <div className="text-sm opacity-70 flex flex-col gap-2">
