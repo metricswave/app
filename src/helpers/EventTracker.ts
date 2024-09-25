@@ -38,7 +38,7 @@ export default {
         }
 
         if (!app.isProduction) {
-            console.log(`[EventTracker] ${event}`, params)
+            console.log(`[EventTracker] PixelEvent ${event}`, params)
         } else {
             ReactPixel.track(event, params)
         }

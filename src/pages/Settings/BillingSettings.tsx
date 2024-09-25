@@ -33,6 +33,9 @@ export default function BillingSettings() {
 
     useEffect(() => {
         if (queryParams.get("fromBillingPortal") === "true" && queryParams.get("success") === "true") {
+            const currency = queryParams.get("currency")
+            const value = parseInt(queryParams.get("amount") ?? '0') / 100
+            eventTracker.pixelEvent('Purchase', {value, currency})
             eventTracker.track(
                 "edbecea2-9097-49bb-95ac-70eec9578960",
                 {step: "Upgraded", user_id: user?.email},
@@ -197,6 +200,7 @@ export default function BillingSettings() {
                                                         setLoadingPurchase(false)
                                                     } else {
                                                         purchase(team.id, plan.id, period, user?.email)
+                                                        eventTracker.pixelEvent('InitiateCheckout')
                                                     }
                                                 }}
                                                 className={[
