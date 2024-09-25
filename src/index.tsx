@@ -36,6 +36,12 @@ Sentry.init({
     replaysOnErrorSampleRate: 1.0, // Change the sample rate to 100% when sampling sessions where errors occur.
 })
 
+declare global {
+    interface Window {
+        fbq: (name: 'track', event: string, params?: Object | null) => void
+    }
+}
+
 root.render(
     <React.StrictMode>
         <RouterProvider router={router}/>

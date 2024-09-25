@@ -16,4 +16,13 @@ export default {
             body: JSON.stringify(params),
         })
     },
+
+    pixelEvent: (event: string, params: Object = {}) => {
+        if (!app.isProduction) {
+            console.log(`[EventTracker] ${event}`, params)
+            return
+        }
+
+        window.fbq("track", event, params)
+    },
 }
