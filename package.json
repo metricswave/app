@@ -46,6 +46,7 @@
     "react-animate-height": "^3.2.2",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18.2.0",
+    "react-facebook-pixel": "^1.0.4",
     "react-google-autocomplete": "^2.7.3",
     "react-markdown": "^8.0.7",
     "react-router-dom": "^6.9.0",

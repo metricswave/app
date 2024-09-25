@@ -68,7 +68,7 @@ export default function SignUp() {
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault()
 
-        if (!isValid()) return
+        if (loading || !isValid()) return
 
         setLoading(true)
         setFormError(false)

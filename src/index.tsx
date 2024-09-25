@@ -6,6 +6,7 @@ import {createBrowserRouter, RouterProvider} from "react-router-dom"
 import {routes} from "./routes/routes"
 import * as Sentry from "@sentry/react"
 import {app} from "./config/app"
+import ReactPixel from 'react-facebook-pixel';
 
 const router = createBrowserRouter(routes)
 
@@ -36,11 +37,11 @@ Sentry.init({
     replaysOnErrorSampleRate: 1.0, // Change the sample rate to 100% when sampling sessions where errors occur.
 })
 
-declare global {
-    interface Window {
-        fbq: (name: 'track', event: string, params?: Object | null) => void
-    }
-}
+const options = {
+  autoConfig: true, // set pixel's autoConfig. More info: https://developers.facebook.com/docs/facebook-pixel/advanced/
+  debug: !app.isProduction, // enable logs
+};
+ReactPixel.init('822838215072018', undefined, options);
 
 root.render(
     <React.StrictMode>

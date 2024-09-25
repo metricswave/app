@@ -1,4 +1,5 @@
 import {app} from "../config/app"
+import ReactPixel from 'react-facebook-pixel';
 
 export default {
     track: (eventUuid: string, params: Object = {}) => {
@@ -23,6 +24,6 @@ export default {
             return
         }
 
-        window.fbq("track", event, params)
+        ReactPixel.track(event, params)
     },
 }
