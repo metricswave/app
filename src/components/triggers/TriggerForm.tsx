@@ -70,7 +70,6 @@ function getTriggerInitialState(
             } else if (field.name === "parameters" && webhookType === "money_income") {
                 acc[field.name] = [
                     "amount",
-                    "currency",
                     "source",
                 ]
             } else {
