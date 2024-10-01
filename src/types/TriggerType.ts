@@ -1,7 +1,7 @@
 import {TriggerTypeId} from "./Trigger"
 
-export type WebhookTriggerType = "custom" | "visits" | "funnel"
-export const AllWebhookTriggers: WebhookTriggerType[] = ["visits", "funnel", "custom"]
+export type WebhookTriggerType = "custom" | "visits" | "funnel" | "money_income"
+export const AllWebhookTriggers: WebhookTriggerType[] = ["visits", "money_income", "funnel", "custom" ]
 
 export type TriggerType = {
     id: TriggerTypeId

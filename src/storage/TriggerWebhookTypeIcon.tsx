@@ -7,6 +7,8 @@ export function triggerWebhookReadableType(triggerType: WebhookTriggerType): str
             return "Visits"
         case "funnel":
             return "Funnel"
+        case "money_income":
+        return "Money Income"
         default:
             return "Custom"
     }
@@ -33,6 +35,44 @@ export function webhookTriggerTypeIcon(triggerType: WebhookTriggerType) {
                 <path d="M16.5 7C15.5654 7 15.0981 7 14.75 7.20096C14.522 7.33261 14.3326 7.52197 14.201 7.75C14 8.09808 14 8.56538 14 9.5L14 14.5C14 15.4346 14 15.9019 14.201 16.25C14.3326 16.478 14.522 16.6674 14.75 16.799C15.0981 17 15.5654 17 16.5 17C17.4346 17 17.9019 17 18.25 16.799C18.478 16.6674 18.6674 16.478 18.799 16.25C19 15.9019 19 15.4346 19 14.5V9.5C19 8.56538 19 8.09808 18.799 7.75C18.6674 7.52197 18.478 7.33261 18.25 7.20096C17.9019 7 17.4346 7 16.5 7Z"
                       stroke="currentColor"
                       strokeWidth="1.5"></path>
+            </g>
+        </svg>)
+    } else if (triggerType === "money_income") {
+        return (<svg
+            className="w-4 h-auto dark:text-orange-500"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+            <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+            <g id="SVGRepo_iconCarrier">
+            <path
+                d="M9 19C6.19108 19 4.78661 19 3.77772 18.3259C3.34096 18.034 2.96596 17.659 2.67412 17.2223C2 16.2134 2 14.8089 2 12C2 9.19108 2 7.78661 2.67412 6.77772C2.96596 6.34096 3.34096 5.96596 3.77772 5.67412C4.78661 5 6.19108 5 9 5L15 5C17.8089 5 19.2134 5 20.2223 5.67412C20.659 5.96596 21.034 6.34096 21.3259 6.77772C22 7.78661 22 9.19108 22 12C22 14.8089 22 16.2134 21.3259 17.2223C21.034 17.659 20.659 18.034 20.2223 18.3259C19.2134 19 17.8089 19 15 19H9Z"
+                stroke="currentColor"
+                strokeWidth="1.5"
+            ></path>
+            <path
+                d="M9 9C7.34315 9 6 10.3431 6 12C6 13.6569 7.34315 15 9 15"
+                stroke="currentColor"
+                strokeWidth="1.5"
+            ></path>
+            <path
+                d="M15 9C16.6569 9 18 10.3431 18 12C18 13.6569 16.6569 15 15 15"
+                stroke="currentColor"
+                strokeWidth="1.5"
+            ></path>
+            <path
+                d="M9 5V18.5"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+            ></path>
+            <path
+                d="M15 5V18.5"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+            ></path>
             </g>
         </svg>)
     } else if (triggerType === "visits") {

@@ -45,6 +45,17 @@ export const getPreviousPeriodDate = (period: Period, date: string | null): stri
     return format(getPreviousPeriodDateObject(period, date), "yyyy-MM-dd");
 };
 
+function parseDataForType(data: Stats, type: string): Stats
+{
+    if (type === "money_income") {
+        data.plot = data.plot.map((row) => {
+            return { ...row, score: row.score / 100 }
+        })
+    }
+
+    return data
+}
+
 export function useTriggerStatsState() {
     const defaultState = { headers: null, plot: [] };
     const [stats, setStats] = useState<Stats>(defaultState);
@@ -75,7 +86,10 @@ export function useTriggerStatsState() {
                 if (publicDashboard === undefined) {
                     expirableLocalStorage.set(key, data.data, FIVE_SECONDS);
                 }
-                current ? setStats(data.data) : setPreviousPeriodStats(data.data);
+
+                const parsedData = parseDataForType(data.data, trigger.configuration.type);
+
+                current ? setStats(parsedData) : setPreviousPeriodStats(parsedData);
                 current ? setStatsLoading(false) : setPreviousStatsLoading(false);
             },
             error: () => {

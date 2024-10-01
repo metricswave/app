@@ -3,7 +3,7 @@ import InputFieldBox from "../form/InputFieldBox"
 import PrimaryButton from "../form/PrimaryButton"
 import {Trigger, TriggerVia} from "../../types/Trigger"
 import React, {FormEvent, ReactElement, useEffect, useState} from "react"
-import {BellEmoji, Emoji, emojiFromNative, FunnelEmoji, VisitsEmoji} from "../../types/Emoji"
+import {BellEmoji, Emoji, emojiFromNative, MoneyIncomeEmoji, FunnelEmoji, VisitsEmoji} from "../../types/Emoji"
 import ParametersFieldBox from "../form/ParametersFieldBox"
 import {TriggerType, TriggerTypeField, WebhookTriggerType} from "../../types/TriggerType"
 import CheckboxInputGroup, {CheckboxGroupValue} from "../form/CheckboxInputGroup"
@@ -67,6 +67,12 @@ function getTriggerInitialState(
                     "step",
                     "user_id",
                 ]
+            } else if (field.name === "parameters" && webhookType === "money_income") {
+                acc[field.name] = [
+                    "amount",
+                    "currency",
+                    "source",
+                ]
             } else {
                 acc[field.name] = field.default ?? (field.multiple ? [] : "")
             }
@@ -77,6 +83,8 @@ function getTriggerInitialState(
 
 function triggerInitialStateTitle(type: WebhookTriggerType): string {
     switch (type) {
+        case "money_income":
+            return "New Income"
         case "visits":
             return "New Visit"
         case "funnel":
@@ -88,6 +96,8 @@ function triggerInitialStateTitle(type: WebhookTriggerType): string {
 
 function triggerInitialStateEmoji(type: WebhookTriggerType): Emoji {
     switch (type) {
+        case "money_income":
+            return MoneyIncomeEmoji
         case "visits":
             return VisitsEmoji
         case "funnel":
@@ -103,6 +113,8 @@ function triggerInitialStateContent(type: WebhookTriggerType): string {
             return "Visit to: {path}"
         case "funnel":
             return "Step: {step}"
+        case "money_income":
+            return "Income: {amount} {currency}"
     }
 
     return ""
@@ -127,7 +139,7 @@ export default function TriggerForm(
 ) {
     const [loading, setLoading] = useState<boolean>(false)
     const {teamChannels} = useTeamChannelsState()
-    const [minimalFormFields] = useState<boolean>(webhookTriggerType !== "custom")
+    const [minimalFormFields] = useState<boolean>(webhookTriggerType !== "custom" && webhookTriggerType !== "money_income")
 
     const [emoji, setEmoji] = useState<Emoji>(trigger ?
         emojiFromNative(trigger.emoji) :
@@ -293,7 +305,7 @@ export default function TriggerForm(
                 </>)}
             </>}
 
-            {fields.map(renderDynamicField)}
+            {webhookTriggerType !== 'money_income' && fields.map(renderDynamicField)}
 
             {webhookTriggerType === "funnel" && (<div key="steps">
                 <TextareaFieldBox

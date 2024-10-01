@@ -14,6 +14,20 @@ export type ParamStatRow = {
     param: string;
 };
 
+function parseDataForType(data: ParamsStats, type: string): ParamsStats
+{
+    if (type === "money_income") {
+        data.plot["amount"] = data.plot["amount"]
+            .filter(row => !isNaN(parseInt(row.param)))
+            .map((row) => {
+                const amount = parseInt(row.param) / 100
+                return { score: amount, param: amount.toString() }
+            })
+    }
+
+    return data
+}
+
 export function useTriggerParamsStatsState() {
     const [statsLoading, setStatsLoading] = useState<boolean>(false);
     const [stats, setStats] = useState<ParamsStats | undefined>();
@@ -57,7 +71,10 @@ export function useTriggerParamsStatsState() {
                 if (publicDashboard === undefined) {
                     expirableLocalStorage.set(key, data.data, FIVE_SECONDS);
                 }
-                setStatsFor(data.data, current);
+
+                const parsedData = parseDataForType(data.data, trigger.configuration.type);
+
+                setStatsFor(parsedData, current);
                 setLoadingFor(false, current);
             },
             error: () => {
