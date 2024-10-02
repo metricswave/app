@@ -3,7 +3,7 @@ import { Trigger } from "../../types/Trigger";
 import { ParamStatRow, useTriggerParamsStatsState } from "../../storage/TriggerParamsStats";
 import DropDownSelectFieldBox from "../form/DropDownSelectFieldBox";
 import PageTitle from "../sections/PageTitle";
-import { number_formatter } from "../../helpers/NumberFormatter";
+import { money_formatter, number_formatter } from "../../helpers/NumberFormatter";
 import InputFieldBox from "../form/InputFieldBox";
 import { calculateDefaultDateForPeriod, fieldTypeForPeriod, Period } from "../../types/Period";
 import CircleArrowsIcon from "../icons/CircleArrowsIcon";
@@ -184,11 +184,13 @@ export function TriggerParamsStats({
                                     },
                                 );
 
+                                const formatedScore = trigger.configuration.type === 'money_income' ? money_formatter(stat.score) : number_formatter(stat.score);
+
                                 return (
                                     <div key={index} className="flex flex-col space-y-2 py-3">
                                         <div className="flex flex-row items-start justify-between space-x-3">
                                             <p className="truncate opacity-75">{stat.param}</p>
-                                            <p className="opacity-75">{number_formatter(stat.score)}</p>
+                                            <p className="opacity-75">{formatedScore}</p>
                                         </div>
 
                                         <div className="flex flex-row gap-4 items-center justify-start">

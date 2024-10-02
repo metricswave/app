@@ -6,6 +6,7 @@ import { expirableLocalStorage, FIVE_SECONDS } from "../helpers/ExpirableLocalSt
 import { getPreviousPeriodDate } from "./TriggerStats";
 import { subDays } from "date-fns";
 import format from "date-fns/format";
+import { amount_from_cents } from "../helpers/NumberFormatter";
 
 export type ParamsStats = { plot: { [key: string]: ParamStatRow[] } };
 
@@ -16,14 +17,6 @@ export type ParamStatRow = {
 
 function parseDataForType(data: ParamsStats, type: string): ParamsStats
 {
-    if (type === "money_income") {
-        data.plot["source"] = data.plot["source"]
-            .map((row) => {
-                const amount = row.score / 100
-                return { ...row, score: amount }
-            })
-    }
-
     return data
 }
 

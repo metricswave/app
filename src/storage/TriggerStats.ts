@@ -7,7 +7,7 @@ import { subDays, subMonths, subYears } from "date-fns";
 import format from "date-fns/format";
 
 export type Stats = {
-    headers: null | { unique: number; pageViews: number; visits: number };
+    headers: null | { unique?: number; pageViews?: number; visits?: number, total_income?: number };
     plot: StatRow[];
 };
 
@@ -49,7 +49,7 @@ function parseDataForType(data: Stats, type: string): Stats
 {
     if (type === "money_income") {
         data.plot = data.plot.map((row) => {
-            return { ...row, score: row.score / 100 }
+            return { ...row, score: row.score }
         })
     }
 
