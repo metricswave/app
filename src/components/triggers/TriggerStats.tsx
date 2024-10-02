@@ -110,10 +110,7 @@ export function TriggerStats({
                             ? previousPeriodStats?.headers[key] as number
                             : 0;
                         const percentageDifference = percentage_diff(header, previousStatsHeaders);
-                        const formattedHeader = key === "total_income" ?
-                            // @todo add currency symbol
-                            money_formatter(header) :
-                            number_formatter(header);
+                        const formattedHeader = key === "total_income" ? money_formatter(header) : number_formatter(header);
 
                         return (
                             <div
