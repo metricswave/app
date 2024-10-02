@@ -167,7 +167,12 @@ export function TriggerStats({
                             });
 
                             const score = (payload?.[0]?.value ?? 0) as number;
-                            const scoreString = number_formatter(score, { maximumFractionDigits: 0 });
+
+                            let scoreString = number_formatter(score, { maximumFractionDigits: 0 });
+                            if (trigger.configuration.type === 'money_income') {
+                                // @todo add currency formatter
+                                scoreString = number_formatter(score, { maximumFractionDigits: 2 });
+                            }
 
                             if (compareWithPrevious) {
                                 const previousDate = new Date((payload?.[1]?.payload?.previousName ?? "") as string);
