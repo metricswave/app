@@ -17,11 +17,10 @@ export type ParamStatRow = {
 function parseDataForType(data: ParamsStats, type: string): ParamsStats
 {
     if (type === "money_income") {
-        data.plot["amount"] = data.plot["amount"]
-            .filter(row => !isNaN(parseInt(row.param)))
+        data.plot["source"] = data.plot["source"]
             .map((row) => {
-                const amount = parseInt(row.param) / 100
-                return { score: amount, param: amount.toString() }
+                const amount = row.score / 100
+                return { ...row, score: amount }
             })
     }
 
