@@ -1,3 +1,5 @@
+import { currentTeamCurrency } from "../storage/Team"
+
 export function number_formatter(n: number, options = {}): string {
     const formatter = new Intl.NumberFormat("en-US", {
         ...{
@@ -8,10 +10,10 @@ export function number_formatter(n: number, options = {}): string {
     return formatter.format(n)
 }
 
-export function money_formatter(n: number, currency?: string): string {
+export function money_formatter(n: number): string {
     const formatter = new Intl.NumberFormat("en-US", {
         style: "currency",
-        currency: currency ?? "USD",
+        currency: currentTeamCurrency() ?? "usd",
         maximumFractionDigits: 2,
     })
 
