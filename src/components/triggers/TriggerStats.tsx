@@ -77,7 +77,7 @@ export function TriggerStats({
         const data = getGraphData(stats, previousPeriodStats, period);
         const average = data.reduce((acc, curr) => acc + curr.total, 0) / data.length;
         setData(data);
-        setAverage(isNaN(average) ? "0" : number_formatter(average, { maximumFractionDigits: 0 }));
+        setAverage(isNaN(average) ? "0" : (trigger.configuration.type === 'money_income' ? money_formatter(average) : number_formatter(average)));
     }, [stats, previousPeriodStats, period]);
 
     if (statsLoading) {

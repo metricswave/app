@@ -64,7 +64,7 @@ export function TriggerParamsStats({
             ? Object.values(previousStats.plot[parameter])
             : undefined;
     const totalScore = paramStats.reduce((acc, curr) => acc + curr.score, 0);
-    const totalScoreString = number_formatter(totalScore);
+    const totalScoreString = trigger.configuration.type !== 'money_income' ? number_formatter(totalScore) : money_formatter(totalScore);
 
     useEffect(() => {
         setDate(fieldTypeForPeriod(period) === "month" ? fieldDate + "-01" : fieldDate!);
