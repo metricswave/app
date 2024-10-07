@@ -9,7 +9,7 @@ export default function ProfileSettings() {
     const [deleteAccount, setDeleteAccount] = useState(false)
 
     const handleAccountDeletion = () => {
-        // todo: implement
+        // TODO: implement
         logout()
     }
 

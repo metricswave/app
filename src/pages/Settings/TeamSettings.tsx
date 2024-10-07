@@ -1,4 +1,4 @@
-import {AuthContextType, DefinedAuthContextType, useAuthContext} from "../../contexts/AuthContext"
+import {DefinedAuthContextType, useAuthContext} from "../../contexts/AuthContext"
 import LoadingPage from "../LoadingPage";
 import InputFieldBox from "../../components/form/InputFieldBox";
 import React, {useEffect, useState} from "react";
@@ -10,10 +10,8 @@ import {fetchAuthApi} from "../../helpers/ApiFetcher";
 import {useTeamInvitesState} from "../../storage/TeamInvites";
 import {TeamInvite} from "../../types/Team";
 import SectionContainer from "../../components/sections/SectionContainer";
-import {TeamState, useTeamState} from "../../storage/Team";
-import {Toast} from "../../components/toast/Toast";
 import {useNavigate} from "react-router-dom";
-import {isInaccessible} from "@testing-library/react";
+import DropDownSelectFieldBox from "../../components/form/DropDownSelectFieldBox";
 
 export default function TeamSettings() {
     const context = useAuthContext()
@@ -23,26 +21,27 @@ export default function TeamSettings() {
     const {invites, loadInvites} = useTeamInvitesState()
     const team = teams.find(team => team.id === currentTeamId)
     const [teamDomain, setTeamDomain] = useState<string>(team?.domain || "")
+    const [teamCurrency, setTeamCurrency] = useState<string>(team?.currency || "USD")
     const [error, setError] = useState<string>("")
-    const [changingTeamDomain, setChangingTeamDomain] = useState<boolean>(false)
-    const [domainChanged, setDomainChanged] = useState<boolean>(false)
+    const [sendingTeamForm, setSendingTeamForm] = useState<boolean>(false)
+    const [formChanged, setFormChanged] = useState<boolean>(false)
 
     useEffect(() => {
         setTeamDomain(team?.domain || "")
-    }, [currentTeamId]);
+    }, [team, currentTeamId]);
 
     useEffect(() => {
-        setDomainChanged(teamDomain !== team?.domain)
-    }, [teamDomain]);
+        setFormChanged(teamDomain !== team?.domain || teamCurrency !== team?.currency)
+    }, [team, teamDomain, teamCurrency]);
 
     useEffect(() => {
-        if (changingTeamDomain) {
-            setDomainChanged(false)
-            setChangingTeamDomain(false)
+        if (sendingTeamForm) {
+            setFormChanged(false)
+            setSendingTeamForm(false)
         }
     }, [teams, user]);
 
-    useEffect(() => loadTeams(), []);
+    useEffect(loadTeams);
 
     if (teams.length === 0 || team === undefined) {
         return <LoadingPage/>
@@ -66,13 +65,24 @@ export default function TeamSettings() {
                         error={error}
                     />
 
+                    <DropDownSelectFieldBox
+                        name="currency"
+                        value={teamCurrency}
+                        label="Currency"
+                        options={[
+                            {value: "usd", label: "USD"},
+                            {value: "eur", label: "EUR"},
+                        ]}
+                        setValue={(value) => setTeamCurrency(value as string)}
+                    />
+
                     <AnimateHeight id={`domain-save-button`}
-                                   height={domainChanged ? "auto" : 0}
+                                   height={formChanged ? "auto" : 0}
                                    duration={300}>
                         <PrimaryButton
                             className="w-full"
                             text={"Save"}
-                            loading={changingTeamDomain}
+                            loading={sendingTeamForm}
                             onClick={() => {
                                 if (teamDomain === "") {
                                     setError("Please enter a domain")
@@ -84,10 +94,10 @@ export default function TeamSettings() {
                                     return
                                 }
 
-                                setChangingTeamDomain(true)
+                                setSendingTeamForm(true)
                                 fetchAuthApi(`/teams/${currentTeamId}`, {
                                     method: "PUT",
-                                    body: {domain: teamDomain},
+                                    body: {domain: teamDomain, currency: teamCurrency},
                                     success: () => {
                                         loadTeams(true)
                                         refreshUser(true)

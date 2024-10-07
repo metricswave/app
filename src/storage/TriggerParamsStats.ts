@@ -6,6 +6,7 @@ import { expirableLocalStorage, FIVE_SECONDS } from "../helpers/ExpirableLocalSt
 import { getPreviousPeriodDate } from "./TriggerStats";
 import { subDays } from "date-fns";
 import format from "date-fns/format";
+import { amount_from_cents } from "../helpers/NumberFormatter";
 
 export type ParamsStats = { plot: { [key: string]: ParamStatRow[] } };
 
@@ -13,6 +14,11 @@ export type ParamStatRow = {
     score: number;
     param: string;
 };
+
+function parseDataForType(data: ParamsStats, type: string): ParamsStats
+{
+    return data
+}
 
 export function useTriggerParamsStatsState() {
     const [statsLoading, setStatsLoading] = useState<boolean>(false);
@@ -57,7 +63,10 @@ export function useTriggerParamsStatsState() {
                 if (publicDashboard === undefined) {
                     expirableLocalStorage.set(key, data.data, FIVE_SECONDS);
                 }
-                setStatsFor(data.data, current);
+
+                const parsedData = parseDataForType(data.data, trigger.configuration.type);
+
+                setStatsFor(parsedData, current);
                 setLoadingFor(false, current);
             },
             error: () => {

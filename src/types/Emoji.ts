@@ -17,6 +17,15 @@ export const VisitsEmoji: Emoji = {
     version: 1,
 }
 
+export const MoneyIncomeEmoji: Emoji = {
+    id: "moneybag",
+    name: "Money Bag",
+    native: "💰",
+    keywords: ["dollar", "payment", "coins", "sale"],
+    skins: [],
+    version: 1,
+}
+
 export const FunnelEmoji: Emoji = {
     id: "mega",
     name: "Megaphone",

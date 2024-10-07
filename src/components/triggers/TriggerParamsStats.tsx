@@ -3,7 +3,7 @@ import { Trigger } from "../../types/Trigger";
 import { ParamStatRow, useTriggerParamsStatsState } from "../../storage/TriggerParamsStats";
 import DropDownSelectFieldBox from "../form/DropDownSelectFieldBox";
 import PageTitle from "../sections/PageTitle";
-import { number_formatter } from "../../helpers/NumberFormatter";
+import { money_formatter, number_formatter } from "../../helpers/NumberFormatter";
 import InputFieldBox from "../form/InputFieldBox";
 import { calculateDefaultDateForPeriod, fieldTypeForPeriod, Period } from "../../types/Period";
 import CircleArrowsIcon from "../icons/CircleArrowsIcon";
@@ -37,7 +37,10 @@ export function TriggerParamsStats({
     hideParameterChooser = false,
     compareWithPrevious = false,
 }: Props) {
-    const [params] = useState<string[]>(trigger.configuration.fields["parameters"] as string[]);
+    const [params] = useState<string[]>(
+        (trigger.configuration.fields["parameters"] as string[])
+            .filter((param) => !(param === "amount" && trigger.configuration.type === 'money_income'))
+    );
     const [parameter, setParameter] = useState<string>(defaultParameter ?? params[0]);
     const [period, setPeriod] = useState<Period>(defaultPeriod);
     const [date, setDate] = useState<string>(defaultDate ?? calculateDefaultDateForPeriod(period));
@@ -61,7 +64,7 @@ export function TriggerParamsStats({
             ? Object.values(previousStats.plot[parameter])
             : undefined;
     const totalScore = paramStats.reduce((acc, curr) => acc + curr.score, 0);
-    const totalScoreString = number_formatter(totalScore);
+    const totalScoreString = trigger.configuration.type !== 'money_income' ? number_formatter(totalScore) : money_formatter(totalScore);
 
     useEffect(() => {
         setDate(fieldTypeForPeriod(period) === "month" ? fieldDate + "-01" : fieldDate!);
@@ -181,11 +184,13 @@ export function TriggerParamsStats({
                                     },
                                 );
 
+                                const formatedScore = trigger.configuration.type === 'money_income' ? money_formatter(stat.score) : number_formatter(stat.score);
+
                                 return (
                                     <div key={index} className="flex flex-col space-y-2 py-3">
                                         <div className="flex flex-row items-start justify-between space-x-3">
                                             <p className="truncate opacity-75">{stat.param}</p>
-                                            <p className="opacity-75">{number_formatter(stat.score)}</p>
+                                            <p className="opacity-75">{formatedScore}</p>
                                         </div>
 
                                         <div className="flex flex-row gap-4 items-center justify-start">

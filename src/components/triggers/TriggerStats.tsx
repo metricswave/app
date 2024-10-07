@@ -3,7 +3,7 @@ import { Trigger } from "../../types/Trigger";
 import { Stats, useTriggerStatsState } from "../../storage/TriggerStats";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useEffect, useState } from "react";
-import { number_formatter } from "../../helpers/NumberFormatter";
+import { money_formatter, number_formatter } from "../../helpers/NumberFormatter";
 import { calculateDefaultDateForPeriod, fieldTypeForPeriod, Period } from "../../types/Period";
 import InputFieldBox from "../form/InputFieldBox";
 import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons";
@@ -77,7 +77,7 @@ export function TriggerStats({
         const data = getGraphData(stats, previousPeriodStats, period);
         const average = data.reduce((acc, curr) => acc + curr.total, 0) / data.length;
         setData(data);
-        setAverage(isNaN(average) ? "0" : number_formatter(average, { maximumFractionDigits: 0 }));
+        setAverage(isNaN(average) ? "0" : (trigger.configuration.type === 'money_income' ? money_formatter(average) : number_formatter(average)));
     }, [stats, previousPeriodStats, period]);
 
     if (statsLoading) {
@@ -105,11 +105,12 @@ export function TriggerStats({
             {stats.headers !== null && (
                 <div className="flex flex-col sm:flex-row justify-start sm:items-center mb-10">
                     {Object.values(stats.headers).map((header, index) => {
-                        const key = Object.keys(stats.headers!)[index] as "unique" | "pageViews" | "visits";
+                        const key = Object.keys(stats.headers!)[index] as "unique" | "pageViews" | "visits" | "total_income";
                         const previousStatsHeaders = previousPeriodStats?.headers
-                            ? previousPeriodStats?.headers[key]
+                            ? previousPeriodStats?.headers[key] as number
                             : 0;
                         const percentageDifference = percentage_diff(header, previousStatsHeaders);
+                        const formattedHeader = key === "total_income" ? money_formatter(header) : number_formatter(header);
 
                         return (
                             <div
@@ -123,12 +124,13 @@ export function TriggerStats({
                                                 unique: "Unique visits",
                                                 pageViews: "Page views",
                                                 visits: "Visits",
+                                                total_income: "Total income",
                                             }[Object.keys(stats.headers!)[index]]
                                         }
                                     </div>
                                 </div>
 
-                                <div className="text-2xl font-medium">{number_formatter(header)}</div>
+                                <div className="text-2xl font-medium">{formattedHeader}</div>
 
                                 {compareWithPrevious && (
                                     <div className="flex flex-row justify-start gap-2 items-baseline">
@@ -167,7 +169,11 @@ export function TriggerStats({
                             });
 
                             const score = (payload?.[0]?.value ?? 0) as number;
-                            const scoreString = number_formatter(score, { maximumFractionDigits: 0 });
+
+                            let scoreString = number_formatter(score, { maximumFractionDigits: 0 });
+                            if (trigger.configuration.type === 'money_income') {
+                                scoreString = money_formatter(score);
+                            }
 
                             if (compareWithPrevious) {
                                 const previousDate = new Date((payload?.[1]?.payload?.previousName ?? "") as string);

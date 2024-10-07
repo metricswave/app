@@ -3,8 +3,10 @@ import {Team, TeamId} from "../types/Team";
 import {expirableLocalStorage, FIVE_SECONDS} from "../helpers/ExpirableLocalStorage";
 import {fetchAuthApi} from "../helpers/ApiFetcher";
 import {User} from "../types/User";
+import {getUser} from "./User";
 
 const CURRENT_TEAM_ID_KEY: string = "nw:current_team"
+const CACHE_KEY: string = "nw:teams"
 
 export type TeamState = {
     teams: Team[],
@@ -15,8 +17,24 @@ export type TeamState = {
     deleteTeam: (teamId: TeamId) => Promise<void>
 }
 
+export function currentTeamCurrency(): null|string {
+    const currentTeamId = expirableLocalStorage.get(CURRENT_TEAM_ID_KEY, null, true);
+    const user = getUser();
+
+    if (currentTeamId === null || user === null) {
+        return null
+    }
+
+    const team = user.all_teams.find(t => t.id === currentTeamId);
+
+    if (team === undefined) {
+        return null
+    }
+
+    return team.currency;
+}
+
 export function useTeamState(): TeamState {
-    const CACHE_KEY = "nw:teams"
     const [teams, setTeams] = useState<Team[]>(
         expirableLocalStorage.get(CACHE_KEY, [], true),
     )

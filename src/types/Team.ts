@@ -5,6 +5,7 @@ export type TeamId = number
 export type Team = {
     id: TeamId
     owner_id: number
+    currency: 'eur' | 'usd'
     initiated: boolean
     domain: string
     subscription_status: boolean

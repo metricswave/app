@@ -50,6 +50,8 @@ function webhookTriggerTypeDetails(triggerType: WebhookTriggerType) {
         description = "Create a funnel event to measure complex registration, sales or onboarding processes, for example."
     } else if (triggerType === "visits") {
         description = "Monitor your website or application traffic automatically measuring visits, unique visits, referrers, more."
+    } else if (triggerType === "money_income") {
+        description = "Track your income from sales, subscriptions, donations, or any other source of money."
     } else {
         description = "Create a custom event, with the fields you want a measure everything you can imagine."
     }
