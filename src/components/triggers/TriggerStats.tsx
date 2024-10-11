@@ -9,18 +9,6 @@ import InputFieldBox from "../form/InputFieldBox";
 import PageTitle from "../sections/PageTitle";
 import { MainTriggerStats } from "./MainTriggerStats";
 
-function getGraphData(stats: Stats, previousPeriodStats: Stats, view: Period) {
-    const data = stats.plot.map((stat, index) => ({
-        name: stat.date,
-        total: stat.score,
-        previous: previousPeriodStats?.plot[index]?.score ?? 0,
-        previousName: previousPeriodStats?.plot[index]?.date ?? "",
-    }));
-
-    data.sort((a, b) => new Date(a.name).getTime() - new Date(b.name).getTime());
-    return data;
-}
-
 type Props = {
     title: string;
     trigger: Trigger;

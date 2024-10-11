@@ -7,6 +7,7 @@ import { TriggerFunnelStats } from "../triggers/TriggerFunnelStats";
 import { Trigger } from "../../types/Trigger";
 import { DashboardItemType } from "../../types/Dashboard";
 import { twMerge } from "../../helpers/TwMerge";
+import { TriggerNumberStats } from "../triggers/TriggerNumberStats";
 
 type Props = {
     title: string;
@@ -59,6 +60,19 @@ export default function DashboardWidget({
 
             {type === "stats" && (
                 <TriggerStats
+                    trigger={trigger}
+                    title={title}
+                    defaultPeriod={period.period}
+                    defaultDate={date}
+                    defaultFromDate={fromDate}
+                    hideViewSwitcher
+                    publicDashboard={publicDashboard}
+                    compareWithPrevious={compareWithPrevious}
+                />
+            )}
+
+            {type === "number" && (
+                <TriggerNumberStats
                     trigger={trigger}
                     title={title}
                     defaultPeriod={period.period}
