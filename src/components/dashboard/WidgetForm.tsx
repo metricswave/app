@@ -44,6 +44,10 @@ function getTypeOptionsForTrigger(selectedTrigger: Trigger | null) {
             value: "stats",
             label: "Stats",
         },
+        {
+            value: "number",
+            label: "Number",
+        },
         ...(hasParameters ? [{
             value: "parameter",
             label: "Parameter",

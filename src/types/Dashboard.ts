@@ -11,9 +11,9 @@ export type DashboardItem = {
     title: string
     size: DashboardItemSize
     parameter?: string
-} & (StatItem | ParameterItem | FunnelItem)
+} & (StatItem | ParameterItem | FunnelItem | NumberItem)
 
-export type DashboardItemType = "stats" | "parameter" | "funnel"
+export type DashboardItemType = "stats" | "parameter" | "funnel" | "number"
 
 export type DashboardItemSize = "base" | "large"
 
@@ -28,4 +28,8 @@ export type ParameterItem = {
 
 export type FunnelItem = {
     type: "funnel"
+}
+
+export type NumberItem = {
+    type: "number"
 }
