@@ -1,8 +1,8 @@
 import {fetchAuthApi} from "./ApiFetcher"
 
-export function portalCheckout(redirectTo: string) {
+export function portalCheckout(teamId: number, redirectTo: string) {
     fetchAuthApi<{ url: string }>(
-        `/checkout/portal-path?redirect-to=${redirectTo}`,
+        `/checkout/${teamId}/portal-path?redirect-to=${redirectTo}`,
         {
             success: (data) => {
                 window.location.href = data.data.url

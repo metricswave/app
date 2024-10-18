@@ -133,7 +133,7 @@ export default function BillingSettings() {
                         <div className="flex flex-row space-x-4"
                              onClick={() => {
                                  setPortalLoading(true)
-                                 portalCheckout("/settings/billing")
+                                 portalCheckout(team.id, "/settings/billing")
                              }}>
                             <div className="flex flex-col space-y-3 bg-blue-100/25 dark:bg-blue-900/10 border border-blue-500/50 dark:border-blue-700 rounded-sm p-4 w-full">
                                 <div className="font-bold text-zinc-800 dark:text-zinc-100">
