@@ -11,8 +11,12 @@ export type Team = {
     subscription_status: boolean
     subscription_type: string
     subscription_plan_id: number
-    owner: User,
+    owner: User
     users: User[]
+    limits: {
+        soft: boolean
+        hard: boolean
+    }
 }
 
 export type TeamInvite = {

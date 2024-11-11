@@ -10,6 +10,7 @@ const CACHE_KEY: string = "nw:teams"
 
 export type TeamState = {
     teams: Team[],
+    team: (teamId?: null|TeamId) => Team | undefined
     loadTeams: (force?: boolean) => void
     currentTeamId: TeamId | null
     setCurrentTeamId: (teamId: TeamId | null) => void
@@ -93,6 +94,11 @@ export function useTeamState(): TeamState {
         return;
     }
 
+    const team = (teamId: null|TeamId = null): Team | undefined => {
+        teamId = teamId ?? currentTeamId
+        return teams.find((t) => t.id === teamId)
+    }
+
     return {
         currentTeamId,
         teams,
@@ -100,5 +106,6 @@ export function useTeamState(): TeamState {
         setCurrentTeamId: setCurrentTeamIdAndSave,
         setCurrentTeamFromTeams,
         deleteTeam,
+        team,
     }
 }
