@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import Logo from "../components/logo/Logo";
 import { useAuthState } from "../storage/AuthToken";
@@ -10,11 +10,16 @@ import { FeedbackWidget } from "../components/feedback/FeedbackWidget";
 import { useAuthContext } from "../contexts/AuthContext";
 import CircleArrowsIcon from "../components/icons/CircleArrowsIcon";
 import { TeamChooser } from "../components/team/TeamChooser";
+import { currentPathIs, currentPathStartsWith } from "../helpers/Routes";
 
 export default function App() {
     const { isAuth } = useAuthState();
     const context = useAuthContext();
     const currentTeam = context.teamState.team();
+    const [showLimitBanner, setShowLimitBanner] = useState(false);
+    const [limitType, setLimitType] = useState<false | "soft" | "hard">(false);
+
+    context.teamState.loadTeams();
 
     TrackVisit();
 
@@ -23,8 +28,24 @@ export default function App() {
         context.userState.refreshUser();
     }, [isAuth]);
 
+    useEffect(() => {
+        const showLimitBanner = currentTeam?.limits.soft || currentTeam?.limits.hard || false;
+        const limitType: false | "soft" | "hard" = !showLimitBanner
+            ? false
+            : currentTeam?.limits.soft
+              ? "soft"
+              : "hard";
+
+        setShowLimitBanner(showLimitBanner);
+        setLimitType(limitType);
+    }, [currentTeam]);
+
     if (context.userState.expired || !isAuth) {
         return <Navigate to="/auth/signup" />;
+    }
+
+    if (limitType === "hard" && !currentPathStartsWith("/settings")) {
+        return <Navigate to="/settings/billing" />;
     }
 
     if (context.userState.user === null) {
@@ -40,7 +61,6 @@ export default function App() {
 
     let paddingTop = "pt-[65px]";
 
-    const showLimitBanner = currentTeam?.limits.soft;
     if (showLimitBanner) {
         paddingTop = "pt-[110px]";
     }
@@ -53,14 +73,18 @@ export default function App() {
             >
                 {showLimitBanner && (
                     <div className="bg-red-200 py-3 px-5">
-                        <div className="max-w-2xl text-sm mx-auto">
-                            You have exceeded the limit of events allowed in your plan.{" "}
-                            <a
-                                className="text-red-700 border-b border-dotted border-red-700 font-bold"
-                                href="/settings/billing"
-                            >
-                                Upgrade your site &rarr;
-                            </a>
+                        <div className="text-sm mx-auto text-center">
+                            {limitType === "soft"
+                                ? "You have exceeded the limit of events allowed in your plan."
+                                : "You have exceeded your site limit and can no longer access your Dashboard."}
+                            {!currentPathIs("/settings/billing") && (
+                                <a
+                                    className="ml-2 text-red-700 border-b border-dotted border-red-700 font-bold"
+                                    href="/settings/billing"
+                                >
+                                    Upgrade your site &rarr;
+                                </a>
+                            )}
                         </div>
                     </div>
                 )}
