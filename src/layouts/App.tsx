@@ -30,14 +30,12 @@ export default function App() {
 
     useEffect(() => {
         const showLimitBanner = currentTeam?.limits.soft || currentTeam?.limits.hard || false;
-        const limitType: false | "soft" | "hard" = !showLimitBanner
-            ? false
-            : currentTeam?.limits.soft
-              ? "soft"
-              : "hard";
-
         setShowLimitBanner(showLimitBanner);
-        setLimitType(limitType);
+
+        if (showLimitBanner) {
+            const limitType: false | "soft" | "hard" = currentTeam?.limits.soft ? "soft" : "hard";
+            setLimitType(limitType);
+        }
     }, [currentTeam]);
 
     if (context.userState.expired || !isAuth) {
