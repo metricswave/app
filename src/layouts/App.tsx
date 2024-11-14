@@ -36,7 +36,7 @@ export default function App() {
             const limitType: false | "soft" | "hard" = currentTeam?.limits.soft ? "soft" : "hard";
             setLimitType(limitType);
         }
-    }, [currentTeam]);
+    }, [currentTeam?.id]);
 
     if (context.userState.expired || !isAuth) {
         return <Navigate to="/auth/signup" />;
