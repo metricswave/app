@@ -19,13 +19,12 @@ export default function App() {
     const [showLimitBanner, setShowLimitBanner] = useState(false);
     const [limitType, setLimitType] = useState<false | "soft" | "hard">(false);
 
-    context.teamState.loadTeams();
-
     TrackVisit();
 
     useEffect(() => {
         context.userState.setIsAuth(isAuth);
         context.userState.refreshUser();
+        context.teamState.loadTeams();
     }, [isAuth]);
 
     useEffect(() => {
