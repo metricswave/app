@@ -227,7 +227,13 @@ export function TriggerStats({
                                         fontSize={12}
                                         tickLine={false}
                                         axisLine={false}
-                                        tickFormatter={(value) => number_formatter(value)}
+                                        tickFormatter={(value) => {
+                                            if (trigger.configuration.type === "money_income") {
+                                                return money_formatter(value);
+                                            }
+
+                                            return number_formatter(value);
+                                        }}
                                     />
                                     <defs>
                                         <linearGradient

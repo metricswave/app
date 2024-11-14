@@ -1,8 +1,6 @@
 import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons";
-import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { money_formatter, number_formatter } from "../../helpers/NumberFormatter";
 import { percentage_diff } from "../../helpers/PercentageOf";
-import { Stats } from "../../storage/TriggerStats";
 import { Period } from "../../types/Period";
 import { Trigger } from "../../types/Trigger";
 import InputFieldBox from "../form/InputFieldBox";
@@ -42,10 +40,16 @@ export function TriggerNumberStats({
             compareWithPrevious={compareWithPrevious}
             children={(stats, previousPeriodStats, data, fieldDate, setFieldDate, dateFieldType, average) => {
                 const totalNumber = (stats.plot ?? []).reduce((acc, { score }) => acc + score, 0);
-                const formattedTotalNumber = trigger.configuration.type === 'money_income' ? money_formatter(totalNumber) : number_formatter(totalNumber);
+                const formattedTotalNumber =
+                    trigger.configuration.type === "money_income"
+                        ? money_formatter(totalNumber)
+                        : number_formatter(totalNumber);
 
                 const previousTotalNumber = (previousPeriodStats.plot ?? []).reduce((acc, { score }) => acc + score, 0);
-                const formattedPreviousTotalNumber = trigger.configuration.type === 'money_income' ? money_formatter(previousTotalNumber) : number_formatter(previousTotalNumber);
+                const formattedPreviousTotalNumber =
+                    trigger.configuration.type === "money_income"
+                        ? money_formatter(previousTotalNumber)
+                        : number_formatter(previousTotalNumber);
 
                 const percentageDifference = percentage_diff(totalNumber, previousTotalNumber);
 
@@ -83,8 +87,8 @@ export function TriggerNumberStats({
                                             )}
 
                                             <div className="text-sm text-gray-400 dark:text-gray-600">
-                                                {number_formatter(percentageDifference)}%
-                                                ({formattedPreviousTotalNumber})
+                                                {number_formatter(percentageDifference)}% (
+                                                {formattedPreviousTotalNumber})
                                             </div>
                                         </div>
                                     )}

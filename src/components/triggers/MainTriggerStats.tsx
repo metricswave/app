@@ -1,14 +1,9 @@
-import PageTitle from "../sections/PageTitle";
 import { Trigger } from "../../types/Trigger";
 import { Stats, useTriggerStatsState } from "../../storage/TriggerStats";
-import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useEffect, useState } from "react";
 import { money_formatter, number_formatter } from "../../helpers/NumberFormatter";
 import { calculateDefaultDateForPeriod, fieldTypeForPeriod, Period } from "../../types/Period";
-import InputFieldBox from "../form/InputFieldBox";
-import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons";
 import { TriggerStatsLoading } from "./TriggerStatsLoading";
-import { percentage_diff } from "../../helpers/PercentageOf";
 
 function getGraphData(stats: Stats, previousPeriodStats: Stats, view: Period) {
     const data = stats.plot.map((stat, index) => ({
@@ -25,12 +20,12 @@ function getGraphData(stats: Stats, previousPeriodStats: Stats, view: Period) {
 type ChildrenFuction = (
     stats: Stats,
     previousPeriodStats: Stats,
-    data: {name: string, total: number}[] | undefined,
+    data: { name: string; total: number }[] | undefined,
     fieldDate: string | undefined,
     setFieldDate: (date: string) => void,
-    dateFieldType: 'date' | 'month',
+    dateFieldType: "date" | "month",
     average: string,
-    ) => JSX.Element;
+) => JSX.Element;
 
 type Props = {
     title: string;
@@ -87,7 +82,13 @@ export function MainTriggerStats({
         const data = getGraphData(stats, previousPeriodStats, period);
         const average = data.reduce((acc, curr) => acc + curr.total, 0) / data.length;
         setData(data);
-        setAverage(isNaN(average) ? "0" : (trigger.configuration.type === 'money_income' ? money_formatter(average) : number_formatter(average)));
+        setAverage(
+            isNaN(average)
+                ? "0"
+                : trigger.configuration.type === "money_income"
+                  ? money_formatter(average)
+                  : number_formatter(average),
+        );
     }, [stats, previousPeriodStats, period]);
 
     if (statsLoading) {
