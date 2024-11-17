@@ -4,14 +4,22 @@ import DateJs from "../helpers/DateJs";
 import NotificationsPageEmptyState from "./NotificationsPageEmptyState";
 import ReactMarkdown from "react-markdown";
 import SectionContainer from "../components/sections/SectionContainer";
+import CircleArrowsIcon from "../components/icons/CircleArrowsIcon";
+import UserFilter from "../components/history/UserFilter";
+import { useEffect, useState } from "react";
 
 export default function HistoryPage() {
-    const { notifications } = useNotificationsStage();
+    const [filter, setFilter] = useState<string>("");
+    const { notifications, setIdFilter } = useNotificationsStage();
 
     const formatTitleDate = function (date: string): string {
         const dt = DateJs.from(date);
         return dt.toLocaleString({ month: "long", day: "numeric", weekday: "short" });
     };
+
+    useEffect(() => {
+        setIdFilter(filter);
+    }, [filter]);
 
     const aDayBefore = function (before: string, current: string): boolean {
         const bdt = DateJs.from(before);
@@ -20,15 +28,18 @@ export default function HistoryPage() {
         return bdt.ordinal < cdt.ordinal;
     };
 
-    if (notifications.length === 0) return <NotificationsPageEmptyState />;
-
     return (
         <SectionContainer>
             <div className="flex flex-col space-y-4 max-w-content">
-                <PageTitle title="Realtime notifications" />
+                <PageTitle>
+                    <h1 className="flex flex-row gap-4 items-center text-lg font-bold">
+                        Relatime Events
+                        <CircleArrowsIcon className="text-green-500 w-4 h-4 animate-pulse-spin" />
+                    </h1>
+                </PageTitle>
 
-                <div className="flex flex-col space-y-4 rounded-sm p-3 border soft-border text-sm animate-pulse bg-amber-50/50 dark:bg-zinc-800/50">
-                    Loading …
+                <div className="py-2">
+                    <UserFilter filter={filter} setFilter={setFilter} />
                 </div>
 
                 {notifications.map((notification, key) => {
