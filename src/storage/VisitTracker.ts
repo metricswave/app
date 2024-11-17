@@ -5,6 +5,6 @@ export const TrackVisit = function () {
     const { user } = useAuthContext().userState;
 
     useEffect(() => {
-        window.metricswave.setUserId(user?.email ?? null);
+        window.metricswave.setUser(user?.email ?? null);
     }, [user]);
 };
