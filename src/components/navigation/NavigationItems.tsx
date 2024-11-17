@@ -1,12 +1,20 @@
 import React from "react";
 import { items } from "./Items";
 import { isCurrentRoute } from "../../helpers/Routes";
+import { useAuthContext } from "../../contexts/AuthContext";
 
 export default function NavigationItems() {
+    const context = useAuthContext();
+    const currentUser = context.userState.user;
+
     return (
         <ul className={"flex flex-row items-center space-x-2"}>
-            {items.map(({ icon, label, path }, index) => {
+            {items.map(({ icon, label, path, enable }, index) => {
                 const current = isCurrentRoute(window.location.pathname, path);
+
+                if (enable !== undefined && currentUser !== null && enable(currentUser) === false) {
+                    return null;
+                }
 
                 return (
                     <li key={`${index}_item`}>
