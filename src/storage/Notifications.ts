@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
 import { fetchAuthApi } from "../helpers/ApiFetcher";
-import { expirableLocalStorage, FIVE_SECONDS } from "../helpers/ExpirableLocalStorage";
+import { expirableLocalStorage, FIFTEEN_MINUTES_SECONDS, FIVE_SECONDS } from "../helpers/ExpirableLocalStorage";
 import { Notification } from "../types/Notification";
 import { useAuthContext } from "../contexts/AuthContext";
 
 export function useNotificationsStage() {
-    const interval = null;
     const { currentTeamId } = useAuthContext().teamState;
     const [idFilter, setIdFilter] = useState<string>("");
     const NOTIFICATIONS_KEY = (userIdFilter: string) => `nw:${currentTeamId}:notifications:${userIdFilter}`;
     const [notifications, setNotifications] = useState<Notification[]>(
         expirableLocalStorage.get(NOTIFICATIONS_KEY(""), [], true),
     );
+    const intervalTime = idFilter === "" ? FIFTEEN_MINUTES_SECONDS * 1000 : FIVE_SECONDS * 1000 * 2;
 
     const reloadNotifications = (userIdFilter: string, force = false) => {
         setIdFilter(userIdFilter);
@@ -39,7 +39,7 @@ export function useNotificationsStage() {
     useEffect(() => reloadNotifications(idFilter, true), [idFilter]);
 
     useEffect(() => {
-        const interval = setInterval(() => reloadNotifications(idFilter, true), FIVE_SECONDS * 1000);
+        const interval = setInterval(() => reloadNotifications(idFilter, true), intervalTime);
         return () => clearInterval(interval);
     }, [idFilter]);
 
