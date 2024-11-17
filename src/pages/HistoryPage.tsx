@@ -42,6 +42,12 @@ export default function HistoryPage() {
                     <UserFilter filter={filter} setFilter={setFilter} />
                 </div>
 
+                {notifications.length === 0 && (
+                    <div className="flex flex-col space-y-2 rounded-sm px-3 border soft-border text-sm text-center py-9">
+                        <span className="opacity-75 animate-pulse">Nothing found.</span>
+                    </div>
+                )}
+
                 {notifications.map((notification, key) => {
                     let showDate = false;
                     const previous = notifications[key - 1] ?? null;
