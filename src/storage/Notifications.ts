@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { fetchAuthApi } from "../helpers/ApiFetcher";
 import { expirableLocalStorage, FIFTEEN_MINUTES_SECONDS, FIVE_SECONDS } from "../helpers/ExpirableLocalStorage";
 import { Notification } from "../types/Notification";
@@ -11,7 +11,12 @@ export function useNotificationsStage() {
     const [notifications, setNotifications] = useState<Notification[]>(
         expirableLocalStorage.get(NOTIFICATIONS_KEY(""), [], true),
     );
-    const intervalTime = idFilter === "" ? FIFTEEN_MINUTES_SECONDS * 1000 : FIVE_SECONDS * 1000 * 2;
+    const intervalTime = idFilter !== "" ? FIFTEEN_MINUTES_SECONDS * 1000 : FIVE_SECONDS * 1000;
+    const [iterationCount, setIterationCount] = useState(0);
+    const iterationCountLimit = 10;
+    const intervalRunning = useMemo(() => {
+        return iterationCount < iterationCountLimit;
+    }, [iterationCount, iterationCountLimit]);
 
     const reloadNotifications = (userIdFilter: string, force = false) => {
         setIdFilter(userIdFilter);
@@ -36,16 +41,35 @@ export function useNotificationsStage() {
         });
     };
 
-    useEffect(() => reloadNotifications(idFilter, true), [idFilter]);
+    const stopInterval = (interval: number | NodeJS.Timer) => {
+        clearInterval(interval);
+    };
+
+    const startInterval = () => {
+        setIterationCount(0);
+    };
+
+    useEffect(startInterval, [idFilter]);
 
     useEffect(() => {
-        const interval = setInterval(() => reloadNotifications(idFilter, true), intervalTime);
-        return () => clearInterval(interval);
-    }, [idFilter]);
+        const interval = setInterval(() => {
+            reloadNotifications(idFilter, true);
+
+            setIterationCount((prevCount) => {
+                if (prevCount + 1 >= iterationCountLimit) {
+                    stopInterval(interval);
+                }
+                return prevCount + 1;
+            });
+        }, intervalTime);
+        return () => stopInterval(interval);
+    }, [idFilter, intervalTime, intervalRunning]);
 
     return {
         notifications,
         setIdFilter,
+        startInterval,
+        intervalRunning,
         refreshNotifications: (idFilter: string) => reloadNotifications(idFilter, true),
     };
 }

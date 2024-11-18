@@ -1,16 +1,16 @@
 import PageTitle from "../components/sections/PageTitle";
 import { useNotificationsStage } from "../storage/Notifications";
 import DateJs from "../helpers/DateJs";
-import NotificationsPageEmptyState from "./NotificationsPageEmptyState";
 import ReactMarkdown from "react-markdown";
 import SectionContainer from "../components/sections/SectionContainer";
 import CircleArrowsIcon from "../components/icons/CircleArrowsIcon";
 import UserFilter from "../components/history/UserFilter";
 import { useEffect, useState } from "react";
+import PauseIcon from "../components/icons/PauseIcon";
 
 export default function HistoryPage() {
     const [filter, setFilter] = useState<string>("");
-    const { notifications, setIdFilter } = useNotificationsStage();
+    const { notifications, setIdFilter, intervalRunning, startInterval } = useNotificationsStage();
 
     const formatTitleDate = function (date: string): string {
         const dt = DateJs.from(date);
@@ -32,9 +32,27 @@ export default function HistoryPage() {
         <SectionContainer>
             <div className="flex flex-col space-y-4 max-w-content">
                 <PageTitle>
-                    <h1 className="flex flex-row gap-4 items-center text-lg font-bold">
+                    <h1 className="flex flex-row gap-4 justify-between items-center text-lg font-bold">
                         Relatime Events
-                        <CircleArrowsIcon className="text-green-500 w-4 h-4 animate-pulse-spin" />
+                        {intervalRunning && (
+                            <div className="flex flex-row items-center gap-2 bg-green-500/10 rounded-full py-1 pl-1.5 pr-2 select-none animate-pulse">
+                                <CircleArrowsIcon className="text-green-500 w-4 h-4 animate-spin" />
+                                <span className="text-xs uppercase tracking-wide font-normal text-green-500">
+                                    Updating
+                                </span>
+                            </div>
+                        )}
+                        {!intervalRunning && (
+                            <div
+                                className="flex flex-row items-center gap-2 bg-red-500/10 rounded-full py-1 pl-2.5 select-none pr-2 cursor-pointer opacity-75 hover:opacity-100 smooth-all"
+                                onClick={() => {
+                                    startInterval();
+                                }}
+                            >
+                                <PauseIcon className="w-3.5 h-3.5 text-red-500" />
+                                <span className="text-xs uppercase tracking-wide font-normal text-red-500">Paused</span>
+                            </div>
+                        )}
                     </h1>
                 </PageTitle>
 
@@ -61,7 +79,7 @@ export default function HistoryPage() {
                     return (
                         <>
                             {showDate && (
-                                <h3 className="pt-4 opacity-75 uppercase text-sm">
+                                <h3 key={notification.id + "_date"} className="pt-4 opacity-75 uppercase text-sm">
                                     {formatTitleDate(notification.created_at)}
                                 </h3>
                             )}
