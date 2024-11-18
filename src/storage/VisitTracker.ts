@@ -1,45 +1,10 @@
-import {useLocation} from "react-router-dom"
-import {useAuthState} from "./AuthToken"
-import {app} from "../config/app"
-import {useEffect, useState} from "react"
-import {useAuthContext} from "../contexts/AuthContext";
+import { useEffect } from "react";
+import { useAuthContext } from "../contexts/AuthContext";
 
 export const TrackVisit = function () {
-    const {isAuth} = useAuthState()
-    const {user, setIsAuth} = useAuthContext().userState
-    const location = useLocation()
-    const [previousLocation, setPreviousLocation] = useState<string>("")
-    const fullLocation = location.pathname + location.search
+    const { user } = useAuthContext().userState;
 
     useEffect(() => {
-        setIsAuth(isAuth)
-    }, [isAuth]);
-
-    useEffect(() => {
-        const params = {
-            user: user?.email ?? "Anonymous",
-        }
-
-        if (previousLocation === fullLocation) {
-            return
-        }
-
-        setPreviousLocation(fullLocation)
-
-        if (!app.isProduction) {
-            console.log("VisitTracker", params)
-            return
-        }
-
-        const path = "https://metricswave.com/webhooks/5410d97c-3255-4a2a-a967-4326bb3458a6"
-
-        fetch(path, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-            },
-            body: JSON.stringify(params),
-        })
-    }, [location])
-}
+        window.metricswave.setUser(user?.email ?? null);
+    }, [user]);
+};

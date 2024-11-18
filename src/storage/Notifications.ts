@@ -1,46 +1,75 @@
-import {useEffect, useState} from "react"
-import {fetchAuthApi} from "../helpers/ApiFetcher"
-import {expirableLocalStorage, FIVE_SECONDS} from "../helpers/ExpirableLocalStorage"
-import {Notification} from "../types/Notification"
-import {useAuthContext} from "../contexts/AuthContext";
+import { useEffect, useMemo, useState } from "react";
+import { fetchAuthApi } from "../helpers/ApiFetcher";
+import { expirableLocalStorage, FIFTEEN_MINUTES_SECONDS, FIVE_SECONDS } from "../helpers/ExpirableLocalStorage";
+import { Notification } from "../types/Notification";
+import { useAuthContext } from "../contexts/AuthContext";
 
 export function useNotificationsStage() {
-    const {currentTeamId} = useAuthContext().teamState
-    const NOTIFICATIONS_KEY = () => `nw:${currentTeamId}:notifications`
+    const { currentTeamId } = useAuthContext().teamState;
+    const [idFilter, setIdFilter] = useState<string>("");
+    const NOTIFICATIONS_KEY = (userIdFilter: string) => `nw:${currentTeamId}:notifications:${userIdFilter}`;
     const [notifications, setNotifications] = useState<Notification[]>(
-        expirableLocalStorage.get(NOTIFICATIONS_KEY(), [], true),
-    )
+        expirableLocalStorage.get(NOTIFICATIONS_KEY(""), [], true),
+    );
+    const intervalTime = idFilter !== "" ? FIFTEEN_MINUTES_SECONDS * 1000 : FIVE_SECONDS * 1000;
+    const [iterationCount, setIterationCount] = useState(0);
+    const iterationCountLimit = 10;
+    const intervalRunning = useMemo(() => {
+        return iterationCount < iterationCountLimit;
+    }, [iterationCount, iterationCountLimit]);
 
-    const reloadNotifications = (force = false) => {
-        const cached = expirableLocalStorage.get(NOTIFICATIONS_KEY(), false)
+    const reloadNotifications = (userIdFilter: string, force = false) => {
+        setIdFilter(userIdFilter);
+
+        const cached = expirableLocalStorage.get(NOTIFICATIONS_KEY(userIdFilter), false);
         if (cached !== false && notifications.length > 0 && !force) {
-            setNotifications(cached)
-            return
+            setNotifications(cached);
+            return;
         }
 
-        fetchAuthApi<Notification[]>(`/teams/${currentTeamId}/notifications`, {
+        let query = "";
+        if (userIdFilter) {
+            query = "?user_parameter=" + userIdFilter;
+        }
+
+        fetchAuthApi<Notification[]>(`/teams/${currentTeamId}/notifications${query}`, {
             success: (data) => {
-                const t = data.data
-                expirableLocalStorage.set(NOTIFICATIONS_KEY(), t)
-                setNotifications(t)
+                const t = data.data;
+                expirableLocalStorage.set(NOTIFICATIONS_KEY(userIdFilter), t);
+                setNotifications(t);
             },
-        })
-    }
+        });
+    };
 
-    useEffect(() => reloadNotifications(true), [currentTeamId])
-    useEffect(() => {
-        setNotifications(
-            expirableLocalStorage.get(NOTIFICATIONS_KEY(), [], true),
-        )
-    }, [currentTeamId])
+    const stopInterval = (interval: number | NodeJS.Timer) => {
+        clearInterval(interval);
+    };
+
+    const startInterval = () => {
+        setIterationCount(0);
+    };
+
+    useEffect(startInterval, [idFilter]);
 
     useEffect(() => {
-        const interval = setInterval(() => reloadNotifications(true), FIVE_SECONDS * 1000)
-        return () => clearInterval(interval)
-    }, [])
+        const interval = setInterval(() => {
+            reloadNotifications(idFilter, true);
+
+            setIterationCount((prevCount) => {
+                if (prevCount + 1 >= iterationCountLimit) {
+                    stopInterval(interval);
+                }
+                return prevCount + 1;
+            });
+        }, intervalTime);
+        return () => stopInterval(interval);
+    }, [idFilter, intervalTime, intervalRunning]);
 
     return {
         notifications,
-        refreshNotifications: () => reloadNotifications(true),
-    }
+        setIdFilter,
+        startInterval,
+        intervalRunning,
+        refreshNotifications: (idFilter: string) => reloadNotifications(idFilter, true),
+    };
 }

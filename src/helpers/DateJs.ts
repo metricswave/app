@@ -1,13 +1,17 @@
-const {DateTime} = require("luxon")
+const { DateTime } = require("luxon");
 
-export default {
+const DateJs = {
     from: DateTime.fromISO,
 
+    now: DateTime.now(),
+
     relative: (date: string) => {
-        return DateTime.fromISO(date).toRelative()
+        return DateTime.fromISO(date).toRelative();
     },
 
     toRfc: (date: string) => {
-        return DateTime.fromISO(date).toRFC2822()
+        return DateTime.fromISO(date).toRFC2822();
     },
-}
+};
+
+export default DateJs;
