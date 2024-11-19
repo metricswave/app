@@ -69,14 +69,14 @@ export default function App() {
                 className="flex flex-col fixed top-0 left-0 right-0 border-b soft-border drop-shadow-sm dark:drop-shadow-xl z-30"
             >
                 {showLimitBanner && (
-                    <div className="bg-red-200 py-3 px-5">
+                    <div className="bg-red-200 dark:bg-red-800/50 py-3 px-5">
                         <div className="text-sm mx-auto text-center">
                             {limitType === "soft"
                                 ? "You have exceeded the limit of events allowed in your plan."
                                 : "You have exceeded your site limit and can no longer access your Dashboard."}
                             {!currentPathIs("/settings/billing") && (
                                 <a
-                                    className="ml-2 text-red-700 border-b border-dotted border-red-700 font-bold"
+                                    className="ml-2 text-red-700 dark:text-red-300 border-b border-dotted border-red-700 dark:border-red-300 font-bold"
                                     href="/settings/billing"
                                 >
                                     Upgrade your site &rarr;
