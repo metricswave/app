@@ -1,4 +1,4 @@
-const isProduction = process.env.NODE_ENV === "production";
+const isProduction = process.env.NODE_ENV === "production" || true;
 
 const productionPath = "https://metricswave.com";
 const developmentPath = "http://metricswave.test";

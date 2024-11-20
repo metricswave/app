@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Trigger } from "../../types/Trigger";
 import { ParamStatRow, useTriggerParamsStatsState } from "../../storage/TriggerParamsStats";
 import DropDownSelectFieldBox from "../form/DropDownSelectFieldBox";
@@ -9,6 +9,7 @@ import { calculateDefaultDateForPeriod, fieldTypeForPeriod, Period } from "../..
 import CircleArrowsIcon from "../icons/CircleArrowsIcon";
 import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons";
 import { percentage_of } from "../../helpers/PercentageOf";
+import { mapParameterName } from "../../helpers/TriggerParameters";
 
 type Props = {
     trigger: Trigger;
@@ -37,10 +38,12 @@ export function TriggerParamsStats({
     hideParameterChooser = false,
     compareWithPrevious = false,
 }: Props) {
-    const [params] = useState<string[]>(
-        (trigger.configuration.fields["parameters"] as string[])
-            .filter((param) => !(param === "amount" && trigger.configuration.type === 'money_income'))
-    );
+    const params = [
+        ...(trigger.configuration.fields["parameters"] as string[]).filter(
+            (param) => !(param === "amount" && trigger.configuration.type === "money_income"),
+        ),
+        "user_parameter",
+    ];
     const [parameter, setParameter] = useState<string>(defaultParameter ?? params[0]);
     const [period, setPeriod] = useState<Period>(defaultPeriod);
     const [date, setDate] = useState<string>(defaultDate ?? calculateDefaultDateForPeriod(period));
@@ -64,7 +67,8 @@ export function TriggerParamsStats({
             ? Object.values(previousStats.plot[parameter])
             : undefined;
     const totalScore = paramStats.reduce((acc, curr) => acc + curr.score, 0);
-    const totalScoreString = trigger.configuration.type !== 'money_income' ? number_formatter(totalScore) : money_formatter(totalScore);
+    const totalScoreString =
+        trigger.configuration.type !== "money_income" ? number_formatter(totalScore) : money_formatter(totalScore);
 
     useEffect(() => {
         setDate(fieldTypeForPeriod(period) === "month" ? fieldDate + "-01" : fieldDate!);
@@ -112,7 +116,7 @@ export function TriggerParamsStats({
                             {!hideParameterChooser && (
                                 <DropDownSelectFieldBox
                                     value={parameter}
-                                    options={params.map((param) => ({ value: param, label: param }))}
+                                    options={params.map((param) => ({ value: param, label: mapParameterName(param) }))}
                                     setValue={(value) => {
                                         setParameter(value as string);
                                     }}
@@ -184,7 +188,10 @@ export function TriggerParamsStats({
                                     },
                                 );
 
-                                const formatedScore = trigger.configuration.type === 'money_income' ? money_formatter(stat.score) : number_formatter(stat.score);
+                                const formatedScore =
+                                    trigger.configuration.type === "money_income"
+                                        ? money_formatter(stat.score)
+                                        : number_formatter(stat.score);
 
                                 return (
                                     <div key={index} className="flex flex-col space-y-2 py-3">

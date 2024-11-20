@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-    --font-mono: 'PT Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
-    monospace;
+    --font-mono: "PT Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New",
+        monospace;
 
     --landing-nav-height: 56px;
 
@@ -39,12 +39,12 @@
         /*  Colors */
         --text-color: #dfdfdf;
         --background-color: #181818;
-        --background-50-color: #27272A;
-        --background-100-color: #27272A;
-        --menu-item-active: #27272A;
+        --background-50-color: #27272a;
+        --background-100-color: #27272a;
+        --menu-item-active: #27272a;
         --menu-item-hover: rgba(39, 39, 42, 0.55);
         --form-select-background: rgba(39, 39, 42, 0.55);
-        --form-select-content-background: #27272A;
+        --form-select-content-background: #27272a;
         --form-select-item-background: #181818;
 
         /* Funnel */
@@ -76,8 +76,8 @@ textarea:-webkit-autofill:focus,
 select:-webkit-autofill,
 select:-webkit-autofill:hover,
 select:-webkit-autofill:focus {
-    -webkit-box-shadow: 0 0 0px 1000px #FFF inset;
-    box-shadow: 0 0 0px 1000px #FFF inset;
+    -webkit-box-shadow: 0 0 0px 1000px #fff inset;
+    box-shadow: 0 0 0px 1000px #fff inset;
 }
 
 .smooth {
@@ -90,6 +90,10 @@ select:-webkit-autofill:focus {
 
 .soft-border {
     @apply border-zinc-400/20 dark:border-zinc-800;
+}
+
+.soft-border-hover:hover {
+    @apply border-zinc-400/20 dark:border-zinc-700;
 }
 
 .soft-border\/50 {

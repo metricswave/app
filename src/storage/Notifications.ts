@@ -1,75 +1,109 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { fetchAuthApi } from "../helpers/ApiFetcher";
-import { expirableLocalStorage, FIFTEEN_MINUTES_SECONDS, FIVE_SECONDS } from "../helpers/ExpirableLocalStorage";
+import { expirableLocalStorage } from "../helpers/ExpirableLocalStorage";
 import { Notification } from "../types/Notification";
 import { useAuthContext } from "../contexts/AuthContext";
 
 export function useNotificationsStage() {
     const { currentTeamId } = useAuthContext().teamState;
     const [idFilter, setIdFilter] = useState<string>("");
-    const NOTIFICATIONS_KEY = (userIdFilter: string) => `nw:${currentTeamId}:notifications:${userIdFilter}`;
-    const [notifications, setNotifications] = useState<Notification[]>(
-        expirableLocalStorage.get(NOTIFICATIONS_KEY(""), [], true),
-    );
-    const intervalTime = idFilter !== "" ? FIFTEEN_MINUTES_SECONDS * 1000 : FIVE_SECONDS * 1000;
-    const [iterationCount, setIterationCount] = useState(0);
-    const iterationCountLimit = 10;
-    const intervalRunning = useMemo(() => {
-        return iterationCount < iterationCountLimit;
-    }, [iterationCount, iterationCountLimit]);
+    const NOTIFICATIONS_KEY = `nw:${currentTeamId}:notifications:${idFilter}`;
+    const [notifications, setNotifications] = useState<Notification[]>([]);
+    const [fetched, setFetched] = useState<boolean>(false);
+    const [fetching, setFetching] = useState<boolean>(false);
+    const [lastPageFetched, setLastPageFetched] = useState<number>(0);
+    const [lastPageAvailable, setLastPageAvailable] = useState<number>(0);
 
-    const reloadNotifications = (userIdFilter: string, force = false) => {
-        setIdFilter(userIdFilter);
+    const loadNotifications = async (page: number = 1) => {
+        setFetching(true);
 
-        const cached = expirableLocalStorage.get(NOTIFICATIONS_KEY(userIdFilter), false);
-        if (cached !== false && notifications.length > 0 && !force) {
-            setNotifications(cached);
-            return;
+        let query = "?page=" + page;
+
+        if (idFilter) {
+            query = query + "&user_parameter=" + idFilter;
         }
 
-        let query = "";
-        if (userIdFilter) {
-            query = "?user_parameter=" + userIdFilter;
-        }
-
-        fetchAuthApi<Notification[]>(`/teams/${currentTeamId}/notifications${query}`, {
+        await fetchAuthApi<Notification[]>(`/teams/${currentTeamId}/notifications${query}`, {
             success: (data) => {
+                if (data.current_page && data.current_page > lastPageFetched) {
+                    setLastPageFetched(data.current_page);
+                }
+
+                if (data.last_page && data.last_page > lastPageAvailable) {
+                    setLastPageAvailable(data.last_page);
+                }
+
                 const t = data.data;
-                expirableLocalStorage.set(NOTIFICATIONS_KEY(userIdFilter), t);
-                setNotifications(t);
+                expirableLocalStorage.set(NOTIFICATIONS_KEY, t);
+                setFetched(true);
+                mergeNotificatons(t, data.current_page === 1);
+                setFetching(false);
             },
         });
     };
 
-    const stopInterval = (interval: number | NodeJS.Timer) => {
-        clearInterval(interval);
+    const loadFromCache = () => {
+        const cached = expirableLocalStorage.get(NOTIFICATIONS_KEY, false);
+        if (cached !== false) {
+            setNotifications(cached);
+        }
     };
 
-    const startInterval = () => {
-        setIterationCount(0);
-    };
+    const mergeNotificatons = (notifications: Notification[], before: boolean) => {
+        setNotifications((currentNotifications) => {
+            const currentNotificationIds = new Set(currentNotifications.map((notification) => notification.id));
+            const newNotifications = notifications.filter(
+                (notification) => !currentNotificationIds.has(notification.id),
+            );
 
-    useEffect(startInterval, [idFilter]);
+            if (before) {
+                return [...newNotifications, ...currentNotifications];
+            }
+
+            return [...currentNotifications, ...newNotifications];
+        });
+    };
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            reloadNotifications(idFilter, true);
+        if (idFilter === "") return;
 
-            setIterationCount((prevCount) => {
-                if (prevCount + 1 >= iterationCountLimit) {
-                    stopInterval(interval);
-                }
-                return prevCount + 1;
-            });
-        }, intervalTime);
-        return () => stopInterval(interval);
-    }, [idFilter, intervalTime, intervalRunning]);
+        loadFromCache();
+        loadNotifications();
+    }, [idFilter]);
 
     return {
         notifications,
-        setIdFilter,
-        startInterval,
-        intervalRunning,
-        refreshNotifications: (idFilter: string) => reloadNotifications(idFilter, true),
+        load: (filter: string) => {
+            setIdFilter(filter);
+        },
+        loadPage: (page?: number | undefined) => {
+            loadNotifications(page ?? lastPageFetched + 1);
+        },
+        filter: idFilter,
+        fetching,
+        fetched,
+        thereIsMore: lastPageFetched < lastPageAvailable,
     };
+}
+
+function usePollingEffect(asyncCallback: () => void, dependencies: string[] = [], shouldRun: boolean) {
+    const interval = 5000;
+    const timeoutIdRef = useRef<string | number | undefined | NodeJS.Timeout>(undefined);
+    useEffect(() => {
+        let _stopped = false;
+        // Side note: preceding semicolon needed for IIFEs.
+        (async function pollingCallback() {
+            try {
+                if (shouldRun) await asyncCallback();
+            } finally {
+                // Set timeout after it finished, unless stopped
+                timeoutIdRef.current = !_stopped && setTimeout(pollingCallback, interval);
+            }
+        })();
+        // Clean up if dependencies change
+        return () => {
+            _stopped = true; // prevent racing conditions
+            clearTimeout(timeoutIdRef.current);
+        };
+    }, [...dependencies, interval]);
 }
