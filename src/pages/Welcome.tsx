@@ -84,9 +84,14 @@ export function Welcome() {
     }, []);
 
     const handleFinish = () => {
-        EventTracker.track("675c40d3-d5c8-44df-bcb5-7882d1959e45", { step: "Welcomed", user_id: DeviceName.name() });
+        EventTracker.track("675c40d3-d5c8-44df-bcb5-7882d1959e45", { step: "Welcomed", user_id: user?.email });
         const referrer = localStorage.getItem("metricswave:referrer") ?? document.referrer;
-        EventTracker.track("f3fcf7cc-416d-4ff9-bc12-3878e9127ff7", { email: user?.email, referrer, step: 2 });
+        EventTracker.track("f3fcf7cc-416d-4ff9-bc12-3878e9127ff7", {
+            email: user?.email,
+            user_id: user?.email,
+            referrer,
+            step: 2,
+        });
 
         navigate("/");
     };
