@@ -32,7 +32,7 @@ export default function HistoryPage() {
                 ].join(" ")}
             >
                 <div className="py-2 mb-12">
-                    <UserFilter filter={filter} setFilter={setFilter} />
+                    <UserFilter filter={filter} setFilter={setFilter} submit={() => load(filter)} />
                     {(idFilter === "" || filter !== idFilter) && (
                         <PrimaryButton
                             text="Search"
@@ -44,9 +44,9 @@ export default function HistoryPage() {
                     )}
                 </div>
 
-                {!fetched && <div className="h-[50vh]" key="decorator"></div>}
+                {!fetched && !fetching && <div className="h-[50vh]" key="decorator"></div>}
 
-                {fetched && (
+                {(fetched || fetching) && (
                     <>
                         <PageTitle>
                             <h1 className="flex flex-row gap-4 justify-between items-center text-lg font-bold">

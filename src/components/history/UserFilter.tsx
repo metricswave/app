@@ -3,9 +3,10 @@ import InputFieldBox from "../form/InputFieldBox";
 type Props = {
     filter: string;
     setFilter: (value: string) => void;
+    submit: () => void;
 };
 
-export default function UserFilter({ filter, setFilter }: Props) {
+export default function UserFilter({ filter, setFilter, submit }: Props) {
     return (
         <>
             <div className="text-right pb-1">
@@ -23,6 +24,11 @@ export default function UserFilter({ filter, setFilter }: Props) {
                 error={false}
                 name="filter"
                 label="User"
+                onKeyPress={(e) => {
+                    if (e.key === "Enter") {
+                        submit();
+                    }
+                }}
                 autoFocus
                 placeholder="Filter by user id"
             />
