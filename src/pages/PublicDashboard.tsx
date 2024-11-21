@@ -1,6 +1,6 @@
 import SectionContainer from "../components/sections/SectionContainer";
 import PageTitle from "../components/sections/PageTitle";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { calculateDefaultDateForPeriod, DEFAULT_PERIOD, Period, PeriodRange, periods } from "../types/Period";
 import { fetchApi } from "../helpers/ApiFetcher";
 import { useParams, useSearchParams } from "react-router-dom";
