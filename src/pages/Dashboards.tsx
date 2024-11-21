@@ -46,16 +46,20 @@ export function Dashboards() {
     const context = useAuthContext();
     const currentTeam = context.userState.currentTeam(context.teamState.currentTeamId);
 
-    if (
-        dashboards !== undefined &&
-        dashboards.length > 0 &&
-        dashboards[dashboardIndex] === undefined &&
-        dashboardIndex !== 0
-    ) {
-        setDashboardIndex(0);
-    }
     const dashboardsHasLoad =
         dashboards !== undefined && dashboards.length > 0 && dashboards[dashboardIndex] !== undefined;
+
+    useEffect(() => {
+        if (
+            dashboards !== undefined &&
+            dashboards[0].id !== undefined &&
+            dashboards.length > 0 &&
+            dashboards[dashboardIndex] === undefined &&
+            dashboardIndex !== 0
+        ) {
+            setDashboardIndex(0);
+        }
+    }, [dashboards, dashboardIndex]);
 
     let addButtonSize = "md:col-span-2";
     if (dashboardsHasLoad && dashboards[dashboardIndex].items) {
