@@ -11,8 +11,9 @@ export default function UserFilter({ filter, setFilter, submit }: Props) {
         <>
             <div className="text-right pb-1">
                 <a
-                    href="/documentation/tracking/user-id"
+                    href="https://metricswave.com/documentation/tracking/user-id"
                     target="_blank"
+                    rel="noreferrer"
                     className="text-xs border-b border-dotted text-blue-500 border-blue-500 opacity-70 hover:border-solid hover:opacity-100"
                 >
                     How to track user-ids?
