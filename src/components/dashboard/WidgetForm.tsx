@@ -5,7 +5,7 @@ import PrimaryButton from "../form/PrimaryButton";
 import { useEffect, useState } from "react";
 import { twMerge } from "../../helpers/TwMerge";
 import { DashboardItemSize, DashboardItemType } from "../../types/Dashboard";
-import { mapParameterName } from "../../helpers/TriggerParameters";
+import { mapParameterName, mergeGlobalParameters } from "../../helpers/TriggerParameters";
 
 type Props = {
     addButtonSize?: string;
@@ -85,7 +85,7 @@ export default function WidgetForm({
 
     const parameters =
         selectedTrigger !== null
-            ? [...(selectedTrigger?.configuration.fields.parameters as string[]), "user_parameter"]
+            ? mergeGlobalParameters(selectedTrigger?.configuration.fields.parameters as string[])
             : [];
 
     const handleSubmitWidgetForm = () => {

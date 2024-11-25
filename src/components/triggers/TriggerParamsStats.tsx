@@ -9,7 +9,7 @@ import { calculateDefaultDateForPeriod, fieldTypeForPeriod, Period } from "../..
 import CircleArrowsIcon from "../icons/CircleArrowsIcon";
 import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons";
 import { percentage_of } from "../../helpers/PercentageOf";
-import { mapParameterName } from "../../helpers/TriggerParameters";
+import { mapParameterName, mergeGlobalParameters } from "../../helpers/TriggerParameters";
 
 type Props = {
     trigger: Trigger;
@@ -38,12 +38,9 @@ export function TriggerParamsStats({
     hideParameterChooser = false,
     compareWithPrevious = false,
 }: Props) {
-    const params = [
-        ...(trigger.configuration.fields["parameters"] as string[]).filter(
-            (param) => !(param === "amount" && trigger.configuration.type === "money_income"),
-        ),
-        "user_parameter",
-    ];
+    const params = mergeGlobalParameters(trigger.configuration.fields["parameters"] as string[]).filter(
+        (param) => !(param === "amount" && trigger.configuration.type === "money_income"),
+    );
     const [parameter, setParameter] = useState<string>(defaultParameter ?? params[0]);
     const [period, setPeriod] = useState<Period>(defaultPeriod);
     const [date, setDate] = useState<string>(defaultDate ?? calculateDefaultDateForPeriod(period));
