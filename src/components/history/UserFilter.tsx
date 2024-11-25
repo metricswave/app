@@ -1,12 +1,20 @@
+import { useState } from "react";
 import InputFieldBox from "../form/InputFieldBox";
+import PrimaryButton from "../form/PrimaryButton";
 
 type Props = {
-    filter: string;
-    setFilter: (value: string) => void;
-    submit: () => void;
+    submit: (filter: string) => void;
 };
 
-export default function UserFilter({ filter, setFilter, submit }: Props) {
+export default function UserFilter({ submit: parentSubmit }: Props) {
+    const [filter, setFilter] = useState<string>("");
+    const [submitedFilter, setSubmitedFilter] = useState<string>("");
+
+    const submit = () => {
+        setSubmitedFilter(filter);
+        parentSubmit(filter);
+    };
+
     return (
         <>
             <div className="text-right pb-1">
@@ -19,6 +27,7 @@ export default function UserFilter({ filter, setFilter, submit }: Props) {
                     How to track user-ids?
                 </a>
             </div>
+
             <InputFieldBox
                 value={filter}
                 setValue={setFilter}
@@ -33,6 +42,10 @@ export default function UserFilter({ filter, setFilter, submit }: Props) {
                 autoFocus
                 placeholder="Filter by user id"
             />
+
+            {submitedFilter !== filter && filter.length > 0 && (
+                <PrimaryButton text="Search" className="w-full mt-3" onClick={submit} />
+            )}
         </>
     );
 }

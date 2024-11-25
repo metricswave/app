@@ -11,8 +11,7 @@ import PrimaryButton from "../components/form/PrimaryButton";
 import { Button } from "../components/ui/button";
 
 export default function HistoryPage() {
-    const [filter, setFilter] = useState<string>("");
-    const { notifications, load, fetched, fetching, thereIsMore, filter: idFilter, loadPage } = useNotificationsStage();
+    const { notifications, load, fetched, fetching, thereIsMore, loadPage } = useNotificationsStage();
 
     const formatTitleDate = function (date: string): string {
         const dt = DateJs.from(date);
@@ -31,16 +30,7 @@ export default function HistoryPage() {
                 ].join(" ")}
             >
                 <div className="py-2 mb-12">
-                    <UserFilter filter={filter} setFilter={setFilter} submit={() => load(filter)} />
-                    {(idFilter === "" || filter !== idFilter) && (
-                        <PrimaryButton
-                            text="Search"
-                            className="w-full mt-3"
-                            onClick={() => {
-                                load(filter);
-                            }}
-                        />
-                    )}
+                    <UserFilter submit={load} />
                 </div>
 
                 {!fetched && !fetching && <div className="h-[50vh]" key="decorator"></div>}

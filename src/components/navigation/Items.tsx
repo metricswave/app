@@ -18,9 +18,8 @@ export const items: Array<NavItem> = [
     },
     {
         icon: ListBulletIcon,
-        label: "Realtime",
+        label: "Users",
         path: "/realtime",
-        enable: (user: User) => user.email === "victoor89@gmail.com",
     },
     {
         icon: LightningBoltIcon,
