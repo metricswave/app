@@ -18,10 +18,10 @@ const panelItems = [
         name: "Billing",
         path: "/settings/billing",
     },
-    // { TODO This view needs to be optimized
-    //     name: "Realtime",
-    //     path: "/settings/realtime",
-    // },
+    {
+        name: "Channels",
+        path: "/settings/channels",
+    },
 ];
 
 export default function SettingsMenu() {

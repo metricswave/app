@@ -10,7 +10,7 @@ import SignUp from "../pages/SignUp";
 import Login from "../pages/Login";
 import ForgotPassword from "../pages/ForgotPassword";
 import ResetPassword from "../pages/ResetPassword";
-import Channels from "../pages/Channels";
+import Channels from "../pages/Settings/SettingsChannels";
 import ErrorPage from "../pages/ErrorPage";
 import HistoryPage from "../pages/HistoryPage";
 import Settings from "../pages/Settings/Settings";
@@ -21,6 +21,7 @@ import Impersonate from "../pages/Impersonate";
 import { DashboardsModify } from "../components/dashboard/DashboardsModify";
 import { AuthContextProvider } from "../contexts/AuthContext";
 import TeamSettings from "../pages/Settings/TeamSettings";
+import SettingsChannels from "../pages/Settings/SettingsChannels";
 
 const ServiceConnection = lazy(() => import("../pages/ServiceConnection"));
 const InviteAccept = lazy(() => import("../pages/InviteAccept"));
@@ -41,10 +42,6 @@ export const routes: RouteObject[] = [
             {
                 path: "/",
                 element: <Dashboards />,
-            },
-            {
-                path: "/services",
-                element: <Channels />,
             },
             {
                 path: "/events",
@@ -85,6 +82,10 @@ export const routes: RouteObject[] = [
                     {
                         path: "/settings/billing",
                         element: <BillingSettings />,
+                    },
+                    {
+                        path: "/settings/channels",
+                        element: <SettingsChannels />,
                     },
                 ],
             },
