@@ -273,7 +273,7 @@ export default function TriggerForm({
 
                                 <div className="pt-3 px-4 text-sm opacity-80 pb-4">
                                     To share this event on a channel you need to create it before. You can do it in the{" "}
-                                    <LinkButton text="channels page" href="/settings/channels" />.
+                                    <LinkButton text="channels page" href="/settings/services" />.
                                 </div>
                             </div>
                         </>

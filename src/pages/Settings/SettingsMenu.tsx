@@ -19,8 +19,8 @@ const panelItems = [
         path: "/settings/billing",
     },
     {
-        name: "Channels",
-        path: "/settings/channels",
+        name: "Services",
+        path: "/settings/services",
     },
 ];
 

@@ -84,7 +84,7 @@ export const routes: RouteObject[] = [
                         element: <BillingSettings />,
                     },
                     {
-                        path: "/settings/channels",
+                        path: "/settings/services",
                         element: <SettingsChannels />,
                     },
                 ],
