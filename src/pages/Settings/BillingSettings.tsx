@@ -21,7 +21,7 @@ export default function BillingSettings() {
     const [portalLoading, setPortalLoading] = useState(false);
     const [loadingPurchase, setLoadingPurchase] = useState(false);
     const { availablePrices, loaded, purchase } = useAvailablePricesState();
-    const [period, setPeriod] = useState<"monthly" | "yearly">("monthly");
+    const [period, setPeriod] = useState<"monthly" | "yearly">("yearly");
     const { userUsage } = useUserUsageState();
     const team = currentTeam(teamState.currentTeamId!)!;
     const subscriptionType = team?.subscription_type ?? "free";
