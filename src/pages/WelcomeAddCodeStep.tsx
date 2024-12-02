@@ -2,6 +2,7 @@ import PrimaryButton from "../components/form/PrimaryButton";
 import SecondaryButton from "../components/form/SecondaryButton";
 import Logo from "../components/logo/Logo";
 import { TrackingCodeIntegrationHelper } from "../components/team/TrackingCodeIntegrationHelper";
+import { Trigger } from "../types/Trigger";
 
 export function AddCodeStep({
     triggers,
@@ -10,7 +11,7 @@ export function AddCodeStep({
     handleFinishCodeStep,
     allowSkip,
 }: {
-    triggers: import("/Users/victor.falcon/Projects/metricswave/app/src/types/Trigger").Trigger[];
+    triggers: Trigger[];
     userUsage: { usage: number };
     allowFinish: boolean;
     handleFinishCodeStep: () => void;
