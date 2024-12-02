@@ -3,16 +3,16 @@ import { useEffect, useState } from "react";
 import { addMonths, startOfMonth } from "date-fns";
 import { number_formatter } from "../../helpers/NumberFormatter";
 import { useUserUsageState } from "../../storage/UserUsage";
-import { planPrice, useAvailablePricesState } from "../../storage/AvailablePrices";
+import { useAvailablePricesState } from "../../storage/AvailablePrices";
 import LoadingPage from "../LoadingPage";
 import eventTracker from "../../helpers/EventTracker";
 import { useLocation } from "react-router-dom";
 import { portalCheckout } from "../../helpers/PortalCheckout";
 import { NoLinkButton } from "../../components/buttons/LinkButton";
-import { price_formatter } from "../../helpers/PriceFormatter";
 import { useAuthContext } from "../../contexts/AuthContext";
 import SectionContainer from "../../components/sections/SectionContainer";
 import { twMerge } from "../../helpers/TwMerge";
+import { PlanBox } from "../../components/plans/plan";
 
 export default function BillingSettings() {
     const queryParams = new URLSearchParams(useLocation().search);
@@ -202,51 +202,15 @@ export default function BillingSettings() {
                                             }
 
                                             return (
-                                                <div
-                                                    key={plan.id}
-                                                    onClick={() => {
-                                                        if (loadingPurchase) return;
-                                                        setLoadingPurchase(true);
-
-                                                        if (planPrice(plan, period) === null) {
-                                                            window.location.href = "mailto:sales@metricswave.com";
-                                                            setLoadingPurchase(false);
-                                                        } else {
-                                                            purchase(team.id, plan.id, period, user?.email);
-                                                            eventTracker.pixelEvent("InitiateCheckout");
-                                                        }
-                                                    }}
-                                                    className={[
-                                                        "flex flex-col space-y-3 border  rounded-sm p-4 w-full smooth",
-                                                        loadingPurchase ? "animate-pulse cursor-not-allowed" : "",
-                                                        "bg-zinc-100/25 dark:bg-blue-900/5 border-blue-200/50 dark:border-blue-900/50 hover:border-blue-500/70 hover:dark:border-blue-700 hover:bg-blue-100/70 dark:hover:bg-blue-900/20 cursor-pointer",
-                                                    ].join(" ")}
-                                                >
-                                                    <div className="font-bold text-blue-500">
-                                                        {plan.name} Plan &mdash;{" "}
-                                                        {planPrice(plan, period) === null
-                                                            ? "Contact Us"
-                                                            : price_formatter(planPrice(plan, period)) +
-                                                              "/" +
-                                                              (period === "monthly" ? "month" : "year")}
-                                                        {period === "yearly" &&
-                                                            (plan.name === "Business" ||
-                                                                plan.name === "Starter" ||
-                                                                plan.name === "Corporate") && (
-                                                                <span className="ml-2 text-sm">(2 months free)</span>
-                                                            )}
-                                                    </div>
-                                                    <div className="text-sm opacity-70 flex flex-col gap-2">
-                                                        {planPrice(plan, period) > 0 && <span>Cancel at any time</span>}
-                                                        <span>
-                                                            {plan.eventsLimit === null
-                                                                ? "Unlimited"
-                                                                : number_formatter(plan.eventsLimit)}{" "}
-                                                            events per month
-                                                        </span>
-                                                        <span>Unlimited data retention</span>
-                                                    </div>
-                                                </div>
+                                                <PlanBox
+                                                    plan={plan}
+                                                    loadingPurchase={loadingPurchase}
+                                                    setLoadingPurchase={setLoadingPurchase}
+                                                    period={period}
+                                                    purchase={purchase}
+                                                    team={team}
+                                                    user={user}
+                                                />
                                             );
                                         })}
                                     </>

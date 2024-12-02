@@ -3,6 +3,7 @@ import { expirableLocalStorage } from "../helpers/ExpirableLocalStorage";
 import { fetchAuthApi } from "../helpers/ApiFetcher";
 import eventTracker from "../helpers/EventTracker";
 import { TeamId } from "../types/Team";
+import { BasicPeriod } from "../types/Period";
 
 const KEY = "nw:available-plans";
 let loading = false;
@@ -19,11 +20,11 @@ export type Plan = {
     eventsLimit: number | null;
 };
 
-export function planPrice(plan: Plan, type: "monthly" | "yearly"): number {
+export function planPrice(plan: Plan, type: BasicPeriod): number {
     if (type === "monthly") {
         return plan.monthlyPrice;
     } else {
-        return plan.yearlyPrice;
+        return plan.yearlyPrice / 12;
     }
 }
 

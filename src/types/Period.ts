@@ -3,6 +3,8 @@ import format from "date-fns/format";
 
 export type Period = "day" | "7d" | "month" | "previous-month" | "30d" | "year" | "previous-year" | "12m" | "c_daily";
 
+export type BasicPeriod = "monthly" | "yearly";
+
 export type PeriodRange = { from: Date | undefined; to: Date | undefined };
 
 export const DEFAULT_PERIOD: Period = "7d";

@@ -4,17 +4,14 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import CircleArrowsIcon from "../components/icons/CircleArrowsIcon";
 import { fetchAuthApi } from "../helpers/ApiFetcher";
 import { useUserUsageState } from "../storage/UserUsage";
-import Logo from "../components/logo/Logo";
-import PrimaryButton from "../components/form/PrimaryButton";
 import { FIVE_MINUTES_SECONDS, FIVE_SECONDS, TWO_SECONDS } from "../helpers/ExpirableLocalStorage";
-import SecondaryButton from "../components/form/SecondaryButton";
 import EventTracker from "../helpers/EventTracker";
-import { DeviceName } from "../storage/DeviceName";
 import { useAuthContext } from "../contexts/AuthContext";
 import { WelcomeDomainStep } from "./WelcomeDomainStep";
-import { TrackingCodeIntegrationHelper } from "../components/team/TrackingCodeIntegrationHelper";
+import { AddCodeStep } from "./WelcomeAddCodeStep";
+import { ChoosePlanStep } from "./WelcomeChoosePlanStep";
 
-type Step = "loading" | "domain" | "add-code";
+type Step = "loading" | "domain" | "add-code" | "choose-plan";
 
 export function Welcome() {
     const navigate = useNavigate();
@@ -83,14 +80,27 @@ export function Welcome() {
         setTimeout(() => setAllowFinish(true), FIVE_MINUTES_SECONDS * 1000);
     }, []);
 
-    const handleFinish = () => {
-        EventTracker.track("675c40d3-d5c8-44df-bcb5-7882d1959e45", { step: "Welcomed", user_id: user?.email });
+    const handleFinishCodeStep = () => {
+        EventTracker.track("675c40d3-d5c8-44df-bcb5-7882d1959e45", { step: "CodeStep", user_id: user?.email });
         const referrer = localStorage.getItem("metricswave:referrer") ?? document.referrer;
         EventTracker.track("f3fcf7cc-416d-4ff9-bc12-3878e9127ff7", {
             email: user?.email,
             user_id: user?.email,
             referrer,
             step: 2,
+        });
+
+        setStep("choose-plan");
+    };
+
+    const finishChoosePlanStep = () => {
+        EventTracker.track("675c40d3-d5c8-44df-bcb5-7882d1959e45", { step: "ChoosePlanStep", user_id: user?.email });
+        const referrer = localStorage.getItem("metricswave:referrer") ?? document.referrer;
+        EventTracker.track("f3fcf7cc-416d-4ff9-bc12-3878e9127ff7", {
+            email: user?.email,
+            user_id: user?.email,
+            referrer,
+            step: 3,
         });
 
         navigate("/");
@@ -115,53 +125,17 @@ export function Welcome() {
         );
     }
 
-    return (
-        <div className="max-w-[600px] px-4 py-12 mx-auto flex flex-col space-y-14">
-            <Logo />
+    if (step === "add-code") {
+        return (
+            <AddCodeStep
+                triggers={triggers}
+                userUsage={userUsage}
+                allowFinish={allowFinish}
+                handleFinishCodeStep={handleFinishCodeStep}
+                allowSkip={allowSkip}
+            />
+        );
+    }
 
-            <div className="flex flex-col space-y-4">
-                <h2 className="text-xl sm:text-2xl">Welcome 👋!</h2>
-
-                <p className="sm:text-lg pt-3">One last step to start tracking your metrics.</p>
-
-                <p className="sm:text-lg">
-                    Integrate the tracking code on your site. There are different guides for each platform:
-                </p>
-
-                {triggers[0] !== undefined && (
-                    <TrackingCodeIntegrationHelper trigger={triggers[0]} usage={userUsage.usage} />
-                )}
-            </div>
-
-            <div>
-                <PrimaryButton
-                    onClick={() => {
-                        if (!allowFinish) {
-                            return;
-                        }
-
-                        handleFinish();
-                    }}
-                    className={[
-                        "w-full",
-                        !allowFinish
-                            ? "bg-zinc-500/20 text-zinc-400 border-zinc-300 hover:bg-zinc-500/20 hover:text-zinc-600 hover:border-zinc-700 dark:bg-zinc-500/20 dark:text-zinc-600 dark:border-zinc-700 hover:dark:bg-zinc-500/20 hover:dark:text-zinc-600 hover:dark:border-zinc-700 cursor-not-allowed"
-                            : "",
-                    ].join(" ")}
-                    text="Done →"
-                />
-
-                <SecondaryButton
-                    className={[
-                        "w-full mt-4 border-transparent shadow-none transition-all duration-300 text-sm",
-                        !allowSkip ? "opacity-0 cursor-default" : "",
-                    ].join(" ")}
-                    onClick={() => {
-                        handleFinish();
-                    }}
-                    text={"Skip for now"}
-                />
-            </div>
-        </div>
-    );
+    return <ChoosePlanStep handleFinish={finishChoosePlanStep} />;
 }
