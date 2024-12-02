@@ -31,6 +31,10 @@ export function Welcome() {
     }, [userUsage]);
 
     useEffect(() => {
+        EventTracker.track("675c40d3-d5c8-44df-bcb5-7882d1959e45", { step: "Welcomed", user_id: user?.email });
+    }, []);
+
+    useEffect(() => {
         let mappedStep = null;
         switch (step) {
             case "domain":
@@ -109,7 +113,6 @@ export function Welcome() {
     };
 
     const finishChoosePlanStep = () => {
-        EventTracker.track("675c40d3-d5c8-44df-bcb5-7882d1959e45", { step: "Welcomed", user_id: user?.email });
         EventTracker.track("9b2a395f-9344-425b-ba9b-ddd74681c2cf", {
             step: "Done",
             user_id: user?.email,
