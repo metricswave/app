@@ -81,27 +81,11 @@ export function Welcome() {
     }, []);
 
     const handleFinishCodeStep = () => {
-        EventTracker.track("675c40d3-d5c8-44df-bcb5-7882d1959e45", { step: "CodeStep", user_id: user?.email });
-        const referrer = localStorage.getItem("metricswave:referrer") ?? document.referrer;
-        EventTracker.track("f3fcf7cc-416d-4ff9-bc12-3878e9127ff7", {
-            email: user?.email,
-            user_id: user?.email,
-            referrer,
-            step: 2,
-        });
-
         setStep("choose-plan");
     };
 
     const finishChoosePlanStep = () => {
-        EventTracker.track("675c40d3-d5c8-44df-bcb5-7882d1959e45", { step: "ChoosePlanStep", user_id: user?.email });
-        const referrer = localStorage.getItem("metricswave:referrer") ?? document.referrer;
-        EventTracker.track("f3fcf7cc-416d-4ff9-bc12-3878e9127ff7", {
-            email: user?.email,
-            user_id: user?.email,
-            referrer,
-            step: 3,
-        });
+        EventTracker.track("675c40d3-d5c8-44df-bcb5-7882d1959e45", { step: "Welcomed", user_id: user?.email });
 
         navigate("/");
     };
