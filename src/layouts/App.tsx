@@ -11,6 +11,7 @@ import { useAuthContext } from "../contexts/AuthContext";
 import CircleArrowsIcon from "../components/icons/CircleArrowsIcon";
 import { TeamChooser } from "../components/team/TeamChooser";
 import { currentPathIs, currentPathStartsWith } from "../helpers/Routes";
+import EventTracker from "../helpers/EventTracker";
 
 export default function App() {
     const { isAuth } = useAuthState();
@@ -32,7 +33,7 @@ export default function App() {
         setShowLimitBanner(showLimitBanner);
 
         if (showLimitBanner) {
-            const limitType: false | "soft" | "hard" = currentTeam?.limits.soft ? "soft" : "hard";
+            const limitType: false | "soft" | "hard" = currentTeam?.limits.hard ? "hard" : "soft";
             setLimitType(limitType);
         }
     }, [currentTeam?.id]);
@@ -42,6 +43,12 @@ export default function App() {
     }
 
     if (limitType === "hard" && !currentPathStartsWith("/settings")) {
+        EventTracker.track("842e2f48-4c9f-436f-bb88-c00266496f10", {
+            message: "User limited and redirected to billing",
+            description: `User (${context.userState.user?.email}) redirected.`,
+            user: context.userState.user?.email,
+        });
+
         return <Navigate to="/settings/billing" />;
     }
 
