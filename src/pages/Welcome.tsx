@@ -113,11 +113,6 @@ export function Welcome() {
     };
 
     const finishChoosePlanStep = () => {
-        EventTracker.track("9b2a395f-9344-425b-ba9b-ddd74681c2cf", {
-            step: "Done",
-            user_id: user?.email,
-        });
-
         navigate("/");
     };
 

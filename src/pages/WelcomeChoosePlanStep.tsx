@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import PrimaryButton from "../components/form/PrimaryButton";
 import SecondaryButton from "../components/form/SecondaryButton";
 import Logo from "../components/logo/Logo";
 import { PlanBox } from "../components/plans/plan";
 import { useAuthContext } from "../contexts/AuthContext";
+import EventTracker from "../helpers/EventTracker";
 import { FIVE_SECONDS } from "../helpers/ExpirableLocalStorage";
 import { useAvailablePricesState } from "../storage/AvailablePrices";
 
@@ -55,11 +57,19 @@ export function ChoosePlanStep({ handleFinish }: Props) {
 
                             return (
                                 <PlanBox
+                                    key={`plan_${plan.id}`}
                                     plan={plan}
                                     loadingPurchase={loadingPurchase}
                                     setLoadingPurchase={setLoadingPurchase}
                                     period={period}
-                                    purchase={purchase}
+                                    purchase={(team, planId, period, email) => {
+                                        EventTracker.track("9b2a395f-9344-425b-ba9b-ddd74681c2cf", {
+                                            step: "Done",
+                                            user_id: user?.email,
+                                        });
+
+                                        purchase(team, planId, period, email);
+                                    }}
                                     team={team}
                                     user={user}
                                 />
@@ -74,9 +84,14 @@ export function ChoosePlanStep({ handleFinish }: Props) {
                         !allowSkip ? "opacity-0 cursor-default" : "",
                     ].join(" ")}
                     onClick={() => {
+                        EventTracker.track("9b2a395f-9344-425b-ba9b-ddd74681c2cf", {
+                            step: "Done",
+                            user_id: user?.email,
+                        });
+
                         handleFinish();
                     }}
-                    text={"Skip for now"}
+                    text={"Continue wihtout plan"}
                 />
             </div>
         </div>
