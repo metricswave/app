@@ -2,7 +2,6 @@ import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { money_formatter, number_formatter } from "../../helpers/NumberFormatter";
 import { percentage_diff } from "../../helpers/PercentageOf";
-import { Stats } from "../../storage/TriggerStats";
 import { Period } from "../../types/Period";
 import { Trigger } from "../../types/Trigger";
 import InputFieldBox from "../form/InputFieldBox";
@@ -44,6 +43,9 @@ export function TriggerStats({
             hideViewSwitcher={hideViewSwitcher}
             compareWithPrevious={compareWithPrevious}
             children={(stats, previousPeriodStats, data, fieldDate, setFieldDate, dateFieldType, average) => {
+                const statsData = stats(trigger.uuid);
+                const previousData = previousPeriodStats(trigger.uuid);
+
                 return (
                     <>
                         <div className="h-full flex flex-col justify-between">
@@ -65,16 +67,16 @@ export function TriggerStats({
                                 )}
                             </div>
 
-                            {stats.headers !== null && (
+                            {statsData.headers !== null && (
                                 <div className="flex flex-col sm:flex-row justify-start sm:items-center mb-10">
-                                    {Object.values(stats.headers).map((header, index) => {
-                                        const key = Object.keys(stats.headers!)[index] as
+                                    {Object.values(statsData.headers).map((header, index) => {
+                                        const key = Object.keys(statsData.headers!)[index] as
                                             | "unique"
                                             | "pageViews"
                                             | "visits"
                                             | "total_income";
-                                        const previousStatsHeaders = previousPeriodStats?.headers
-                                            ? (previousPeriodStats?.headers[key] as number)
+                                        const previousStatsHeaders = previousData?.headers
+                                            ? (previousData?.headers[key] as number)
                                             : 0;
                                         const percentageDifference = percentage_diff(header, previousStatsHeaders);
                                         const formattedHeader =
@@ -93,7 +95,7 @@ export function TriggerStats({
                                                                 pageViews: "Page views",
                                                                 visits: "Visits",
                                                                 total_income: "Total income",
-                                                            }[Object.keys(stats.headers!)[index]]
+                                                            }[Object.keys(statsData.headers!)[index]]
                                                         }
                                                     </div>
                                                 </div>

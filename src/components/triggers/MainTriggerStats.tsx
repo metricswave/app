@@ -18,9 +18,9 @@ function getGraphData(stats: Stats, previousPeriodStats: Stats, view: Period) {
 }
 
 type ChildrenFuction = (
-    stats: Stats,
-    previousPeriodStats: Stats,
-    data: { name: string; total: number }[] | undefined,
+    stats: (uuid: string) => Stats,
+    previousPeriodStats: (uuid: string) => Stats,
+    data: Data[] | undefined,
     fieldDate: string | undefined,
     setFieldDate: (date: string) => void,
     dateFieldType: "date" | "month",
@@ -40,6 +40,8 @@ type Props = {
     children: ChildrenFuction;
 };
 
+type Data = { name: string; total: number };
+
 export function MainTriggerStats({
     trigger,
     otherTriggers = null,
@@ -51,8 +53,10 @@ export function MainTriggerStats({
     children,
 }: Props): JSX.Element {
     const [period, setPeriod] = useState<Period>(defaultPeriod);
-    const { stats, previousPeriodStats, loadStats, loadPreviousPeriodStats, statsLoading } = useTriggerStatsState();
-    const [data, setData] = useState<{ name: string; total: number }[]>();
+    const { stats, previousPeriodStats, loadStats, loadPreviousPeriodStats, statsLoading } = useTriggerStatsState(
+        trigger.uuid,
+    );
+    const [data, setData] = useState<Data[]>();
     const [average, setAverage] = useState("");
     const [date, setDate] = useState<string>(defaultDate ?? calculateDefaultDateForPeriod(period));
     const [fieldDate, setFieldDate] = useState<string>();
@@ -81,7 +85,7 @@ export function MainTriggerStats({
         [trigger.id, compareWithPrevious, period, date, publicDashboard, defaultFromDate],
     );
     useEffect(() => {
-        const data = getGraphData(stats, previousPeriodStats, period);
+        const data = getGraphData(stats(trigger.uuid), previousPeriodStats(trigger.uuid), period);
         const average = data.reduce((acc, curr) => acc + curr.total, 0) / data.length;
         setData(data);
         setAverage(
@@ -91,7 +95,7 @@ export function MainTriggerStats({
                   ? money_formatter(average)
                   : number_formatter(average),
         );
-    }, [stats, previousPeriodStats, period]);
+    }, [stats(trigger.uuid), previousPeriodStats(trigger.uuid), period]);
 
     if (statsLoading) {
         return <TriggerStatsLoading />;
