@@ -30,6 +30,7 @@ type ChildrenFuction = (
 type Props = {
     title: string;
     trigger: Trigger;
+    otherTriggers?: Trigger[] | null;
     publicDashboard?: string | undefined;
     defaultPeriod: Period;
     defaultDate?: string;
@@ -41,6 +42,7 @@ type Props = {
 
 export function MainTriggerStats({
     trigger,
+    otherTriggers = null,
     publicDashboard,
     defaultPeriod,
     defaultDate,

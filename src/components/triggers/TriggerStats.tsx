@@ -12,6 +12,7 @@ import { MainTriggerStats } from "./MainTriggerStats";
 type Props = {
     title: string;
     trigger: Trigger;
+    otherTriggers?: Trigger[] | null;
     publicDashboard?: string | undefined;
     defaultPeriod: Period;
     defaultDate?: string;
@@ -23,6 +24,7 @@ type Props = {
 export function TriggerStats({
     title,
     trigger,
+    otherTriggers = null,
     publicDashboard,
     defaultPeriod,
     defaultDate,
@@ -34,6 +36,7 @@ export function TriggerStats({
         <MainTriggerStats
             title={title}
             trigger={trigger}
+            otherTriggers={otherTriggers}
             publicDashboard={publicDashboard}
             defaultPeriod={defaultPeriod}
             defaultDate={defaultDate}

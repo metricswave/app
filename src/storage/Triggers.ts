@@ -102,5 +102,6 @@ export function useTriggersState() {
             reloadTriggers(true);
         },
         triggerByUuid: (uuid: string) => triggers.find((t) => t.uuid === uuid),
+        triggersByUuids: (uuids: string[]) => uuids.map((uuid) => triggers.find((t) => t.uuid === uuid)!),
     };
 }
