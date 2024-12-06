@@ -1,7 +1,7 @@
 export const isProduction = process.env.NODE_ENV === "production";
 
 const productionPath = "https://metricswave.com";
-const developmentPath = "http://metricswave.test";
+const developmentPath = "https://metricswave.com";
 
 export const app = {
     name: "MetricsWave",

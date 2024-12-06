@@ -2,10 +2,11 @@ import InputFieldBox from "../form/InputFieldBox";
 import DropDownSelectFieldBox from "../form/DropDownSelectFieldBox";
 import { Trigger } from "../../types/Trigger";
 import PrimaryButton from "../form/PrimaryButton";
-import { useEffect, useState } from "react";
+import { EffectCallback, useEffect, useState } from "react";
 import { twMerge } from "../../helpers/TwMerge";
 import { DashboardItemSize, DashboardItemType } from "../../types/Dashboard";
 import { mapParameterName, mergeGlobalParameters } from "../../helpers/TriggerParameters";
+import { UndoIcon } from "lucide-react";
 
 type Props = {
     addButtonSize?: string;
@@ -21,6 +22,8 @@ type Props = {
     setType: (value: DashboardItemType) => void;
     parameter: string;
     setParameter: (value: string) => void;
+    otherEvents: string[];
+    setOtherEvents: (value: string[] | ((previous: string[]) => string[])) => void;
     submitButtonLabel?: string;
     submitWidgetForm: () => void;
     showTitle?: boolean;
@@ -74,6 +77,8 @@ export default function WidgetForm({
     setType,
     parameter,
     setParameter,
+    otherEvents,
+    setOtherEvents,
     submitButtonLabel = "Add Widget",
     submitWidgetForm,
     showTitle = true,
@@ -144,6 +149,16 @@ export default function WidgetForm({
                 />
 
                 <DropDownSelectFieldBox
+                    value={type}
+                    options={typesOptions}
+                    setValue={(value) => {
+                        setType(value as DashboardItemType);
+                    }}
+                    label={"Type"}
+                    name={"type"}
+                />
+
+                <DropDownSelectFieldBox
                     value={event}
                     error={eventError}
                     options={[
@@ -163,6 +178,70 @@ export default function WidgetForm({
                     name={"event"}
                 />
 
+                {type === "stats" &&
+                    otherEvents.map((event, index) => (
+                        <DropDownSelectFieldBox
+                            value={event}
+                            options={[
+                                {
+                                    value: "",
+                                    label: "Select another Event (optional)",
+                                },
+                                ...triggers.map((trigger: Trigger) => ({
+                                    value: trigger.uuid,
+                                    label: trigger.title,
+                                })),
+                            ]}
+                            setValue={(value) => {
+                                const e = otherEvents;
+                                e[index] = value as string;
+                                setOtherEvents([...e]);
+                            }}
+                            label={"Another event"}
+                            name={`another_event_${index}`}
+                            key={`another_event_${index}`}
+                        />
+                    ))}
+
+                {type === "stats" && (
+                    <DropDownSelectFieldBox
+                        value={""}
+                        options={[
+                            {
+                                value: "",
+                                label: "Select another Event (optional)",
+                            },
+                            ...triggers.map((trigger: Trigger) => ({
+                                value: trigger.uuid,
+                                label: trigger.title,
+                            })),
+                        ]}
+                        setValue={(value) => {
+                            setOtherEvents((prev) => [...prev, value as string]);
+                        }}
+                        label={"Another event"}
+                        name={`another_event_last`}
+                        key={`another_event_last`}
+                    />
+                )}
+
+                {type === "parameter" &&
+                    selectedTrigger?.configuration.fields.parameters !== undefined &&
+                    selectedTrigger?.configuration.fields.parameters.length > 0 && (
+                        <DropDownSelectFieldBox
+                            value={parameter}
+                            options={parameters.map((parameter) => ({
+                                value: parameter,
+                                label: mapParameterName(parameter),
+                            }))}
+                            setValue={(value) => {
+                                setParameter(value as string);
+                            }}
+                            label={"Parameter"}
+                            name={"parameter"}
+                        />
+                    )}
+
                 <DropDownSelectFieldBox
                     value={size}
                     options={[
@@ -181,33 +260,6 @@ export default function WidgetForm({
                     label={"Size"}
                     name={"size"}
                 />
-
-                <DropDownSelectFieldBox
-                    value={type}
-                    options={typesOptions}
-                    setValue={(value) => {
-                        setType(value as DashboardItemType);
-                    }}
-                    label={"Type"}
-                    name={"type"}
-                />
-
-                {type === "parameter" &&
-                    selectedTrigger?.configuration.fields.parameters !== undefined &&
-                    selectedTrigger?.configuration.fields.parameters.length > 0 && (
-                        <DropDownSelectFieldBox
-                            value={parameter}
-                            options={parameters.map((parameter) => ({
-                                value: parameter,
-                                label: mapParameterName(parameter),
-                            }))}
-                            setValue={(value) => {
-                                setParameter(value as string);
-                            }}
-                            label={"Parameter"}
-                            name={"parameter"}
-                        />
-                    )}
 
                 <PrimaryButton text={submitButtonLabel} onClick={handleSubmitWidgetForm} />
             </div>
