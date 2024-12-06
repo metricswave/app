@@ -46,6 +46,8 @@ export function TriggerStats({
                 const statsData = stats(trigger.uuid);
                 const previousData = previousPeriodStats(trigger.uuid);
 
+                console.log({ data });
+
                 return (
                     <>
                         <div className="h-full flex flex-col justify-between">
@@ -228,6 +230,7 @@ export function TriggerStats({
                                         }}
                                     />
                                     <YAxis
+                                        dataKey="total"
                                         stroke="#888888"
                                         fontSize={12}
                                         tickLine={false}

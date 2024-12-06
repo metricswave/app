@@ -38,11 +38,9 @@ export function TriggerNumberStats({
             defaultFromDate={defaultFromDate}
             hideViewSwitcher={hideViewSwitcher}
             compareWithPrevious={compareWithPrevious}
-            children={(stats, previousPeriodStats, data, fieldDate, setFieldDate, dateFieldType, average) => {
+            children={(stats, previousPeriodStats, _, fieldDate, setFieldDate, dateFieldType, average) => {
                 const statsData = stats(trigger.uuid);
                 const previousStatsData = previousPeriodStats(trigger.uuid);
-
-                console.log({ statsData, previousStatsData });
 
                 const totalNumber = (statsData.plot ?? []).reduce((acc, { score }) => acc + score, 0);
                 const formattedTotalNumber =
