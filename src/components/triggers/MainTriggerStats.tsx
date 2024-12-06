@@ -77,6 +77,13 @@ export function MainTriggerStats({
         () => loadStats(trigger, period, date, publicDashboard, defaultFromDate),
         [trigger.id, period, date, publicDashboard, defaultFromDate],
     );
+
+    useEffect(() => {
+        otherTriggers?.forEach((t) => {
+            loadStats(t, period, date, publicDashboard, defaultFromDate);
+        });
+    }, [...(otherTriggers ?? []).map((t) => t.id), period, date, publicDashboard, defaultFromDate]);
+
     useEffect(
         () =>
             compareWithPrevious
@@ -84,8 +91,25 @@ export function MainTriggerStats({
                 : undefined,
         [trigger.id, compareWithPrevious, period, date, publicDashboard, defaultFromDate],
     );
+
+    useEffect(
+        () =>
+            compareWithPrevious
+                ? otherTriggers?.forEach((t) => {
+                      loadPreviousPeriodStats(t, period, date, publicDashboard, defaultFromDate);
+                  })
+                : undefined,
+        [...(otherTriggers ?? []).map((t) => t.id), period, date, publicDashboard, defaultFromDate],
+    );
+
     useEffect(() => {
         const data = getGraphData(stats(trigger.uuid), previousPeriodStats(trigger.uuid), period);
+
+        otherTriggers?.forEach((t) => {
+            const d = getGraphData(stats(t.uuid), previousPeriodStats(t.uuid), period);
+            console.log({ d });
+        });
+
         const average = data.reduce((acc, curr) => acc + curr.total, 0) / data.length;
         setData(data);
         setAverage(
@@ -95,7 +119,13 @@ export function MainTriggerStats({
                   ? money_formatter(average)
                   : number_formatter(average),
         );
-    }, [stats(trigger.uuid), previousPeriodStats(trigger.uuid), period]);
+    }, [
+        stats(trigger.uuid),
+        previousPeriodStats(trigger.uuid),
+        period,
+        ...(otherTriggers ?? []).map((t) => t.id),
+        // ...(otherTriggers ?? []).map((t) => stats(t.uuid)),
+    ]);
 
     if (statsLoading) {
         return <TriggerStatsLoading />;

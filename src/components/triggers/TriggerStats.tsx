@@ -46,7 +46,7 @@ export function TriggerStats({
                 const statsData = stats(trigger.uuid);
                 const previousData = previousPeriodStats(trigger.uuid);
 
-                console.log({ data });
+                if (trigger.uuid === "f41ff0fd-4475-499c-b086-82d6012bbf16") console.log({ data });
 
                 return (
                     <>
