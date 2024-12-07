@@ -21,6 +21,11 @@ const getColor = (i: number, previous: boolean = false): string => {
     return COLORS[i % COLORS.length];
 };
 
+const graphType = (type: string): "step" | "monotone" => {
+    console.log({ type });
+    return type === "visits" ? "monotone" : "step";
+};
+
 type Props = {
     title: string;
     trigger: Trigger;
@@ -267,13 +272,13 @@ export function TriggerStats({
                                             {compareWithPrevious && (
                                                 <Area
                                                     dataKey={`previous_${t.id}`}
-                                                    type={"step"}
+                                                    type={graphType(t.configuration.type)}
                                                     stroke={getColor(i, true)}
                                                     fill={`url(#colorPrevious${t.id})`}
                                                 />
                                             )}
                                             <Area
-                                                type={"step"}
+                                                type={graphType(t.configuration.type)}
                                                 dataKey={`total_${t.id}`}
                                                 stroke={getColor(i)}
                                                 fill={`url(#colorCurrent${t.id})`}
@@ -283,15 +288,14 @@ export function TriggerStats({
                                     {compareWithPrevious && (
                                         <Area
                                             dataKey="previous"
-                                            type="monotone"
+                                            type={graphType(trigger.configuration.type)}
                                             stroke={PREVIOUS_MAIN_COLOR}
                                             fill="url(#colorPrevious)"
                                         />
                                     )}
                                     <Area
                                         dataKey="total"
-                                        fontSize={12}
-                                        type="monotone"
+                                        type={graphType(trigger.configuration.type)}
                                         stroke={MAIN_COLOR}
                                         fill="url(#colorCurrent)"
                                     />
