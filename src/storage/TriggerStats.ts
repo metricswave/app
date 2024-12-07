@@ -79,7 +79,7 @@ type StatsState = {
     statsLoading: boolean;
 };
 
-export function useTriggerStatsState(uuid: string): StatsState {
+export function useTriggerStatsState(uuid: string = ""): StatsState {
     const defaultState: StatsData = { headers: null, plot: [] };
     const stateFor = (uuid: string, state: StatsData = defaultState): Stats => {
         return { ...state, triggerUuid: uuid };

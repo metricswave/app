@@ -40,7 +40,13 @@ type Props = {
     children: ChildrenFuction;
 };
 
-type Data = { name: string; total: number };
+type Data = {
+    name: string;
+    total: number;
+    previous: number;
+    previousName: string;
+    [key: string]: string | number;
+};
 
 export function MainTriggerStats({
     trigger,
@@ -80,6 +86,7 @@ export function MainTriggerStats({
 
     useEffect(() => {
         otherTriggers?.forEach((t) => {
+            console.log("loading other trigger with " + t.uuid);
             loadStats(t, period, date, publicDashboard, defaultFromDate);
         });
     }, [...(otherTriggers ?? []).map((t) => t.id), period, date, publicDashboard, defaultFromDate]);
@@ -103,11 +110,12 @@ export function MainTriggerStats({
     );
 
     useEffect(() => {
-        const data = getGraphData(stats(trigger.uuid), previousPeriodStats(trigger.uuid), period);
+        let data = getGraphData(stats(trigger.uuid), previousPeriodStats(trigger.uuid), period);
 
         otherTriggers?.forEach((t) => {
             const d = getGraphData(stats(t.uuid), previousPeriodStats(t.uuid), period);
-            console.log({ d });
+            data = mergeData(data, d, t);
+            console.log({ data, d });
         });
 
         const average = data.reduce((acc, curr) => acc + curr.total, 0) / data.length;
@@ -120,11 +128,11 @@ export function MainTriggerStats({
                   : number_formatter(average),
         );
     }, [
-        stats(trigger.uuid),
-        previousPeriodStats(trigger.uuid),
+        stats(trigger.uuid).plot.length,
+        previousPeriodStats(trigger.uuid).plot.length,
         period,
-        ...(otherTriggers ?? []).map((t) => t.id),
-        // ...(otherTriggers ?? []).map((t) => stats(t.uuid)),
+        ...(otherTriggers ?? []).map((t) => stats(t.uuid).plot.length),
+        ...(otherTriggers ?? []).map((t) => previousPeriodStats(t.uuid).plot.length),
     ]);
 
     if (statsLoading) {
@@ -132,4 +140,22 @@ export function MainTriggerStats({
     }
 
     return children(stats, previousPeriodStats, data, fieldDate, setFieldDate, dateFieldType, average);
+}
+
+function mergeData(data: Data[], d: Data[], trigger: Trigger): Data[] {
+    return data.map((item) => {
+        const i = d.find((d) => d.name === item.name);
+
+        return {
+            ...item,
+            ...(i !== undefined
+                ? {
+                      [`name_${trigger.id}`]: i.name,
+                      [`total_${trigger.id}`]: i.total,
+                      [`previousName_${trigger.id}`]: i.previousName,
+                      [`previous_${trigger.id}`]: i.previous,
+                  }
+                : {}),
+        };
+    });
 }
