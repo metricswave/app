@@ -110,12 +110,10 @@ export function useTriggerStatsState(uuid: string = ""): StatsState {
         publicDashboard: string | undefined,
         fromDate: string | undefined,
     ) => {
-        const key = `trigger-graph-stats-${trigger.uuid}-${period}-${date ?? ""}-${fromDate ?? ""}`;
+        const key = `trigger-graph-stats-v2-${trigger.uuid}-${period}-${date ?? ""}-${fromDate ?? ""}`;
 
         if (publicDashboard === undefined) {
-            let value = current
-                ? expirableLocalStorage.get(key, defaultState)
-                : expirableLocalStorage.get(key, defaultState);
+            let value = expirableLocalStorage.get(key, stateFor(trigger.uuid));
 
             if (Array.isArray(value)) {
                 current ? setStats(value) : setPreviousPeriodStats(value);
@@ -126,11 +124,11 @@ export function useTriggerStatsState(uuid: string = ""): StatsState {
 
         const methods = {
             success: (data: ApiResponse<StatsData>) => {
-                if (publicDashboard === undefined) {
-                    expirableLocalStorage.set(key, data.data, FIVE_SECONDS);
-                }
-
                 const parsedData = stateFor(trigger.uuid, parseDataForType(data.data, trigger.configuration.type));
+
+                if (publicDashboard === undefined) {
+                    expirableLocalStorage.set(key, parsedData, FIVE_SECONDS);
+                }
 
                 updateOrSetStats(parsedData, current);
                 current ? setStatsLoading(false) : setPreviousStatsLoading(false);
