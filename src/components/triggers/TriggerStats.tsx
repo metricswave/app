@@ -1,4 +1,5 @@
 import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons";
+import { Fragment } from "react";
 import { Area, AreaChart, Bar, ComposedChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { long_number_formatter, money_formatter, number_formatter } from "../../helpers/NumberFormatter";
 import { percentage_diff } from "../../helpers/PercentageOf";
@@ -22,7 +23,6 @@ const getColor = (i: number, previous: boolean = false): string => {
 };
 
 const graphType = (type: string): "step" | "monotone" => {
-    console.log({ type });
     return type === "visits" ? "monotone" : "step";
 };
 
@@ -223,8 +223,8 @@ export function TriggerStats({
                                                             )}
                                                         </p>
 
-                                                        {items.map((i) => (
-                                                            <p className="flex gap-3 justify-between">
+                                                        {items.map((i, index) => (
+                                                            <p key={i.name} className="flex gap-3 justify-between">
                                                                 <span
                                                                     className={`${i.previous ? "opacity-50 pl-0.5" : "opacity-75"}`}
                                                                 >
@@ -268,9 +268,10 @@ export function TriggerStats({
                                         }}
                                     />
                                     {(otherTriggers ?? []).map((t, i) => (
-                                        <>
+                                        <Fragment key={`area_wrapper_${t.id}`}>
                                             {compareWithPrevious && (
                                                 <Area
+                                                    key={`previous_area_${t.id}`}
                                                     dataKey={`previous_${t.id}`}
                                                     type={graphType(t.configuration.type)}
                                                     stroke={getColor(i, true)}
@@ -278,16 +279,18 @@ export function TriggerStats({
                                                 />
                                             )}
                                             <Area
+                                                key={`total_area_${t.id}`}
                                                 type={graphType(t.configuration.type)}
                                                 dataKey={`total_${t.id}`}
                                                 stroke={getColor(i)}
                                                 fill={`url(#colorCurrent${t.id})`}
                                             />
-                                        </>
+                                        </Fragment>
                                     ))}
                                     {compareWithPrevious && (
                                         <Area
                                             dataKey="previous"
+                                            key={`previous_area_${trigger.id}`}
                                             type={graphType(trigger.configuration.type)}
                                             stroke={PREVIOUS_MAIN_COLOR}
                                             fill="url(#colorPrevious)"
@@ -295,6 +298,7 @@ export function TriggerStats({
                                     )}
                                     <Area
                                         dataKey="total"
+                                        key={`total_area_${trigger.id}`}
                                         type={graphType(trigger.configuration.type)}
                                         stroke={MAIN_COLOR}
                                         fill="url(#colorCurrent)"
@@ -327,8 +331,9 @@ export function TriggerStats({
                                             </linearGradient>
                                         )}
                                         {(otherTriggers ?? []).map((t, i) => (
-                                            <>
+                                            <Fragment key={`linarWrapper_${t.id}`}>
                                                 <linearGradient
+                                                    key={`linearGradient_colorCurrent${t.id}`}
                                                     id={`colorCurrent${t.id}`}
                                                     x1="0"
                                                     y1="0"
@@ -342,6 +347,7 @@ export function TriggerStats({
                                                 </linearGradient>
                                                 {compareWithPrevious && (
                                                     <linearGradient
+                                                        key={`linearGradient_colorPrevious${t.id}`}
                                                         id={`colorPrevious${t.id}`}
                                                         x1="0"
                                                         y1="0"
@@ -362,7 +368,7 @@ export function TriggerStats({
                                                         />
                                                     </linearGradient>
                                                 )}
-                                            </>
+                                            </Fragment>
                                         ))}
                                     </defs>
                                 </ComposedChart>
