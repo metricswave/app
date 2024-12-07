@@ -86,7 +86,6 @@ export function MainTriggerStats({
 
     useEffect(() => {
         otherTriggers?.forEach((t) => {
-            console.log("loading other trigger with " + t.uuid);
             loadStats(t, period, date, publicDashboard, defaultFromDate);
         });
     }, [...(otherTriggers ?? []).map((t) => t.id), period, date, publicDashboard, defaultFromDate]);
@@ -115,7 +114,6 @@ export function MainTriggerStats({
         otherTriggers?.forEach((t) => {
             const d = getGraphData(stats(t.uuid), previousPeriodStats(t.uuid), period);
             data = mergeData(data, d, t);
-            console.log({ data, d });
         });
 
         const average = data.reduce((acc, curr) => acc + curr.total, 0) / data.length;
