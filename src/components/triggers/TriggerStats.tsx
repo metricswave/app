@@ -1,7 +1,12 @@
 import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons";
 import { Fragment } from "react";
 import { Area, AreaChart, Bar, ComposedChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { long_number_formatter, money_formatter, number_formatter } from "../../helpers/NumberFormatter";
+import {
+    amount_from_cents,
+    long_number_formatter,
+    money_formatter,
+    number_formatter,
+} from "../../helpers/NumberFormatter";
 import { percentage_diff } from "../../helpers/PercentageOf";
 import { Period } from "../../types/Period";
 import { Trigger } from "../../types/Trigger";
@@ -22,8 +27,25 @@ const getColor = (i: number, previous: boolean = false): string => {
     return COLORS[i % COLORS.length];
 };
 
-const graphType = (type: string): "step" | "monotone" => {
-    return type === "visits" ? "monotone" : "step";
+type CHAR_TYPES =
+    | "basis"
+    | "basisClosed"
+    | "basisOpen"
+    | "bumpX"
+    | "bumpY"
+    | "bump"
+    | "linear"
+    | "linearClosed"
+    | "natural"
+    | "monotoneX"
+    | "monotoneY"
+    | "monotone"
+    | "step"
+    | "stepBefore"
+    | "stepAfter";
+
+const graphType = (type: string): CHAR_TYPES => {
+    return type === "visits" ? "bump" : "step";
 };
 
 type Props = {
@@ -66,6 +88,19 @@ export function TriggerStats({
 
                 const statsDataMaxValue = Math.max(...statsData.plot.map((c) => c.score));
                 const previousStasDataMaxValue = Math.max(...previousData.plot.map((c) => c.score));
+
+                const maxYAxisValue = Math.max(
+                    ...[trigger, ...(otherTriggers ?? [])]
+                        .map((t) => [
+                            ...stats(t.uuid).plot.map((c) =>
+                                t.configuration.type === "money_income" ? amount_from_cents(c.score) : c.score,
+                            ),
+                            ...previousPeriodStats(t.uuid).plot.map((c) =>
+                                t.configuration.type === "money_income" ? amount_from_cents(c.score) : c.score,
+                            ),
+                        ])
+                        .flat(),
+                );
 
                 const yAxisKey = statsDataMaxValue > previousStasDataMaxValue ? "total" : "previous";
 
@@ -179,7 +214,7 @@ export function TriggerStats({
                                             const score = (payload?.[0]?.payload.total ?? 0) as number;
                                             let scoreString = number_formatter(score, { maximumFractionDigits: 0 });
                                             if (trigger.configuration.type === "money_income") {
-                                                scoreString = money_formatter(score);
+                                                scoreString = money_formatter(score * 100);
                                             }
                                             items.push({ name: trigger.title, score: scoreString });
 
@@ -188,7 +223,7 @@ export function TriggerStats({
                                                 let scoreString =
                                                     trigger.configuration.type !== "money_income"
                                                         ? number_formatter(score, { maximumFractionDigits: 0 })
-                                                        : money_formatter(score);
+                                                        : money_formatter(score * 100);
                                                 items.push({ name: "↳", score: scoreString, previous: true });
                                             }
 
@@ -197,7 +232,7 @@ export function TriggerStats({
                                                 let scoreString =
                                                     t.configuration.type !== "money_income"
                                                         ? number_formatter(score, { maximumFractionDigits: 0 })
-                                                        : money_formatter(score);
+                                                        : money_formatter(score * 100);
                                                 items.push({ name: t.title, score: scoreString });
 
                                                 if (compareWithPrevious) {
@@ -206,7 +241,7 @@ export function TriggerStats({
                                                     let scoreString =
                                                         t.configuration.type !== "money_income"
                                                             ? number_formatter(score, { maximumFractionDigits: 0 })
-                                                            : money_formatter(score);
+                                                            : money_formatter(score * 100);
                                                     items.push({ name: "↳", score: scoreString, previous: true });
                                                 }
                                             });
@@ -224,7 +259,10 @@ export function TriggerStats({
                                                         </p>
 
                                                         {items.map((i, index) => (
-                                                            <p key={i.name} className="flex gap-3 justify-between">
+                                                            <p
+                                                                key={index + i.name}
+                                                                className="flex gap-3 justify-between"
+                                                            >
                                                                 <span
                                                                     className={`${i.previous ? "opacity-50 pl-0.5" : "opacity-75"}`}
                                                                 >
@@ -241,6 +279,7 @@ export function TriggerStats({
                                     />
                                     <YAxis
                                         dataKey={yAxisKey}
+                                        domain={[0, maxYAxisValue + 10]}
                                         stroke="#888888"
                                         fontSize={12}
                                         tickLine={false}

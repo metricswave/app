@@ -1,7 +1,7 @@
 import { Trigger } from "../../types/Trigger";
 import { Stats, useTriggerStatsState } from "../../storage/TriggerStats";
 import { useEffect, useState } from "react";
-import { money_formatter, number_formatter } from "../../helpers/NumberFormatter";
+import { amount_from_cents, money_formatter, number_formatter } from "../../helpers/NumberFormatter";
 import { calculateDefaultDateForPeriod, fieldTypeForPeriod, Period } from "../../types/Period";
 import { TriggerStatsLoading } from "./TriggerStatsLoading";
 
@@ -149,9 +149,11 @@ function mergeData(data: Data[], d: Data[], trigger: Trigger): Data[] {
             ...(i !== undefined
                 ? {
                       [`name_${trigger.id}`]: i.name,
-                      [`total_${trigger.id}`]: i.total,
+                      [`total_${trigger.id}`]:
+                          trigger.configuration.type === "money_income" ? amount_from_cents(i.total) : i.total,
                       [`previousName_${trigger.id}`]: i.previousName,
-                      [`previous_${trigger.id}`]: i.previous,
+                      [`previous_${trigger.id}`]:
+                          trigger.configuration.type === "money_income" ? amount_from_cents(i.previous) : i.previous,
                   }
                 : {}),
         };
