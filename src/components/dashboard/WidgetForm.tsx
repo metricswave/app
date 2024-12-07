@@ -203,7 +203,7 @@ export default function WidgetForm({
                         />
                     ))}
 
-                {type === "stats" && (
+                {type === "stats" && otherEvents.length === 0 && (
                     <DropDownSelectFieldBox
                         value={""}
                         options={[

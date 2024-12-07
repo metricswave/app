@@ -226,7 +226,7 @@ function SortableItemView({
                     {open && (
                         <>
                             <li onClick={() => setOpen(0)} className="cursor-pointer">
-                                <div className="text-sm smooth-all p-1.5 rounded bg-red-50/50 hover:bg-red-100">
+                                <div className="text-sm smooth-all p-1.5 rounded bg-red-50/50 hover:bg-red-100 dark:bg-red-900/25 hover:dark:bg-red-900/50">
                                     <Cross1Icon className="text-red-500 w-3.5 h-auto" />
                                 </div>
                             </li>
