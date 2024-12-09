@@ -38,7 +38,7 @@ export function TriggerParamsStats({
     hideParameterChooser = false,
     compareWithPrevious = false,
 }: Props) {
-    const params = mergeGlobalParameters(trigger.configuration.fields["parameters"] as string[]).filter(
+    const params = mergeGlobalParameters((trigger.configuration.fields["parameters"]) as string[]).filter(
         (param) => !(param === "amount" && trigger.configuration.type === "money_income"),
     );
     const [parameter, setParameter] = useState<string>(defaultParameter ?? params[0]);

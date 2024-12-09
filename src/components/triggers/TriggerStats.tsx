@@ -1,17 +1,57 @@
 import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons";
-import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { money_formatter, number_formatter } from "../../helpers/NumberFormatter";
+import { Fragment } from "react";
+import { Area, AreaChart, Bar, ComposedChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import {
+    amount_from_cents,
+    long_number_formatter,
+    money_formatter,
+    number_formatter,
+} from "../../helpers/NumberFormatter";
 import { percentage_diff } from "../../helpers/PercentageOf";
-import { Stats } from "../../storage/TriggerStats";
 import { Period } from "../../types/Period";
 import { Trigger } from "../../types/Trigger";
 import InputFieldBox from "../form/InputFieldBox";
 import PageTitle from "../sections/PageTitle";
 import { MainTriggerStats } from "./MainTriggerStats";
 
+const MAIN_COLOR = "#3b82f6";
+const COLORS = ["#ec4899", "#22c55e", "#f97316", "#ef4444", "#a855f7"];
+const PREVIOUS_MAIN_COLOR = "#93c5fd";
+const PREVIOUS_COLORS = ["#f9a8d4", "#86efac", "#fdba74", "#ef4444", "#a855f7"];
+
+const getColor = (i: number, previous: boolean = false): string => {
+    if (previous) {
+        return PREVIOUS_COLORS[i % PREVIOUS_COLORS.length];
+    }
+
+    return COLORS[i % COLORS.length];
+};
+
+type CHAR_TYPES =
+    | "basis"
+    | "basisClosed"
+    | "basisOpen"
+    | "bumpX"
+    | "bumpY"
+    | "bump"
+    | "linear"
+    | "linearClosed"
+    | "natural"
+    | "monotoneX"
+    | "monotoneY"
+    | "monotone"
+    | "step"
+    | "stepBefore"
+    | "stepAfter";
+
+const graphType = (type: string): CHAR_TYPES => {
+    return type === "visits" ? "bump" : "step";
+};
+
 type Props = {
     title: string;
     trigger: Trigger;
+    otherTriggers?: Trigger[] | null;
     publicDashboard?: string | undefined;
     defaultPeriod: Period;
     defaultDate?: string;
@@ -23,6 +63,7 @@ type Props = {
 export function TriggerStats({
     title,
     trigger,
+    otherTriggers = null,
     publicDashboard,
     defaultPeriod,
     defaultDate,
@@ -34,6 +75,7 @@ export function TriggerStats({
         <MainTriggerStats
             title={title}
             trigger={trigger}
+            otherTriggers={otherTriggers}
             publicDashboard={publicDashboard}
             defaultPeriod={defaultPeriod}
             defaultDate={defaultDate}
@@ -41,6 +83,27 @@ export function TriggerStats({
             hideViewSwitcher={hideViewSwitcher}
             compareWithPrevious={compareWithPrevious}
             children={(stats, previousPeriodStats, data, fieldDate, setFieldDate, dateFieldType, average) => {
+                const statsData = stats(trigger.uuid);
+                const previousData = previousPeriodStats(trigger.uuid);
+
+                const statsDataMaxValue = Math.max(...statsData.plot.map((c) => c.score));
+                const previousStasDataMaxValue = Math.max(...previousData.plot.map((c) => c.score));
+
+                const maxYAxisValue = Math.max(
+                    ...[trigger, ...(otherTriggers ?? [])]
+                        .map((t) => [
+                            ...stats(t.uuid).plot.map((c) =>
+                                t.configuration.type === "money_income" ? amount_from_cents(c.score) : c.score,
+                            ),
+                            ...previousPeriodStats(t.uuid).plot.map((c) =>
+                                t.configuration.type === "money_income" ? amount_from_cents(c.score) : c.score,
+                            ),
+                        ])
+                        .flat(),
+                );
+
+                const yAxisKey = statsDataMaxValue > previousStasDataMaxValue ? "total" : "previous";
+
                 return (
                     <>
                         <div className="h-full flex flex-col justify-between">
@@ -62,16 +125,16 @@ export function TriggerStats({
                                 )}
                             </div>
 
-                            {stats.headers !== null && (
+                            {statsData.headers !== null && (
                                 <div className="flex flex-col sm:flex-row justify-start sm:items-center mb-10">
-                                    {Object.values(stats.headers).map((header, index) => {
-                                        const key = Object.keys(stats.headers!)[index] as
+                                    {Object.values(statsData.headers).map((header, index) => {
+                                        const key = Object.keys(statsData.headers!)[index] as
                                             | "unique"
                                             | "pageViews"
                                             | "visits"
                                             | "total_income";
-                                        const previousStatsHeaders = previousPeriodStats?.headers
-                                            ? (previousPeriodStats?.headers[key] as number)
+                                        const previousStatsHeaders = previousData?.headers
+                                            ? (previousData?.headers[key] as number)
                                             : 0;
                                         const percentageDifference = percentage_diff(header, previousStatsHeaders);
                                         const formattedHeader =
@@ -90,7 +153,7 @@ export function TriggerStats({
                                                                 pageViews: "Page views",
                                                                 visits: "Visits",
                                                                 total_income: "Total income",
-                                                            }[Object.keys(stats.headers!)[index]]
+                                                            }[Object.keys(statsData.headers!)[index]]
                                                         }
                                                     </div>
                                                 </div>
@@ -123,89 +186,110 @@ export function TriggerStats({
                             )}
 
                             <ResponsiveContainer width="100%" height={400}>
-                                <AreaChart data={data}>
+                                <ComposedChart data={data}>
                                     <Tooltip
                                         cursor={{ fill: "#ffffff", opacity: "0.05" }}
                                         content={({ payload, label }) => {
-                                            const date = new Date((payload?.[0]?.payload?.name ?? "") as string);
+                                            const date = new Date((label ?? "") as string);
                                             const formattedDate = date.toLocaleDateString(undefined, {
                                                 month: "short",
                                                 day: "numeric",
                                             });
 
-                                            const score = (payload?.[0]?.value ?? 0) as number;
+                                            const previousDate = new Date(
+                                                (payload?.[0]?.payload.previousName ?? "") as string,
+                                            );
+                                            const previousFormattedDate = previousDate.toLocaleDateString(undefined, {
+                                                month: "short",
+                                                day: "numeric",
+                                            });
 
+                                            const items: {
+                                                name: string;
+                                                score: string;
+                                                previous?: true | undefined;
+                                            }[] = [];
+
+                                            // Main trigger number
+                                            const score = (payload?.[0]?.payload.total ?? 0) as number;
                                             let scoreString = number_formatter(score, { maximumFractionDigits: 0 });
                                             if (trigger.configuration.type === "money_income") {
-                                                scoreString = money_formatter(score);
+                                                scoreString = money_formatter(score * 100);
                                             }
+                                            items.push({ name: trigger.title, score: scoreString });
 
                                             if (compareWithPrevious) {
-                                                const previousDate = new Date(
-                                                    (payload?.[1]?.payload?.previousName ?? "") as string,
-                                                );
-                                                const formattedPreciousDate = previousDate.toLocaleDateString(
-                                                    undefined,
-                                                    {
-                                                        month: "short",
-                                                        day: "numeric",
-                                                    },
-                                                );
-
-                                                const previousScore = (payload?.[1]?.value ?? 0) as number;
-                                                const previousScoreString = number_formatter(previousScore, {
-                                                    maximumFractionDigits: 0,
-                                                });
-
-                                                const diffPercentage = ((score - previousScore) / previousScore) * 100;
-
-                                                return (
-                                                    <>
-                                                        <div className="bg-white dark:bg-zinc-900 p-2 shadow rounded-sm text-sm">
-                                                            <p className="flex flex-row justify-between gap-2">
-                                                                <span className="opacity-75">{formattedDate}</span>
-                                                                <span className="font-bold min-w-[60px] text-right">
-                                                                    {scoreString}
-                                                                </span>
-                                                            </p>
-                                                            <p className="flex flex-row justify-between gap-2">
-                                                                <span className="opacity-75">
-                                                                    {formattedPreciousDate}
-                                                                </span>
-                                                                <span className="font-bold min-w-[60px] text-right">
-                                                                    {previousScoreString}
-                                                                </span>
-                                                            </p>
-                                                            <p className="flex flex-row justify-between gap-2">
-                                                                <span></span>
-                                                                <div className="flex flex-row gap-0.5 justify-end items-center font-bold min-w-[60px] text-right">
-                                                                    {diffPercentage >= 0 && (
-                                                                        <ArrowUpIcon className="text-green-500" />
-                                                                    )}
-                                                                    {diffPercentage < 0 && (
-                                                                        <ArrowDownIcon className="text-red-500" />
-                                                                    )}
-                                                                    {number_formatter(diffPercentage, {
-                                                                        maximumFractionDigits: 0,
-                                                                    })}
-                                                                    %
-                                                                </div>
-                                                            </p>
-                                                        </div>
-                                                    </>
-                                                );
+                                                const score = (payload?.[0]?.payload.previous ?? 0) as number;
+                                                let scoreString =
+                                                    trigger.configuration.type !== "money_income"
+                                                        ? number_formatter(score, { maximumFractionDigits: 0 })
+                                                        : money_formatter(score * 100);
+                                                items.push({ name: "↳", score: scoreString, previous: true });
                                             }
+
+                                            otherTriggers?.forEach((t) => {
+                                                const score = (payload?.[0]?.payload[`total_${t.id}`] ?? 0) as number;
+                                                let scoreString =
+                                                    t.configuration.type !== "money_income"
+                                                        ? number_formatter(score, { maximumFractionDigits: 0 })
+                                                        : money_formatter(score * 100);
+                                                items.push({ name: t.title, score: scoreString });
+
+                                                if (compareWithPrevious) {
+                                                    const score = (payload?.[0]?.payload[`previous_${t.id}`] ??
+                                                        0) as number;
+                                                    let scoreString =
+                                                        t.configuration.type !== "money_income"
+                                                            ? number_formatter(score, { maximumFractionDigits: 0 })
+                                                            : money_formatter(score * 100);
+                                                    items.push({ name: "↳", score: scoreString, previous: true });
+                                                }
+                                            });
 
                                             return (
                                                 <>
                                                     <div className="bg-white dark:bg-zinc-900 p-2 shadow rounded-sm text-sm">
-                                                        <p>
-                                                            <span className="opacity-75">{formattedDate}:</span>
-                                                            <span className="font-bold">{scoreString}</span>
+                                                        <p className="flex gap-3 pb-2 justify-between">
+                                                            <span className="font-bold">{formattedDate}</span>
+                                                            {compareWithPrevious && (
+                                                                <span className="font-bold opacity-75">
+                                                                    → {previousFormattedDate}
+                                                                </span>
+                                                            )}
                                                         </p>
+
+                                                        {items.map((i, index) => (
+                                                            <p
+                                                                key={index + i.name}
+                                                                className="flex gap-3 justify-between"
+                                                            >
+                                                                <span
+                                                                    className={`${i.previous ? "opacity-50 pl-0.5" : "opacity-75"}`}
+                                                                >
+                                                                    {i.name}
+                                                                    {i.previous === undefined ? ":" : ""}
+                                                                </span>
+                                                                <span className="font-bold">{i.score}</span>
+                                                            </p>
+                                                        ))}
                                                     </div>
                                                 </>
                                             );
+                                        }}
+                                    />
+                                    <YAxis
+                                        dataKey={yAxisKey}
+                                        domain={[0, maxYAxisValue + 10]}
+                                        stroke="#888888"
+                                        fontSize={12}
+                                        tickLine={false}
+                                        axisLine={false}
+                                        tickFormatter={(value) => {
+                                            if (trigger.configuration.type === "money_income") {
+                                                return money_formatter(value);
+                                            }
+
+                                            return long_number_formatter(value);
                                         }}
                                     />
                                     <XAxis
@@ -222,18 +306,41 @@ export function TriggerStats({
                                             });
                                         }}
                                     />
-                                    <YAxis
-                                        stroke="#888888"
-                                        fontSize={12}
-                                        tickLine={false}
-                                        axisLine={false}
-                                        tickFormatter={(value) => {
-                                            if (trigger.configuration.type === "money_income") {
-                                                return money_formatter(value);
-                                            }
-
-                                            return number_formatter(value);
-                                        }}
+                                    {(otherTriggers ?? []).map((t, i) => (
+                                        <Fragment key={`area_wrapper_${t.id}`}>
+                                            {compareWithPrevious && (
+                                                <Area
+                                                    key={`previous_area_${t.id}`}
+                                                    dataKey={`previous_${t.id}`}
+                                                    type={graphType(t.configuration.type)}
+                                                    stroke={getColor(i, true)}
+                                                    fill={`url(#colorPrevious${t.id})`}
+                                                />
+                                            )}
+                                            <Area
+                                                key={`total_area_${t.id}`}
+                                                type={graphType(t.configuration.type)}
+                                                dataKey={`total_${t.id}`}
+                                                stroke={getColor(i)}
+                                                fill={`url(#colorCurrent${t.id})`}
+                                            />
+                                        </Fragment>
+                                    ))}
+                                    {compareWithPrevious && (
+                                        <Area
+                                            dataKey="previous"
+                                            key={`previous_area_${trigger.id}`}
+                                            type={graphType(trigger.configuration.type)}
+                                            stroke={PREVIOUS_MAIN_COLOR}
+                                            fill="url(#colorPrevious)"
+                                        />
+                                    )}
+                                    <Area
+                                        dataKey="total"
+                                        key={`total_area_${trigger.id}`}
+                                        type={graphType(trigger.configuration.type)}
+                                        stroke={MAIN_COLOR}
+                                        fill="url(#colorCurrent)"
                                     />
                                     <defs>
                                         <linearGradient
@@ -245,32 +352,65 @@ export function TriggerStats({
                                             color={"transparent"}
                                             gradientUnits="userSpaceOnUse"
                                         >
-                                            <stop offset="0" stopColor="#3b82f6" stopOpacity={0.99} />
-                                            <stop offset=".7" stopColor="#3b82f6" stopOpacity={0} />
+                                            <stop offset="0" stopColor={MAIN_COLOR} stopOpacity={0.99} />
+                                            <stop offset=".7" stopColor={MAIN_COLOR} stopOpacity={0} />
                                         </linearGradient>
-                                        <linearGradient
-                                            id="colorPrevious"
-                                            x1="0"
-                                            y1="0"
-                                            x2="0"
-                                            y2="100%"
-                                            color={"transparent"}
-                                            gradientUnits="userSpaceOnUse"
-                                        >
-                                            <stop offset="0" stopColor="#78716c" stopOpacity={0.99} />
-                                            <stop offset=".7" stopColor="#78716c" stopOpacity={0} />
-                                        </linearGradient>
+                                        {compareWithPrevious && (
+                                            <linearGradient
+                                                id="colorPrevious"
+                                                x1="0"
+                                                y1="0"
+                                                x2="0"
+                                                y2="100%"
+                                                color={"transparent"}
+                                                gradientUnits="userSpaceOnUse"
+                                            >
+                                                <stop offset="0" stopColor={PREVIOUS_MAIN_COLOR} stopOpacity={0.99} />
+                                                <stop offset=".7" stopColor={PREVIOUS_MAIN_COLOR} stopOpacity={0} />
+                                            </linearGradient>
+                                        )}
+                                        {(otherTriggers ?? []).map((t, i) => (
+                                            <Fragment key={`linarWrapper_${t.id}`}>
+                                                <linearGradient
+                                                    key={`linearGradient_colorCurrent${t.id}`}
+                                                    id={`colorCurrent${t.id}`}
+                                                    x1="0"
+                                                    y1="0"
+                                                    x2="0"
+                                                    y2="100%"
+                                                    color={"transparent"}
+                                                    gradientUnits="userSpaceOnUse"
+                                                >
+                                                    <stop offset="0" stopColor={getColor(i)} stopOpacity={0.99} />
+                                                    <stop offset=".7" stopColor={getColor(i)} stopOpacity={0} />
+                                                </linearGradient>
+                                                {compareWithPrevious && (
+                                                    <linearGradient
+                                                        key={`linearGradient_colorPrevious${t.id}`}
+                                                        id={`colorPrevious${t.id}`}
+                                                        x1="0"
+                                                        y1="0"
+                                                        x2="0"
+                                                        y2="100%"
+                                                        color={"transparent"}
+                                                        gradientUnits="userSpaceOnUse"
+                                                    >
+                                                        <stop
+                                                            offset="0"
+                                                            stopColor={getColor(i, true)}
+                                                            stopOpacity={0.99}
+                                                        />
+                                                        <stop
+                                                            offset=".7"
+                                                            stopColor={getColor(i, true)}
+                                                            stopOpacity={0}
+                                                        />
+                                                    </linearGradient>
+                                                )}
+                                            </Fragment>
+                                        ))}
                                     </defs>
-                                    <Area type={"step"} dataKey="total" stroke="#3b82f6" fill="url(#colorCurrent)" />
-                                    {compareWithPrevious && (
-                                        <Area
-                                            type={"step"}
-                                            dataKey="previous"
-                                            stroke="#78716c"
-                                            fill="url(#colorPrevious)"
-                                        />
-                                    )}
-                                </AreaChart>
+                                </ComposedChart>
                             </ResponsiveContainer>
                         </div>
                     </>

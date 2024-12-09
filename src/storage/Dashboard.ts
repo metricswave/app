@@ -18,7 +18,7 @@ export function useDashboardsState() {
     const KEY = () => `nw:${currentTeamId}:dashboards`;
 
     const { logout } = useAuthState();
-    const [dashboards, setDashboards] = useState<Dashboard[]>([expirableLocalStorage.get(KEY(), [], true)]);
+    const [dashboards, setDashboards] = useState<Dashboard[]>(expirableLocalStorage.get<Dashboard[]>(KEY(), [], true));
 
     const reloadDashboards = (force: boolean = false) => {
         if (loading) return;

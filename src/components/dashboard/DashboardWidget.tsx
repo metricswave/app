@@ -19,6 +19,7 @@ type Props = {
     date: string;
     fromDate?: string | undefined;
     trigger: Trigger;
+    otherTriggers?: Trigger[] | null;
     publicDashboard?: string | undefined;
 };
 
@@ -32,6 +33,7 @@ export default function DashboardWidget({
     date,
     fromDate = undefined,
     trigger,
+    otherTriggers = null,
     publicDashboard = undefined,
 }: Props) {
     const eventUuid = trigger.uuid;
@@ -61,6 +63,7 @@ export default function DashboardWidget({
             {type === "stats" && (
                 <TriggerStats
                     trigger={trigger}
+                    otherTriggers={otherTriggers}
                     title={title}
                     defaultPeriod={period.period}
                     defaultDate={date}

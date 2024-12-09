@@ -17,7 +17,7 @@ export function DashboardView(props: {
     fromDate?: undefined | string;
     addWidgetToDashboard: (item: DashboardItem) => void;
 }) {
-    const { triggerByUuid } = useTriggersState();
+    const { triggerByUuid, triggersByUuids } = useTriggersState();
 
     return (
         <SectionContainer size={"extra-big"}>
@@ -34,8 +34,9 @@ export function DashboardView(props: {
             {props.dashboards[props.dashboardIndex].items !== undefined && (
                 <div className="-mx-2.5 pb-64 grid gap-4 grid-cols-1 md:grid-cols-2 ">
                     {props.dashboards[props.dashboardIndex].items.map(
-                        ({ eventUuid, title, size, type, parameter }, index) => {
+                        ({ eventUuid, title, size, type, parameter, otherEvents }, index) => {
                             const trigger = triggerByUuid(eventUuid);
+                            const otherTriggers = otherEvents ? triggersByUuids(otherEvents) : null;
 
                             if (trigger === undefined) {
                                 return null;
@@ -44,6 +45,7 @@ export function DashboardView(props: {
                             return (
                                 <DashboardWidget
                                     trigger={trigger}
+                                    otherTriggers={otherTriggers}
                                     title={title}
                                     size={size as "base" | "large"}
                                     type={type}

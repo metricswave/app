@@ -1,9 +1,10 @@
 import { Trigger } from "../../types/Trigger";
 import { Stats, useTriggerStatsState } from "../../storage/TriggerStats";
 import { useEffect, useState } from "react";
-import { money_formatter, number_formatter } from "../../helpers/NumberFormatter";
+import { amount_from_cents, money_formatter, number_formatter } from "../../helpers/NumberFormatter";
 import { calculateDefaultDateForPeriod, fieldTypeForPeriod, Period } from "../../types/Period";
 import { TriggerStatsLoading } from "./TriggerStatsLoading";
+import { format } from "date-fns";
 
 function getGraphData(stats: Stats, previousPeriodStats: Stats, view: Period) {
     const data = stats.plot.map((stat, index) => ({
@@ -18,9 +19,9 @@ function getGraphData(stats: Stats, previousPeriodStats: Stats, view: Period) {
 }
 
 type ChildrenFuction = (
-    stats: Stats,
-    previousPeriodStats: Stats,
-    data: { name: string; total: number }[] | undefined,
+    stats: (uuid: string) => Stats,
+    previousPeriodStats: (uuid: string) => Stats,
+    data: Data[] | undefined,
     fieldDate: string | undefined,
     setFieldDate: (date: string) => void,
     dateFieldType: "date" | "month",
@@ -30,6 +31,7 @@ type ChildrenFuction = (
 type Props = {
     title: string;
     trigger: Trigger;
+    otherTriggers?: Trigger[] | null;
     publicDashboard?: string | undefined;
     defaultPeriod: Period;
     defaultDate?: string;
@@ -39,8 +41,17 @@ type Props = {
     children: ChildrenFuction;
 };
 
+type Data = {
+    name: string;
+    total: number;
+    previous: number;
+    previousName: string;
+    [key: string]: string | number;
+};
+
 export function MainTriggerStats({
     trigger,
+    otherTriggers = null,
     publicDashboard,
     defaultPeriod,
     defaultDate,
@@ -49,8 +60,10 @@ export function MainTriggerStats({
     children,
 }: Props): JSX.Element {
     const [period, setPeriod] = useState<Period>(defaultPeriod);
-    const { stats, previousPeriodStats, loadStats, loadPreviousPeriodStats, statsLoading } = useTriggerStatsState();
-    const [data, setData] = useState<{ name: string; total: number }[]>();
+    const { stats, previousPeriodStats, loadStats, loadPreviousPeriodStats, statsLoading } = useTriggerStatsState(
+        trigger.uuid,
+    );
+    const [data, setData] = useState<Data[]>();
     const [average, setAverage] = useState("");
     const [date, setDate] = useState<string>(defaultDate ?? calculateDefaultDateForPeriod(period));
     const [fieldDate, setFieldDate] = useState<string>();
@@ -67,19 +80,38 @@ export function MainTriggerStats({
     }, [fieldDate]);
     useEffect(() => setPeriodAndDate(defaultPeriod), [defaultPeriod]);
     useEffect(() => setDate(defaultDate!), [defaultDate]);
-    useEffect(
-        () => loadStats(trigger, period, date, publicDashboard, defaultFromDate),
-        [trigger.id, period, date, publicDashboard, defaultFromDate],
-    );
-    useEffect(
-        () =>
-            compareWithPrevious
-                ? loadPreviousPeriodStats(trigger, period, date, publicDashboard, defaultFromDate)
-                : undefined,
-        [trigger.id, compareWithPrevious, period, date, publicDashboard, defaultFromDate],
-    );
     useEffect(() => {
-        const data = getGraphData(stats, previousPeriodStats, period);
+        loadStats(trigger, period, date, publicDashboard, defaultFromDate);
+    }, [trigger.id, period, date, publicDashboard, defaultFromDate]);
+
+    useEffect(() => {
+        otherTriggers?.forEach((t) => {
+            loadStats(t, period, date, publicDashboard, defaultFromDate);
+        });
+    }, [...(otherTriggers ?? []).map((t) => t.id), period, date, publicDashboard, defaultFromDate]);
+
+    useEffect(() => {
+        return compareWithPrevious
+            ? loadPreviousPeriodStats(trigger, period, date, publicDashboard, defaultFromDate)
+            : undefined;
+    }, [trigger.id, compareWithPrevious, period, date, publicDashboard, defaultFromDate]);
+
+    useEffect(() => {
+        return compareWithPrevious
+            ? otherTriggers?.forEach((t) => {
+                  loadPreviousPeriodStats(t, period, date, publicDashboard, defaultFromDate);
+              })
+            : undefined;
+    }, [...(otherTriggers ?? []).map((t) => t.id), period, date, publicDashboard, defaultFromDate]);
+
+    useEffect(() => {
+        let data = getGraphData(stats(trigger.uuid), previousPeriodStats(trigger.uuid), period);
+
+        otherTriggers?.forEach((t) => {
+            const d = getGraphData(stats(t.uuid), previousPeriodStats(t.uuid), period);
+            data = mergeData(data, d, t);
+        });
+
         const average = data.reduce((acc, curr) => acc + curr.total, 0) / data.length;
         setData(data);
         setAverage(
@@ -89,11 +121,45 @@ export function MainTriggerStats({
                   ? money_formatter(average)
                   : number_formatter(average),
         );
-    }, [stats, previousPeriodStats, period]);
+    }, [
+        stats(trigger.uuid).plot.length,
+        previousPeriodStats(trigger.uuid).plot.length,
+        period,
+        ...(otherTriggers ?? []).map((t) => stats(t.uuid).plot.length),
+        ...(otherTriggers ?? []).map((t) => previousPeriodStats(t.uuid).plot.length),
+    ]);
 
     if (statsLoading) {
         return <TriggerStatsLoading />;
     }
 
     return children(stats, previousPeriodStats, data, fieldDate, setFieldDate, dateFieldType, average);
+}
+
+function mergeData(data: Data[], d: Data[], trigger: Trigger): Data[] {
+    const prevData = [...data];
+
+    const r = data.map((item) => {
+        const i = d.find((d) => format(new Date(d.name), "yyyyLLdd") === format(new Date(item.name), "yyyyLLdd"));
+
+        console.log({ item, i });
+
+        return {
+            ...item,
+            ...(i !== undefined
+                ? {
+                      [`name_${trigger.id}`]: i.name,
+                      [`total_${trigger.id}`]:
+                          trigger.configuration.type === "money_income" ? amount_from_cents(i.total) : i.total,
+                      [`previousName_${trigger.id}`]: i.previousName,
+                      [`previous_${trigger.id}`]:
+                          trigger.configuration.type === "money_income" ? amount_from_cents(i.previous) : i.previous,
+                  }
+                : {}),
+        };
+    });
+
+    console.log({ prevData, d, r, trigger });
+
+    return r;
 }

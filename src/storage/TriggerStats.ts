@@ -6,8 +6,12 @@ import { ApiResponse, fetchApi, fetchAuthApi } from "../helpers/ApiFetcher";
 import { subDays, subMonths, subYears } from "date-fns";
 import format from "date-fns/format";
 
-export type Stats = {
-    headers: null | { unique?: number; pageViews?: number; visits?: number, total_income?: number };
+export type Stats = StatsData & {
+    triggerUuid: string;
+};
+
+type StatsData = {
+    headers: null | { unique?: number; pageViews?: number; visits?: number; total_income?: number };
     plot: StatRow[];
 };
 
@@ -45,23 +49,58 @@ export const getPreviousPeriodDate = (period: Period, date: string | null): stri
     return format(getPreviousPeriodDateObject(period, date), "yyyy-MM-dd");
 };
 
-function parseDataForType(data: Stats, type: string): Stats
-{
+function parseDataForType(data: StatsData, type: string): StatsData {
     if (type === "money_income") {
         data.plot = data.plot.map((row) => {
-            return { ...row, score: row.score }
-        })
+            return { ...row, score: row.score };
+        });
     }
 
-    return data
+    return data;
 }
 
-export function useTriggerStatsState() {
-    const defaultState = { headers: null, plot: [] };
-    const [stats, setStats] = useState<Stats>(defaultState);
-    const [previousPeriodStats, setPreviousPeriodStats] = useState<Stats>(defaultState);
+type StatsState = {
+    stats: (uuid: string) => Stats;
+    previousPeriodStats: (uuid: string) => Stats;
+    loadStats: (
+        trigger: Trigger,
+        period: Period,
+        date: string | null,
+        publicDashboard: string | undefined,
+        fromDate: string | undefined,
+    ) => void;
+    loadPreviousPeriodStats: (
+        trigger: Trigger,
+        period: Period,
+        date: string | null,
+        publicDashboard: string | undefined,
+        fromDate: string | undefined,
+    ) => void;
+    statsLoading: boolean;
+};
+
+export function useTriggerStatsState(uuid: string = ""): StatsState {
+    const defaultState: StatsData = { headers: null, plot: [] };
+    const stateFor = (uuid: string, state: StatsData = defaultState): Stats => {
+        return { ...state, triggerUuid: uuid };
+    };
+    const [stats, setStats] = useState<Stats[]>([stateFor(uuid)]);
+    const [previousPeriodStats, setPreviousPeriodStats] = useState<Stats[]>([stateFor(uuid)]);
     const [statsLoading, setStatsLoading] = useState<boolean>(false);
     const [previousStatsLoading, setPreviousStatsLoading] = useState<boolean>(false);
+
+    const updateOrSetStats = (newStats: Stats, current: boolean) => {
+        const value: Stats[] = current ? stats : previousPeriodStats;
+        const index = value.findIndex((s) => s.triggerUuid === newStats.triggerUuid);
+
+        if (index !== -1) {
+            value[index] = newStats;
+        } else {
+            value.push(newStats);
+        }
+
+        current ? setStats([...value]) : setPreviousPeriodStats([...value]);
+    };
 
     const loadStatsFor = (
         current: boolean,
@@ -71,33 +110,35 @@ export function useTriggerStatsState() {
         publicDashboard: string | undefined,
         fromDate: string | undefined,
     ) => {
-        const key = `trigger-graph-stats-${trigger.uuid}-${period}-${date ?? ""}-${fromDate ?? ""}`;
+        const key = `trigger-graph-stats-v2-${trigger.uuid}-${period}-${date ?? ""}-${fromDate ?? ""}`;
 
         if (publicDashboard === undefined) {
-            current
-                ? setStats(expirableLocalStorage.get(key, defaultState))
-                : setPreviousPeriodStats(expirableLocalStorage.get(key, defaultState));
+            let value = expirableLocalStorage.get<Stats>(key, stateFor(trigger.uuid));
+
+            updateOrSetStats(value, current);
         }
 
         current ? setStatsLoading(true) : setPreviousStatsLoading(true);
 
         const methods = {
-            success: (data: ApiResponse<Stats>) => {
+            success: (data: ApiResponse<StatsData>) => {
+                const parsedData = stateFor(trigger.uuid, parseDataForType(data.data, trigger.configuration.type));
+
                 if (publicDashboard === undefined) {
-                    expirableLocalStorage.set(key, data.data, FIVE_SECONDS);
+                    expirableLocalStorage.set(key, parsedData, FIVE_SECONDS);
                 }
 
-                const parsedData = parseDataForType(data.data, trigger.configuration.type);
-
-                current ? setStats(parsedData) : setPreviousPeriodStats(parsedData);
+                updateOrSetStats(parsedData, current);
                 current ? setStatsLoading(false) : setPreviousStatsLoading(false);
             },
             error: () => {
-                current ? setStats(defaultState) : setPreviousPeriodStats(defaultState);
+                const state = stateFor(trigger.uuid);
+                updateOrSetStats(state, current);
                 current ? setStatsLoading(false) : setPreviousStatsLoading(false);
             },
             catcher: () => {
-                current ? setStats(defaultState) : setPreviousPeriodStats(defaultState);
+                const state = stateFor(trigger.uuid);
+                updateOrSetStats(state, current);
                 current ? setStatsLoading(false) : setPreviousStatsLoading(false);
             },
         };
@@ -153,8 +194,11 @@ export function useTriggerStatsState() {
     };
 
     return {
-        stats,
-        previousPeriodStats,
+        stats: (uuid: string) => {
+            return stats.find((s) => s.triggerUuid === uuid) ?? stateFor(uuid);
+        },
+        previousPeriodStats: (uuid: string) =>
+            previousPeriodStats.find((s) => s.triggerUuid === uuid) ?? stateFor(uuid),
         loadStats,
         loadPreviousPeriodStats,
         statsLoading: statsLoading || previousStatsLoading,

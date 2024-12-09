@@ -3,6 +3,7 @@ export function mapParameterName(parameter: string): string {
 }
 
 export function mergeGlobalParameters(parameters: string[]): string[] {
+    parameters = parameters ?? [];
     if (!parameters.includes("user_parameter")) {
         parameters.push("user_parameter");
     }

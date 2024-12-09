@@ -38,14 +38,17 @@ export function TriggerNumberStats({
             defaultFromDate={defaultFromDate}
             hideViewSwitcher={hideViewSwitcher}
             compareWithPrevious={compareWithPrevious}
-            children={(stats, previousPeriodStats, data, fieldDate, setFieldDate, dateFieldType, average) => {
-                const totalNumber = (stats.plot ?? []).reduce((acc, { score }) => acc + score, 0);
+            children={(stats, previousPeriodStats, _, fieldDate, setFieldDate, dateFieldType, average) => {
+                const statsData = stats(trigger.uuid);
+                const previousStatsData = previousPeriodStats(trigger.uuid);
+
+                const totalNumber = (statsData.plot ?? []).reduce((acc, { score }) => acc + score, 0);
                 const formattedTotalNumber =
                     trigger.configuration.type === "money_income"
                         ? money_formatter(totalNumber)
                         : number_formatter(totalNumber);
 
-                const previousTotalNumber = (previousPeriodStats.plot ?? []).reduce((acc, { score }) => acc + score, 0);
+                const previousTotalNumber = (previousStatsData.plot ?? []).reduce((acc, { score }) => acc + score, 0);
                 const formattedPreviousTotalNumber =
                     trigger.configuration.type === "money_income"
                         ? money_formatter(previousTotalNumber)

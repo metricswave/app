@@ -1,4 +1,3 @@
-import React from "react";
 import PageTitle from "../components/sections/PageTitle";
 import SectionContainer from "../components/sections/SectionContainer";
 import { DialogComponent } from "../components/dialog/DialogComponent";
