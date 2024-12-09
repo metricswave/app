@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { amount_from_cents, money_formatter, number_formatter } from "../../helpers/NumberFormatter";
 import { calculateDefaultDateForPeriod, fieldTypeForPeriod, Period } from "../../types/Period";
 import { TriggerStatsLoading } from "./TriggerStatsLoading";
+import { format } from "date-fns";
 
 function getGraphData(stats: Stats, previousPeriodStats: Stats, view: Period) {
     const data = stats.plot.map((stat, index) => ({
@@ -79,10 +80,9 @@ export function MainTriggerStats({
     }, [fieldDate]);
     useEffect(() => setPeriodAndDate(defaultPeriod), [defaultPeriod]);
     useEffect(() => setDate(defaultDate!), [defaultDate]);
-    useEffect(
-        () => loadStats(trigger, period, date, publicDashboard, defaultFromDate),
-        [trigger.id, period, date, publicDashboard, defaultFromDate],
-    );
+    useEffect(() => {
+        loadStats(trigger, period, date, publicDashboard, defaultFromDate);
+    }, [trigger.id, period, date, publicDashboard, defaultFromDate]);
 
     useEffect(() => {
         otherTriggers?.forEach((t) => {
@@ -90,23 +90,19 @@ export function MainTriggerStats({
         });
     }, [...(otherTriggers ?? []).map((t) => t.id), period, date, publicDashboard, defaultFromDate]);
 
-    useEffect(
-        () =>
-            compareWithPrevious
-                ? loadPreviousPeriodStats(trigger, period, date, publicDashboard, defaultFromDate)
-                : undefined,
-        [trigger.id, compareWithPrevious, period, date, publicDashboard, defaultFromDate],
-    );
+    useEffect(() => {
+        return compareWithPrevious
+            ? loadPreviousPeriodStats(trigger, period, date, publicDashboard, defaultFromDate)
+            : undefined;
+    }, [trigger.id, compareWithPrevious, period, date, publicDashboard, defaultFromDate]);
 
-    useEffect(
-        () =>
-            compareWithPrevious
-                ? otherTriggers?.forEach((t) => {
-                      loadPreviousPeriodStats(t, period, date, publicDashboard, defaultFromDate);
-                  })
-                : undefined,
-        [...(otherTriggers ?? []).map((t) => t.id), period, date, publicDashboard, defaultFromDate],
-    );
+    useEffect(() => {
+        return compareWithPrevious
+            ? otherTriggers?.forEach((t) => {
+                  loadPreviousPeriodStats(t, period, date, publicDashboard, defaultFromDate);
+              })
+            : undefined;
+    }, [...(otherTriggers ?? []).map((t) => t.id), period, date, publicDashboard, defaultFromDate]);
 
     useEffect(() => {
         let data = getGraphData(stats(trigger.uuid), previousPeriodStats(trigger.uuid), period);
@@ -141,8 +137,12 @@ export function MainTriggerStats({
 }
 
 function mergeData(data: Data[], d: Data[], trigger: Trigger): Data[] {
-    return data.map((item) => {
-        const i = d.find((d) => d.name === item.name);
+    const prevData = [...data];
+
+    const r = data.map((item) => {
+        const i = d.find((d) => format(new Date(d.name), "yyyyLLdd") === format(new Date(item.name), "yyyyLLdd"));
+
+        console.log({ item, i });
 
         return {
             ...item,
@@ -158,4 +158,8 @@ function mergeData(data: Data[], d: Data[], trigger: Trigger): Data[] {
                 : {}),
         };
     });
+
+    console.log({ prevData, d, r, trigger });
+
+    return r;
 }

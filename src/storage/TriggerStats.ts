@@ -113,11 +113,9 @@ export function useTriggerStatsState(uuid: string = ""): StatsState {
         const key = `trigger-graph-stats-v2-${trigger.uuid}-${period}-${date ?? ""}-${fromDate ?? ""}`;
 
         if (publicDashboard === undefined) {
-            let value = expirableLocalStorage.get(key, stateFor(trigger.uuid));
+            let value = expirableLocalStorage.get<Stats>(key, stateFor(trigger.uuid));
 
-            if (Array.isArray(value)) {
-                current ? setStats(value) : setPreviousPeriodStats(value);
-            }
+            updateOrSetStats(value, current);
         }
 
         current ? setStatsLoading(true) : setPreviousStatsLoading(true);
