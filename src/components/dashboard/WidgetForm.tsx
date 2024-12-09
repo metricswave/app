@@ -193,8 +193,9 @@ export default function WidgetForm({
                                 })),
                             ]}
                             setValue={(value) => {
-                                const e = otherEvents;
+                                let e = otherEvents;
                                 e[index] = value as string;
+                                e = e.filter((e) => e.length > 0 && e !== null);
                                 setOtherEvents([...e]);
                             }}
                             label={"Another event"}
