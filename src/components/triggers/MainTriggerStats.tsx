@@ -137,12 +137,8 @@ export function MainTriggerStats({
 }
 
 function mergeData(data: Data[], d: Data[], trigger: Trigger): Data[] {
-    const prevData = [...data];
-
-    const r = data.map((item) => {
+    return data.map((item) => {
         const i = d.find((d) => format(new Date(d.name), "yyyyLLdd") === format(new Date(item.name), "yyyyLLdd"));
-
-        console.log({ item, i });
 
         return {
             ...item,
@@ -158,8 +154,4 @@ function mergeData(data: Data[], d: Data[], trigger: Trigger): Data[] {
                 : {}),
         };
     });
-
-    console.log({ prevData, d, r, trigger });
-
-    return r;
 }
