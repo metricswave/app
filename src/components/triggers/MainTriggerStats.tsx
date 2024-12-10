@@ -106,6 +106,11 @@ export function MainTriggerStats({
 
     useEffect(() => {
         let data = getGraphData(stats(trigger.uuid), previousPeriodStats(trigger.uuid), period);
+        data = data.map((d) => ({
+            ...d,
+            total: trigger.configuration.type === "money_income" ? amount_from_cents(d.total) : d.total,
+            previous: trigger.configuration.type === "money_income" ? amount_from_cents(d.previous) : d.previous,
+        }));
 
         otherTriggers?.forEach((t) => {
             const d = getGraphData(stats(t.uuid), previousPeriodStats(t.uuid), period);
