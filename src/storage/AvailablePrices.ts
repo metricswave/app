@@ -39,7 +39,7 @@ export function useAvailablePricesState() {
                 yearlyPrice: 0,
                 dataRetentionInMonths: 6,
                 dedicatedSupport: false,
-                eventsLimit: 1000,
+                eventsLimit: 1_000_000,
             },
         ],
     );
