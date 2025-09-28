@@ -50,8 +50,9 @@ export function Dashboards() {
     useEffect(() => {
         if (
             dashboards !== undefined &&
-            dashboards[0].id !== undefined &&
             dashboards.length > 0 &&
+            dashboards[0] !== undefined &&
+            dashboards[0].id !== undefined &&
             dashboards[dashboardIndex] === undefined &&
             dashboardIndex !== 0
         ) {
@@ -78,6 +79,8 @@ export function Dashboards() {
     );
 
     const handleDashboardUpdate = (dashboardIndex: number, fields: Partial<Dashboard>) => {
+        if (!dashboards || !dashboards[dashboardIndex]) return;
+
         if (fields.public !== undefined && fields.public && !dashboards[dashboardIndex].public) {
             setChangedToPublic(true);
         }
@@ -86,6 +89,8 @@ export function Dashboards() {
     };
 
     const handleDashboardDeleted = (dashboardIndex: number) => {
+        if (!dashboards || !dashboards[dashboardIndex]) return;
+
         fetchAuthApi(`/dashboards/${dashboards[dashboardIndex].id}`, {
             method: "DELETE",
             success: () => {
@@ -104,7 +109,7 @@ export function Dashboards() {
     };
 
     useEffect(() => {
-        if (dashboardJustCreated) {
+        if (dashboardJustCreated && dashboards && dashboards.length > 0) {
             setDashboardIndex(dashboards.length - 1);
             setDashboardJustCreated(false);
         }
@@ -172,7 +177,7 @@ export function Dashboards() {
                     />
                 </div>
 
-                {dashboards[dashboardIndex].uuid !== null && changedToPublic && (
+                {dashboards && dashboards[dashboardIndex] && dashboards[dashboardIndex].uuid !== null && changedToPublic && (
                     <div>
                         <div className="p-4 bg-green-100 border border-green-200 dark:bg-green-800/20 dark:border-green-800/50">
                             <div className=" flex flex-row gap-2 items-center justify-between">

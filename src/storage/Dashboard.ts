@@ -18,7 +18,9 @@ export function useDashboardsState() {
     const KEY = () => `nw:${currentTeamId}:dashboards`;
 
     const { logout } = useAuthState();
-    const [dashboards, setDashboards] = useState<Dashboard[]>(expirableLocalStorage.get<Dashboard[]>(KEY(), [], true));
+    const [dashboards, setDashboards] = useState<Dashboard[]>(() => {
+        return currentTeamId ? expirableLocalStorage.get<Dashboard[]>(KEY(), [], true) : [];
+    });
 
     const reloadDashboards = (force: boolean = false) => {
         if (loading) return;
@@ -52,7 +54,15 @@ export function useDashboardsState() {
         });
     };
 
-    useEffect(reloadDashboards, [currentTeamId]);
+    useEffect(() => {
+        if (currentTeamId) {
+            const cachedDashboards = expirableLocalStorage.get<Dashboard[]>(KEY(), [], true);
+            setDashboards(cachedDashboards);
+        } else {
+            setDashboards([]);
+        }
+        reloadDashboards();
+    }, [currentTeamId]);
 
     const updateDashboard = (index: number, newDashboards: Dashboard[]) => {
         const id = newDashboards[index].id;
