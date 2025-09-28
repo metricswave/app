@@ -53,6 +53,10 @@ export default function App() {
     }
 
     if (context.userState.user === null) {
+        if (!isAuth) {
+            return <Navigate to="/auth/signup" />;
+        }
+
         return (
             <>
                 <div className="flex flex-col gap-4 items-center animate-pulse justify-center pt-20 sm:pt-44 md:pt-64">

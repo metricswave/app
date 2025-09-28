@@ -39,7 +39,10 @@ export function useUserState(): UserState {
                 setIsFreshUser(true);
                 setExpired(false);
             },
-            finally: () => {
+            error: () => {
+                setExpired(true);
+            },
+            catcher: () => {
                 setExpired(true);
             },
         });

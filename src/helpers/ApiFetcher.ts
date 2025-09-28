@@ -76,7 +76,6 @@ export function fetchApi<T>(path: string, { method = "GET", ...params }: ApiFetc
             if (res.status >= 200 && res.status < 300) {
                 const data = res.status === 204 ? null : await res.json();
                 await params.success(data, res.status);
-                params.success(data, res.status);
                 return;
             }
 
