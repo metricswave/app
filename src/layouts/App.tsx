@@ -97,7 +97,7 @@ export default function App() {
                     </div>
                 )}
 
-                <div className="flex flex-row space-x-4 items-center justify-between py-3 px-5 text-sm bg-white dark:bg-zinc-900 bg-opacity-70 dark:bg-opacity-50 backdrop-blur-lg firefox:bg-opacity-95 firefox:dark:bg-opacity-95">
+                <div className="flex flex-row space-x-4 items-center justify-between py-3 px-5 text-sm bg-white dark:bg-zinc-900 bg-opacity-70 dark:bg-opacity-50 backdrop-blur-lg firefox:bg-opacity-100 firefox:dark:bg-opacity-100 firefox:backdrop-blur-none">
                     <Logo />
                     <div className="hidden sm:block">
                         <NavigationItems />
@@ -131,7 +131,7 @@ export default function App() {
 
             <div
                 id="bottom-nav-menu"
-                className="fixed bottom-0 left-0 right-0 p-4 border-t soft-border sm:hidden bg-white dark:bg-zinc-900 bg-opacity-70 dark:bg-opacity-50 backdrop-blur-lg firefox:bg-opacity-95 firefox:dark:bg-opacity-95 drop-shadow-2xl z-30"
+                className="fixed bottom-0 left-0 right-0 p-4 border-t soft-border sm:hidden bg-white dark:bg-zinc-900 bg-opacity-70 dark:bg-opacity-50 backdrop-blur-lg firefox:bg-opacity-100 firefox:dark:bg-opacity-100 firefox:backdrop-blur-none drop-shadow-2xl z-30"
             >
                 <MobileNavigationItems />
             </div>
