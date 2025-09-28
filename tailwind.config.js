@@ -62,6 +62,9 @@ module.exports = {
     },
     plugins: [
         require("@tailwindcss/typography"),
+        function ({ addVariant }) {
+            addVariant('firefox', '@-moz-document url-prefix()');
+        },
         function ({ addBase, theme }) {
             function extractColorVars(colorObj, colorGroup = "") {
                 return Object.keys(colorObj).reduce((vars, colorKey) => {
