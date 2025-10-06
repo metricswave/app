@@ -53,7 +53,9 @@ export function PlanBox({ plan, loadingPurchase, setLoadingPurchase, period, pur
                 {period === "yearly" && <span>Billed yearly &mdash; {price_formatter(plan.yearlyPrice)}</span>}
                 {price > 0 && <span>Cancel at any time</span>}
                 <span>
-                    {plan.eventsLimit === null ? "Unlimited" : number_formatter(plan.eventsLimit)} events per month
+                    {plan.eventsLimit === null
+                        ? "Unlimited"
+                        : "Up to " + number_formatter(plan.eventsLimit) + " events per month"}
                 </span>
                 <span>Unlimited data retention</span>
             </div>
